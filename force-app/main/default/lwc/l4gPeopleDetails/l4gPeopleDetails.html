@@ -1,0 +1,34 @@
+<template>
+    <div lwc:if={showNewContactForm}>
+        <c-l4g-new-contact record-details={recordDetails} object-api-name="Contact" field-set-name="L4G_NewContact"></c-l4g-new-contact>
+    </div>
+    <div lwc:else>
+        <lightning-card title="People Details" icon-name="standard:contact">
+            <template if:true={contacts.length}>
+                <div class="slds-p-around_medium">
+                    <template for:each={contacts} for:item="contact">
+                        <lightning-card key={contact.email} class="contact-card">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="slds-grid slds-align-center">
+                                    <lightning-icon icon-name="standard:user" alternative-text="User Icon" size="small" class="slds-m-right_small"></lightning-icon>
+                                    <h3 class="slds-text-heading_small">{contact.name}</h3>
+                                </div>
+                                <div class="slds-m-top_medium">
+                                    <template if:true={contact.showAddNew}>
+                                        <lightning-button data-email={contact.email} label="Create Contact" variant="brand" onclick={handleAddNew}></lightning-button>
+                                    </template>
+                                    <template if:true={contact.showView}>
+                                        <lightning-button data-target-id={contact.Id} label="View" variant="neutral" onclick={handleView}></lightning-button>
+                                    </template>
+                                </div>
+                            </div>
+                        </lightning-card>
+                    </template>
+                </div>
+            </template>
+            <template if:false={contacts.length}>
+                <p>No contacts available.</p>
+            </template>
+        </lightning-card>
+    </div>
+</template>

@@ -1,0 +1,69 @@
+<template>
+    <div class="spinner">
+        <template if:true={isLoading}>
+             <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+             </lightning-spinner>
+        </template>
+    </div>
+    <lightning-card  title="Clone Account Team Members" icon-name="standard:account">
+  
+    <lightning-progress-indicator current-step={currentStep} type="base" variant="base">
+        <lightning-progress-step label="Step 1" value="1" onclick={handleOnStepClick}></lightning-progress-step>
+        <lightning-progress-step label="Step 2" value="2" onclick={handleOnStepClick}></lightning-progress-step>
+        <lightning-progress-step label="Step 3" value="3" onclick={handleOnStepClick}></lightning-progress-step>
+    </lightning-progress-indicator>
+       
+        <template if:true={isStepOne}>
+            <lightning-card  title="Select Team Members" >
+  
+                <div class="slds-p-horizontal_small">
+                                      <div style="height: 150px;">
+                                        <lightning-datatable
+                                                key-field="Id"
+                                                data={accTeamList}
+                                                columns={columns}
+                                                selected-rows={selection}
+                                                onrowselection={rowSelection}>
+                                        </lightning-datatable>
+                                    </div>   
+                </div>    
+           
+            </lightning-card>
+        </template>
+        <template if:true={isStepTwo}>
+                <lightning-card  title="Select Account" > 
+                <lightning-record-edit-form object-api-name="Account">
+                    <lightning-messages></lightning-messages>
+                    <lightning-input-field data-accid field-name="ParentId" variant="label-hidden" onchange={handleLookupChange} value={lookupValue} required>  </lightning-input-field>
+                    
+                </lightning-record-edit-form>
+                </lightning-card>
+        </template>
+        <template if:true={isStepThree}>
+            
+                <lightning-card  title={AccountName} >
+                    <template for:each={teamMembersName} for:item="teamM">
+                        <li key={teamM.Name}>
+                            {teamM.label}
+                        </li>
+                    </template>
+                </lightning-card>
+            
+        </template>
+        <p class="slds-align_absolute-center" slot = "footer">
+        
+        <template if:true={isEnablePrev}>
+            <lightning-button label="Back" onclick={handlePrev}></lightning-button>
+        </template>
+         
+        <template if:true={isEnableNext}>
+            <lightning-button label="Next" onclick={handleNext}></lightning-button>
+        </template>
+
+        <template if:true={isEnableFinish}>
+            <lightning-button label="Confirm" variant="brand" onclick={handleFinish}></lightning-button>
+        </template> 
+       
+        </p>   
+    </lightning-card>
+ </template>

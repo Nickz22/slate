@@ -1,0 +1,68 @@
+<template>
+    <!-- spinner -->
+	<template if:true={spinnerStatus}>
+		<lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+	</template>
+
+    <div class="slds-p-around_small">
+        <template if:true={error}>
+            {error}
+        </template>
+        <template if:true={showRecipientDetailsScreen}>
+            <h2> Template Name: <b>ICA - Template</b> </h2>
+            <div class="slds-grid slds-wrap">
+                <div class="slds-col slds-size_6-of-12 slds-p-horizontal--small slds-m-bottom--small">
+                    <lightning-input
+                        class="reqInpFld"
+                        type="text"
+                        label="Document Name"
+                        name="documentName"
+                        onchange={inputValueChange}
+                        value={documentName}
+                        ></lightning-input>
+                </div>
+                <!--<div class="slds-col slds-size_6-of-12 slds-p-horizontal--small slds-m-bottom--small">
+                    <lightning-input
+                        class="reqInpFld"
+                        type="email"
+                        label="Email"
+                        name="recipientDetails||email"
+                        onchange={inputValueChange}
+                        ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_6-of-12 slds-p-horizontal--small slds-m-bottom--small">
+                    <lightning-input
+                        class="reqInpFld"
+                        type="text"
+                        label="First Name"
+                        name="recipientDetails||first_name"
+                        onchange={inputValueChange}
+                        ></lightning-input>
+                </div>
+                <div class="slds-col slds-size_6-of-12 slds-p-horizontal--small slds-m-bottom--small">
+                    <lightning-input
+                        class="reqInpFld"
+                        type="text"
+                        label="Last Name"
+                        name="recipientDetails||last_name"
+                        onchange={inputValueChange}
+                        ></lightning-input>
+                </div>-->
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning-button variant="brand" label="Create & Send" onclick={CreateAndSendDocumentHelper} name="CreateAndSendDocumentButton" class="slds-p-around_x-small"></lightning-button>
+            </footer>
+        </template>
+        <template if:true={showAllDocumetsScreen}>
+            <h2> Generated Document Info </h2>
+            <div style="height: 300px;">
+                <lightning-datatable
+                        key-field="id"
+                        data={documentList}
+                        columns={DocumentDetailsColumns}
+                        hide-checkbox-column>
+                </lightning-datatable>
+            </div>
+        </template>
+    </div>
+</template>

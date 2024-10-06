@@ -1,0 +1,37 @@
+<template>
+    <div class="exampleHolder" lwc:if={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+    </div>
+    <div lwc:else>
+        <lightning-record-edit-form object-api-name="Contact" onsubmit={handleSubmit}
+            onsuccess={handleSuccess} onerror={handleError} density="comfy">
+            <lightning-messages></lightning-messages>
+            <lightning-card>
+                <lightning-layout multiple-rows="true">
+                    <template for:each={fieldSetValues} for:item="field">
+                        <template lwc:if={field.isReference}>
+                            <lightning-layout-item key={field.fieldName} size="12" small-device-size="12"
+                                medium-device-size="12" large-device-size="12" padding="horizontal-small">
+                                <c-l4g-custom-lookup icon-name="standard:account"
+                                    s-object-api-name={field.referencedObjectName} default-record-id={field.value}
+                                    label="Account" onlookupupdate={lookupRecord} placeholder="type here...">
+                                </c-l4g-custom-lookup>
+                            </lightning-layout-item>
+                        </template>
+                        <template lwc:else>
+                            <lightning-layout-item key={field.fieldName} size="12" small-device-size="12"
+                                medium-device-size="12" large-device-size="12" padding="horizontal-small">
+                                <lightning-input-field field-name={field.fieldName} value={field.value}
+                                    required={field.isRequired}>
+                                </lightning-input-field>
+                            </lightning-layout-item>
+                        </template>
+                    </template>
+                </lightning-layout>
+                <div class="slds-m-top_medium slds-align_absolute-center">
+                    <lightning-button variant="brand" type="submit" label="Save"></lightning-button>
+                </div>
+            </lightning-card>
+        </lightning-record-edit-form>
+    </div>
+</template>
