@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Shoot_Hold_2__c</fullName>
+    <description>Located in Gmail Integration for Opp Creation.
+Enter 2nd Option End Dates here.
+Integrates w Shoot Holds Calendar. 
+Warning to inform of conflicting Holds in calendar to reduce error.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Located in Gmail Integration for Opp Creation.
+Enter 2nd Option End Dates here.
+Integrates w Shoot Holds Calendar. 
+Warning to inform of conflicting Holds in calendar to reduce error.</inlineHelpText>
+    <label>Shoot Date - 2nd - End</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

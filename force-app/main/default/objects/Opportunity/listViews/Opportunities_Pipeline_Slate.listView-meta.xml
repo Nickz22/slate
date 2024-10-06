@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Opportunities_Pipeline_Slate</fullName>
+    <columns>OPPORTUNITY.NAME</columns>
+    <columns>Opportunity_Descriptor__c</columns>
+    <columns>ACCOUNT.NAME</columns>
+    <columns>OPPORTUNITY.STAGE_NAME</columns>
+    <columns>SBQQ__PrimaryQuote__c</columns>
+    <columns>Amount_QB__c</columns>
+    <columns>breadwinner_qbo__Total_Amount_Invoiced__c</columns>
+    <columns>True_Margin__c</columns>
+    <columns>Margin__c</columns>
+    <columns>OPPORTUNITY.CLOSE_DATE</columns>
+    <columns>Invoice_Due_Date_Override__c</columns>
+    <columns>Primary_E_mail__c</columns>
+    <columns>OPPORTUNITY.LEAD_SOURCE</columns>
+    <columns>Lead_Type__c</columns>
+    <columns>PrimaryContact__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>OPPORTUNITY.STAGE_NAME</field>
+        <operation>notEqual</operation>
+        <value>Closed Won,Closed Lost</value>
+    </filters>
+    <filters>
+        <field>OPPORTUNITY.RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Opportunity.Standard_Opportunity</value>
+    </filters>
+    <filters>
+        <field>Lead_Type__c</field>
+        <operation>equals</operation>
+        <value>Brand Content,Slate - CGI,E-Commerce,Motion,Retouching,Studio Rental</value>
+    </filters>
+    <label>Opportunities - Slate</label>
+    <sharedTo>
+        <group>Sys_Admins</group>
+    </sharedTo>
+</ListView>

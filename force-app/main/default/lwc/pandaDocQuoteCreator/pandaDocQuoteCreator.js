@@ -1,5 +1,4 @@
 import { LightningElement, api, wire, track } from "lwc";
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import createPandaDocQuote from "@salesforce/apex/PandaDocQuoteController.createPandaDocQuote";
 import checkDocumentStatus from "@salesforce/apex/PandaDocQuoteController.checkDocumentStatus";
 import attachDocumentToOpportunity from "@salesforce/apex/PandaDocQuoteController.attachDocumentToOpportunity";
@@ -12,6 +11,8 @@ export default class PandaDocQuoteCreator extends LightningElement {
   documentId;
   pollingInterval;
   dotInterval;
+  maxPollingAttempts = 30; // Maximum number of polling attempts (60 seconds total)
+  pollingAttempts = 0;
 
   connectedCallback() {
     this.animateDots();
@@ -33,13 +34,20 @@ export default class PandaDocQuoteCreator extends LightningElement {
     }, 200);
   }
 
-  @wire(createPandaDocQuote, { opportunityId: "$recordId" })
+  @wire(createPandaDocQuote, {
+    opportunityId: "$recordId",
+    timestamp: "$timestamp"
+  })
   wiredQuoteCreation({ error, data }) {
     if (data) {
       this.handleQuoteCreation(data);
     } else if (error) {
       this.handleError(error);
     }
+  }
+
+  get timestamp() {
+    return Date.now();
   }
 
   handleQuoteCreation(result) {
@@ -54,20 +62,34 @@ export default class PandaDocQuoteCreator extends LightningElement {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
+    this.pollingAttempts = 0;
     this.pollingInterval = setInterval(() => this.checkDocumentStatus(), 2000);
   }
 
   async checkDocumentStatus() {
-    const result = await checkDocumentStatus({
-      statusUrl: this.statusUrl
-    }).catch((error) => {
+    this.pollingAttempts++;
+    if (this.pollingAttempts > this.maxPollingAttempts) {
+      clearInterval(this.pollingInterval);
+      this.handleError(
+        new Error("Quote generation timed out. Please try again.")
+      );
+      return;
+    }
+
+    try {
+      const result = await checkDocumentStatus({
+        statusUrl: this.statusUrl
+      });
+
+      if (result && result.status === "document.draft") {
+        clearInterval(this.pollingInterval);
+        this.showPreview(result.id);
+      } else if (result && result.status === "error") {
+        throw new Error("An error occurred while generating the quote.");
+      }
+    } catch (error) {
       clearInterval(this.pollingInterval);
       this.handleError(error);
-    });
-
-    if (result && result.status === "document.draft") {
-      clearInterval(this.pollingInterval);
-      this.showPreview(result.id);
     }
   }
 
@@ -75,18 +97,19 @@ export default class PandaDocQuoteCreator extends LightningElement {
     const previewUrl = `https://app.pandadoc.com/a/#/documents/${documentId}`;
     window.open(previewUrl, "_blank");
 
-    await attachDocumentToOpportunity({
-      opportunityId: this.recordId,
-      documentId: documentId,
-      documentName: `PandaDoc Quote - ${this.recordId}`
-    }).catch((error) => {
+    try {
+      await attachDocumentToOpportunity({
+        opportunityId: this.recordId,
+        documentId: documentId,
+        documentName: `PandaDoc Quote - ${this.recordId}`
+      });
+      this.statusMessage =
+        "A copy of the Quote has been attached to the Opportunity, you may close this screen.";
+      this.isLoading = false;
+      clearInterval(this.dotInterval);
+    } catch (error) {
       this.handleError(error);
-      return;
-    });
-    this.statusMessage =
-      "A copy of the Quote has been attached to the Opportunity, you may close this screen";
-    this.isLoading = false;
-    clearInterval(this.dotInterval);
+    }
   }
 
   showToast(title, message, variant) {
@@ -96,6 +119,7 @@ export default class PandaDocQuoteCreator extends LightningElement {
   handleError(error) {
     this.isLoading = false;
     clearInterval(this.dotInterval);
+    clearInterval(this.pollingInterval);
     this.statusMessage = "An error occurred. Please try again.";
     this.showToast(
       "Error",

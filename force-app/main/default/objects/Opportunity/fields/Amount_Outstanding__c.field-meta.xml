@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Amount_Outstanding__c</fullName>
+    <defaultValue>0.00</defaultValue>
+    <description>Amt Outstanding on Invoice and informs whether Customer has paid Invoice and which amount remains outstanding.
+Populated by Middleware software, Workato, via recipe w. QB which looks up Invoice Amt Outstanding in QB and populates this field automatically in SF</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Amt Outstanding on Invoice and informs whether Customer has paid Invoice and which amount remains outstanding.
+Populated by Middleware software, Workato, via recipe w. QB which looks up Invoice Amt Outstanding in QB and populates this field automatically in SF</inlineHelpText>
+    <label>zAmount - Outstanding</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

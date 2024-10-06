@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>X6_Months_From_Confirmed_Shoot_Date_Star__c</fullName>
+    <description>Email notification if 6+ month from last &apos;Won&apos; shoot date
+Useful for client retention</description>
+    <externalId>false</externalId>
+    <formula>Shoot_Date_2__c  = TODAY() - 183</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Email notification if 6+ month from last &apos;Won&apos; shoot date
+Useful for client retention</inlineHelpText>
+    <label>zShoot Date - Misc - 6M From Last Shoot</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

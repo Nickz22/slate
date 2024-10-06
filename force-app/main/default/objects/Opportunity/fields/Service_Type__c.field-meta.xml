@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Service_Type__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    OR
+    (ISPICKVAL(Lead_Type__c, &quot;Brand Content&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;Slate - CGI&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;E-Commerce&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;Motion&quot;),
+    ISPICKVAL(Lead_Type__c, &quot;Retouching&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;Studio Rental&quot;)
+    ), &quot;Slate&quot;,
+
+
+IF(
+    OR
+    (ISPICKVAL(Lead_Type__c, &quot;Align - CGI&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;Retouching - Align&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;Align - Video Editing&quot;), 
+    ISPICKVAL(Lead_Type__c,&quot;Align - VFX/Animation&quot;)
+    ), &quot;Align&quot;,
+IF(
+    OR
+    (ISPICKVAL(Lead_Type__c, &quot;Casablanca - Motion Production&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;Casablanca - Motion Post Production&quot;)
+    ), &quot;Casablanca&quot;,
+IF(
+    OR(ISPICKVAL(Lead_Type__c, &quot;Palermo - Branding&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;Palermo - Video Production&quot;), 
+    ISPICKVAL(Lead_Type__c, &quot;Palermo - CGI&quot;),
+    ISPICKVAL(Lead_Type__c, &quot;Palermo - Digital/UX&quot;),
+    ISPICKVAL(Lead_Type__c, &quot; Palermo - E-Commerce Content Production&quot;)
+    ), &quot;Palermo&quot;,
+     &quot;&quot;)
+
+)
+)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Service Type - Company</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

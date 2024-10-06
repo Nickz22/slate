@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>QB_Company__c</fullName>
+    <description>Specifies which company this opp is for based on Service Type value</description>
+    <externalId>false</externalId>
+    <formula>If(CONTAINS(TEXT(Lead_Type__c),&apos;Palermo&apos;), &apos;Palermo Studio&apos;,
+			IF(CONTAINS(TEXT(Lead_Type__c),&apos;Align&apos;), &apos;Align Retouch&apos;,
+						IF(CONTAINS(TEXT(Lead_Type__c),&apos;Casablanca&apos;), &apos;Casablanca Films&apos;,
+									&apos;Slate Studios&apos;
+									)
+						)
+			)</formula>
+    <inlineHelpText>Specifies which company this opp is for based on Service Type value</inlineHelpText>
+    <label>Quickbooks - Company</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

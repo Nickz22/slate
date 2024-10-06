@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Google_Review_Request_Sent__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>If checked on Opp, Marketing Team has already sent Request to Primary Contact on Opp to provide Google Review</description>
+    <externalId>false</externalId>
+    <inlineHelpText>If checked on Opp, Marketing Team has already sent Request to Primary Contact on Opp to provide Google Review</inlineHelpText>
+    <label>zMarketing - Google Review - Requested</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

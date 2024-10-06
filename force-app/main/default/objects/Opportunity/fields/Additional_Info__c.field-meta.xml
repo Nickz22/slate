@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Additional_Info__c</fullName>
+    <description>Copy &amp; Paste Initial Client Inquiry Email into this field. 
+Required Field upon Opp Creation in Gmail Integration
+Have considered automating this w Einstein Gmail integration into Activity section, however, initial email would become buried at bottom of activity chain unless we determined best practice for &apos;pinning&apos; initial email to top. 
+Starting 12/2022, Typeform now auto-populates field based on Typeform responses</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Copy &amp; Paste Initial Client Inquiry Email into this field. 
+Required Field upon Opp Creation in Gmail Integration
+Have considered automating this w Einstein Gmail integration into Activity section, however, initial email would become buried at bottom of activity chain unless we determined best practice for &apos;pinning&apos; initial email to top. 
+Starting 12/2022, Typeform now auto-populates field based on Typeform responses</inlineHelpText>
+    <label>Initial Inquiry</label>
+    <length>32768</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

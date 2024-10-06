@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lead_Producer__c</fullName>
+    <description>This is a Single Picklist Field to enter the Lead Producer for each Opportunity
+This field is important for Reporting Dashboards for Employee Performance and also allows Lead Producers to sort the Opportunity Pipeline Views to show only their assigned Projects.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>This is a Single Picklist Field to enter the Lead Producer for each Opportunity
+This field is important for Reporting Dashboards for Employee Performance and also allows Lead Producers to sort the Opportunity Pipeline Views to show only their assigned Projects.</inlineHelpText>
+    <label>Lead Producer</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Lead_Type__c</controllingField>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Heather Cullum</fullName>
+                <default>true</default>
+                <label>Heather Cullum</label>
+            </value>
+            <value>
+                <fullName>Ferhat Yurdam</fullName>
+                <default>false</default>
+                <label>Ferhat Yurdam</label>
+            </value>
+            <value>
+                <fullName>Cameron Krone</fullName>
+                <default>false</default>
+                <label>Cameron Krone</label>
+            </value>
+            <value>
+                <fullName>Regina Bakeeva</fullName>
+                <default>false</default>
+                <label>Regina Bakeeva</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>E-Commerce</controllingFieldValue>
+            <controllingFieldValue>Studio Rental</controllingFieldValue>
+            <controllingFieldValue>Slate - CGI</controllingFieldValue>
+            <controllingFieldValue>Brand Content</controllingFieldValue>
+            <controllingFieldValue>Retouching</controllingFieldValue>
+            <controllingFieldValue>Motion</controllingFieldValue>
+            <valueName>Heather Cullum</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Palermo - Video Production</controllingFieldValue>
+            <controllingFieldValue>Palermo - Branding</controllingFieldValue>
+            <valueName>Regina Bakeeva</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Retouching - Align</controllingFieldValue>
+            <valueName>Ferhat Yurdam</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

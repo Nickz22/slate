@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FirstHold2DT__c</fullName>
+    <description>Runs BTS and not located in Page View
+Integrates w Shoot Holds Calendar.</description>
+    <externalId>false</externalId>
+    <formula>DATETIMEVALUE(  First_Hold_2__c  ) + 1020/1440</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Runs BTS and not located in Page View
+Integrates w Shoot Holds Calendar.</inlineHelpText>
+    <label>zShoot Date - 1st - End</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>DateTime</type>
+</CustomField>

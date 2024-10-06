@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Price_Per_Image__c</fullName>
+    <description>Formula based on Customer Invoice Amount / Image Count.
+Price Per Image is important industry standard which we can use to determine if pricing is within industry standards. Customers request to estimate based on price per image v full amount</description>
+    <externalId>false</externalId>
+    <formula>Amount /  Image_Count__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Formula based on Customer Invoice Amount / Image Count.
+Price Per Image is important industry standard which we can use to determine if pricing is within industry standards. Customers request to estimate based on price per image v full amount</inlineHelpText>
+    <label>zAmount - Price Per Image</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Deposit_Amount_Paid__c</fullName>
+    <description>Entered when Client has remitted payment for 50% Deposit.
+Auto Generated via &apos;Amount Outstanding&apos; field which displays Total Invoice Amount - Payments, which calculates deposit payment amount</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Entered when Client has remitted payment for 50% Deposit.
+Auto Generated via &apos;Amount Outstanding&apos; field which displays Total Invoice Amount - Payments, which calculates deposit payment amount</inlineHelpText>
+    <label>zDeposit - Amount Paid</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>
