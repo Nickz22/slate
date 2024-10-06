@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BusinessProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Standard</fullName>
+    <isActive>true</isActive>
+    <values>
+        <fullName>Closed Lost</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Closed Won</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Negotiation</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Proposal</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Qualification - Inquiry</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Qualification - Project</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Won - Complete</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Won - Post Production</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Won - Pre Production</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Won - Production</fullName>
+        <default>false</default>
+    </values>
+</BusinessProcess>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lead_Producer_Email__c</fullName>
+    <description>This is a Lookup Field to the Lead Producer Field which auto populates based on the Lead Producer assigned
+This field is important for Round Robin automations as the Round Robin emails from the Email Address of the Lead Producer on the Opportunity; not on the Creator of the Opportunity</description>
+    <externalId>false</externalId>
+    <inlineHelpText>This is a Lookup Field to the Lead Producer Field which auto populates based on the Lead Producer assigned
+This field is important for Round Robin automations as the Round Robin emails from the Email Address of the Lead Producer on the Opportunity; not on the Creator of the Opportunity</inlineHelpText>
+    <label>Lead Producer Email</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Email</type>
+    <unique>false</unique>
+</CustomField>

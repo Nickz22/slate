@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Amount_QB__c</fullName>
+    <description>Customer Invoice Amount on the QB Invoice. 
+QB Invoices are automatically pulled from Primary Opp Quote when Estimate Status is set to &apos;Invoice Sent&apos;. 
+QB Amount should always equal Primary Quote Amount + Sales Tax
+Used frequently in bookkeeping for Monthly Close</description>
+    <externalId>false</externalId>
+    <formula>Amount +  Tax_to_collect__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Customer Invoice Amount on the QB Invoice. 
+QB Invoices are automatically pulled from Primary Opp Quote when Estimate Status is set to &apos;Invoice Sent&apos;. 
+QB Amount should always equal Primary Quote Amount + Sales Tax
+Used frequently in bookkeeping for Monthly Close</inlineHelpText>
+    <label>Invoice - Amount - QB</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

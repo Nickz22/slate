@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Assets_Per_Day</fullName>
+    <availability>online</availability>
+    <displayType>link</displayType>
+    <encodingKey>UTF-8</encodingKey>
+    <height>600</height>
+    <linkType>url</linkType>
+    <masterLabel>Assets Per Day</masterLabel>
+    <openType>noSidebar</openType>
+    <protected>false</protected>
+    <url>https://airtable.com/shrpDOGKTGkaHRmBs</url>
+</WebLink>

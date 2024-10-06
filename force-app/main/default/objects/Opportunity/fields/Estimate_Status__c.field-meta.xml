@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Estimate_Status__c</fullName>
+    <description>Populated Automatically based on Pandadoc Estimate/Invoice statuses.
+If Estimate Status = Invoice Sent, Invoice is automatically created in QB to reflect current Primary Quote</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Populated Automatically based on Pandadoc Estimate/Invoice statuses.
+If Estimate Status = Invoice Sent, Invoice is automatically created in QB to reflect current Primary Quote</inlineHelpText>
+    <label>zPandadoc - Estimate - Status</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>true</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Estimate Not Sent</fullName>
+                <default>true</default>
+                <label>Estimate Not Sent</label>
+            </value>
+            <value>
+                <fullName>Estimate Sent</fullName>
+                <default>false</default>
+                <label>Estimate Sent</label>
+            </value>
+            <value>
+                <fullName>Estimate Viewed</fullName>
+                <default>false</default>
+                <label>Estimate Viewed</label>
+            </value>
+            <value>
+                <fullName>Deposit Paid</fullName>
+                <default>false</default>
+                <label>Deposit Paid</label>
+            </value>
+            <value>
+                <fullName>Invoice Created</fullName>
+                <default>false</default>
+                <label>Invoice Sent to QB</label>
+            </value>
+            <value>
+                <fullName>Invoice Paid</fullName>
+                <default>false</default>
+                <label>Invoice Paid</label>
+            </value>
+            <value>
+                <fullName>Estimate Sent - General Rate Card</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Estimate Sent - General Rate Card</label>
+            </value>
+            <value>
+                <fullName>Waiting for Payment - Balance</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Invoice Viewed</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

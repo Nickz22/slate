@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Text_Shoot_Dates__c</fullName>
+    <description>Used in Pandadoc Estimaes/Invoices</description>
+    <externalId>false</externalId>
+    <formula>IF( 
+    ISNULL( Shoot_Date_2__c ) = TRUE,Shoot_1_Full_Text__c, IF(AND(Shoot_1_Full_Text__c &lt;&gt; NULL, Shoot_1_Full_Text__c = Shoot_2_Full_Text__c),Shoot_1_Full_Text__c,
+    IF( Continuous__c = TRUE, Shoot_1_Full_Text__c &amp; &quot; - &quot; &amp;Shoot_2_Full_Text__c, Shoot_1_Full_Text__c &amp; &quot;, &quot; &amp; Shoot_2_Full_Text__c)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Used in Pandadoc Estimaes/Invoices</inlineHelpText>
+    <label>zPandadoc - Shoot Date - Text - Caps</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

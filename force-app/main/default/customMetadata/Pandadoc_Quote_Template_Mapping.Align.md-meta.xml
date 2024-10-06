@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Align</label>
+    <protected>false</protected>
+    <values>
+        <field>Division_Name__c</field>
+        <value xsi:type="xsd:string">Align</value>
+    </values>
+    <values>
+        <field>Pandadoc_CC_Fee_Estimate_Template_Id__c</field>
+        <value xsi:type="xsd:string">tFsn3vyHryjh5uj9US466J</value>
+    </values>
+    <values>
+        <field>Pandadoc_Estimate_Template_Id__c</field>
+        <value xsi:type="xsd:string">BZgHVChDZK68fYz6ELk25X</value>
+    </values>
+    <values>
+        <field>Pandadoc_Invoice_Template_Id__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

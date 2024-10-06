@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Referrer_Type__c</fullName>
+    <description>Tracks Types of Referrers of Opps to Slate.
+Determines Ideal Referrer and focusing Marketing Efforts on that Referrer Segment to ^amount of referrers</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Tracks Types of Referrers of Opps to Slate.
+Determines Ideal Referrer and focusing Marketing Efforts on that Referrer Segment to ^amount of referrers</inlineHelpText>
+    <label>zReferred - Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Brand Direct</fullName>
+                <default>false</default>
+                <label>Brand Direct</label>
+            </value>
+            <value>
+                <fullName>Brand Founder</fullName>
+                <default>false</default>
+                <label>Brand Founder</label>
+            </value>
+            <value>
+                <fullName>Brand Marketing Manager</fullName>
+                <default>false</default>
+                <label>Brand Marketing Manager</label>
+            </value>
+            <value>
+                <fullName>Contractor</fullName>
+                <default>false</default>
+                <label>Contractor</label>
+            </value>
+            <value>
+                <fullName>Creative Director</fullName>
+                <default>false</default>
+                <label>Creative Director</label>
+            </value>
+            <value>
+                <fullName>Digital Agency</fullName>
+                <default>false</default>
+                <label>Digital Agency</label>
+            </value>
+            <value>
+                <fullName>Director/DP</fullName>
+                <default>false</default>
+                <label>Director/DP</label>
+            </value>
+            <value>
+                <fullName>Freelance Producer</fullName>
+                <default>false</default>
+                <label>Freelance Producer</label>
+            </value>
+            <value>
+                <fullName>Photographer</fullName>
+                <default>false</default>
+                <label>Photographer</label>
+            </value>
+            <value>
+                <fullName>Photographer Rep</fullName>
+                <default>false</default>
+                <label>Photographer Rep</label>
+            </value>
+            <value>
+                <fullName>Production Company</fullName>
+                <default>false</default>
+                <label>Production Company</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

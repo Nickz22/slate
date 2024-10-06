@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>zMotion_Deliverables__c</fullName>
+    <description>Text field to input Motion Deliverable info for Motion Production Opp 
+Includes Qty of Deliverables</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Text field to input Motion Deliverable info for Motion Production Opp 
+Includes Qty of Deliverables</inlineHelpText>
+    <label>zDeliverables - Motion</label>
+    <length>32768</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>6</visibleLines>
+</CustomField>

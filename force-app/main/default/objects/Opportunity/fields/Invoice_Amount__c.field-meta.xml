@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invoice_Amount__c</fullName>
+    <description>Formula Field which calculates  List Amount minus any applied Customer Discounts. 
+Factors in CC Fee, Sales Tax, Deposit Amount Paid</description>
+    <externalId>false</externalId>
+    <formula>IF (  AND(DATEVALUE(CreatedDate) &lt; DATE(2023,10,5),CC_Payment__c = TRUE), Amount +  CC_Fee_invoice__c + Tax_to_collect__c - Deposit_Amount_Paid__c, Amount + Tax_to_collect__c - Deposit_Amount_Paid__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Formula Field which calculates  List Amount minus any applied Customer Discounts. 
+Factors in CC Fee, Sales Tax, Deposit Amount Paid</inlineHelpText>
+    <label>Invoice - Amount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

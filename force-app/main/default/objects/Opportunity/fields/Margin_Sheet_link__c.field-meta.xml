@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Margin_Sheet_link__c</fullName>
+    <description>Links to Margin Sheets in Google Sheets, used from 2015-20 to function as previous Quote method. 
+Replaced by Quotes when implemented SF in 2020</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Links to Margin Sheets in Google Sheets, used from 2015-20 to function as previous Quote method. 
+Replaced by Quotes when implemented SF in 2020</inlineHelpText>
+    <label>zMargin - Sheet</label>
+    <length>500</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>2</visibleLines>
+</CustomField>

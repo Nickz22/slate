@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invoice_Due_Date__c</fullName>
+    <description>Due date on the invoice that will be passed to Quickbooks
+This equals &apos;Invoice Date&apos; field + &apos;Payment Terms&apos; Field
+Can be updated as needed. Update this from Salesforce; not Quickbooks, as it will be pushed to Quickbooks via Breadwinner</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Due date on the invoice that will be passed to Quickbooks
+This equals &apos;Invoice Date&apos; field + &apos;Payment Terms&apos; Field
+Can be updated as needed. Update this from Salesforce; not Quickbooks, as it will be pushed to Quickbooks via Breadwinner</inlineHelpText>
+    <label>Invoice Due Date</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>InvoiceNumber__c</fullName>
+    <description>This is an Invoice Number which is automatically created by Salesforce and delivered to Quickbooks via Workato, our Middleware. It&apos;s important for bookkeeping purposes as the Invoice Numbers in Salesforce must be identical to the Invoice Numbers in Quickbooks</description>
+    <displayFormat>{0000}</displayFormat>
+    <externalId>false</externalId>
+    <inlineHelpText>This is an Invoice Number which is automatically created by Salesforce and delivered to Quickbooks via Workato, our Middleware. It&apos;s important for bookkeeping purposes as the Invoice Numbers in Salesforce must be identical to the Invoice Numbers in Quickbooks</inlineHelpText>
+    <label>Invoice Number</label>
+    <trackHistory>false</trackHistory>
+    <type>AutoNumber</type>
+</CustomField>

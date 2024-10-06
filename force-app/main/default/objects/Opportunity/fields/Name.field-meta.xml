@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Name</fullName>
+    <description>This is a Field for the Opportunity Name, which is an important field which has been systemized in the following method.
+YearMonthDay_Account_ServiceType (All Caps) --&gt; 220101_NIKE_EC 
+The Opportunity Name is referenced by Accounts Payable in relation to Vendor Bill lookups and is referenced on all Estimates/Invoices that are sent to our clients.</description>
+    <inlineHelpText>This is a Field for the Opportunity Name, which is an important field which has been systemized in the following method.
+YearMonthDay_Account_ServiceType (All Caps) --&gt; 220101_NIKE_EC 
+The Opportunity Name is referenced by Accounts Payable in relation to Vendor Bill lookups and is referenced on all Estimates/Invoices that are sent to our clients.</inlineHelpText>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+</CustomField>

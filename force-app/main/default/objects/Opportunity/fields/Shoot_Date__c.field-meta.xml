@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Shoot_Date__c</fullName>
+    <description>Start Date of Opportunity.
+Displayed on Opp Page View as Confirmed Shoot Date.
+Flows into SF Shoot Date Calendar + issues warnings when entering in conflicting opp dates on opp creation</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Start Date of Opportunity.
+Displayed on Opp Page View as Confirmed Shoot Date.
+Flows into SF Shoot Date Calendar + issues warnings when entering in conflicting opp dates on opp creation</inlineHelpText>
+    <label>Shoot Date - Start</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

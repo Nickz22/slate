@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>zDeliverable_Size_Motion__c</fullName>
+    <description>Input Motion Deliverable Sizes for Motion Production Opp</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Input Motion Deliverable Sizes for Motion Production Opp</inlineHelpText>
+    <label>zDeliverables - Motion - Size</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>16:9</fullName>
+                <default>false</default>
+                <label>16:9</label>
+            </value>
+            <value>
+                <fullName>1:1</fullName>
+                <default>false</default>
+                <label>1:1</label>
+            </value>
+            <value>
+                <fullName>4:5</fullName>
+                <default>false</default>
+                <label>4:5</label>
+            </value>
+            <value>
+                <fullName>9:16</fullName>
+                <default>false</default>
+                <label>9:16</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>
