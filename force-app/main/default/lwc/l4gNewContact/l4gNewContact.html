@@ -12,10 +12,12 @@
                         <template lwc:if={field.isReference}>
                             <lightning-layout-item key={field.fieldName} size="12" small-device-size="12"
                                 medium-device-size="12" large-device-size="12" padding="horizontal-small">
-                                <c-l4g-custom-lookup icon-name="standard:account"
-                                    s-object-api-name={field.referencedObjectName} default-record-id={field.value}
-                                    label="Account" onlookupupdate={lookupRecord} placeholder="type here...">
-                                </c-l4g-custom-lookup>
+                                <div class="slds-tooltip-trigger" data-tooltip="Your tooltip text goes here">
+                                    <c-l4g-custom-lookup icon-name="standard:account"
+                                        s-object-api-name={field.referencedObjectName} default-record-id={field.value}
+                                        label="Account" onlookupupdate={lookupRecord} placeholder="type here...">
+                                    </c-l4g-custom-lookup>
+                                </div>
                             </lightning-layout-item>
                         </template>
                         <template lwc:else>

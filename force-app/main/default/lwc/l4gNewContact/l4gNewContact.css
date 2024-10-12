@@ -1,0 +1,30 @@
+.slds-tooltip-trigger {
+    position: relative;
+}
+
+.slds-tooltip-trigger:hover:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    background-color: #16325c;
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 9999;
+}
+
+.slds-tooltip-trigger:hover:after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #16325c transparent transparent transparent;
+}
+
