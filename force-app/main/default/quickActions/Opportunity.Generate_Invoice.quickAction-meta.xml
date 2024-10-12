@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionSubtype>ScreenAction</actionSubtype>
+    <description>Generates an invoice based on the configuration in Pandadoc Quote Template Mapping custom metadata</description>
+    <label>Generate Invoice</label>
+    <lightningWebComponent>pandaDocQuoteCreator</lightningWebComponent>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>LightningWebComponent</type>
+</QuickAction>

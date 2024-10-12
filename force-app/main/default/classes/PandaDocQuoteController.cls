@@ -1,20 +1,24 @@
 public class PandaDocQuoteController {
-  private static final String PRICING_TABLE_NAME = 'Pricing Table - Cam Design - 11.04.20';
+  // all pandadoc pricing tables have to be named Pricing_Table
+  private static final String PRICING_TABLE_NAME = 'Pricing_Table';
   private Id opportunityId;
   private Opportunity opp;
   private Boolean isCCPayment;
   private Pandadoc_Quote_Template_Mapping__mdt quoteTemplateMapping;
-  private String quoteType;
-  private static final String QUOTE_TYPE_ESTIMATE = 'Estimate';
-  private static final String QUOTE_TYPE_INVOICE = 'Invoice';
-  private Map<String, Decimal> percentToPayByQuoteType = new Map<String, Decimal>{
-    QUOTE_TYPE_ESTIMATE.toLowerCase() => 0.7,
-    QUOTE_TYPE_INVOICE.toLowerCase() => 0.3
+  private PandaDocQuoteType quoteType;
+  enum PandaDocQuoteType {
+    ESTIMATE,
+    INVOICE
+  }
+
+  private static final Map<PandaDocQuoteType, Decimal> PERCENT_TO_PAY_BY_QUOTE_TYPE = new Map<PandaDocQuoteType, Decimal>{
+    PandaDocQuoteType.ESTIMATE => 0.7,
+    PandaDocQuoteType.INVOICE => 0.3
   };
 
   public PandaDocQuoteController(Id oppId, String quoteType) {
     this.opportunityId = oppId;
-    this.quoteType = quoteType;
+    this.quoteType = PandaDocQuoteType.valueOf(quoteType.toUpperCase());
     this.opp = new OpportunitySelector()
       .selectOpportunitiesByIds(new Set<Id>{ oppId })
       .get(0);
@@ -32,45 +36,51 @@ public class PandaDocQuoteController {
     }
   }
 
+  public String getQuoteTemplateUuid() {
+    String templateUuid;
+    switch on this.quoteType {
+      when ESTIMATE {
+        templateUuid = this.isCCPayment
+          ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Estimate_Template_Id__c
+          : this.quoteTemplateMapping.Pandadoc_Estimate_Template_Id__c;
+      }
+      when INVOICE {
+        templateUuid = this.isCCPayment
+          ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Invoice_Template_Id__c
+          : this.quoteTemplateMapping.Pandadoc_Invoice_Template_Id__c;
+      }
+      when else {
+        throw new PandaDocQuoteException(
+          'Invalid quote type: ' + this.quoteType
+        );
+      }
+    }
+    return templateUuid;
+  }
+
   @AuraEnabled(cacheable=true)
-  public static Map<String, String> createPandaDocQuote(Id opportunityId, String quoteType) {
+  public static Map<String, String> createPandaDocQuote(
+    Id opportunityId,
+    String quoteType
+  ) {
     PandaDocQuoteController controller = new PandaDocQuoteController(
-      opportunityId, quoteType.toLowerCase()
+      opportunityId,
+      quoteType.toLowerCase()
     );
 
     // Fetch a fresh Opportunity every time
-    Opportunity freshOpp = [
-      SELECT
-        Id,
-        Name,
-        CC_Payment__c,
-        Division__r.Name,
-        Account.Name,
-        Upper_Descriptor__c,
-        InvoiceNumber__c,
-        Payment__c,
-        Tax_to_collect__c,
-        Shoot_Date__c,
-        CC_Fee_invoice__c,
-        PrimaryContact__r.Email,
-        PrimaryContact__r.FirstName,
-        PrimaryContact__r.LastName,
-        Invoice_Amount__c
-      FROM Opportunity
-      WHERE Id = :opportunityId
-      LIMIT 1
-    ];
+    Opportunity freshOpp = new OpportunitySelector()
+      .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
+      .get(0);
 
     controller.opp = freshOpp;
     controller.isCCPayment = freshOpp.CC_Payment__c;
 
     Map<String, Object> requestBody = new Map<String, Object>{
       'name' => controller.getDocumentName(),
-      'template_uuid' => controller.isCCPayment
-        ? controller.quoteTemplateMapping.Pandadoc_CC_Fee_Estimate_Template_Id__c
-        : controller.quoteTemplateMapping.Pandadoc_Estimate_Template_Id__c,
+      'template_uuid' => controller.getQuoteTemplateUuid(),
       'recipients' => controller.getRecipients(),
-      'owner' => new Map<String, String>{ 'email' => 'nickzsb.nz@gmail.com' },
+      'owner' => new Map<String, String>{ 'email' => UserInfo.getUserEmail() },
       'tokens' => controller.getTokens(),
       'metadata' => controller.getMetadata(),
       'pricing_tables' => controller.getPricingItems()
@@ -139,9 +149,15 @@ public class PandaDocQuoteController {
 
   private List<PandaDocQuoteToken> getTokens() {
     System.debug(JSON.serializePretty(this.opp));
-    Decimal taxToCollect = this.opp.Tax_to_collect__c * this.percentToPayByQuoteType.get(this.quoteType);
-    Decimal amount = this.opp.Invoice_Amount__c * this.percentToPayByQuoteType.get(this.quoteType);
-    Decimal ccfee = this.opp.CC_Fee_invoice__c * this.percentToPayByQuoteType.get(this.quoteType);
+    Decimal taxToCollect =
+      this.opp.Tax_to_collect__c *
+      PERCENT_TO_PAY_BY_QUOTE_TYPE.get(this.quoteType);
+    Decimal amount =
+      this.opp.Invoice_Amount__c *
+      PERCENT_TO_PAY_BY_QUOTE_TYPE.get(this.quoteType);
+    Decimal ccfee =
+      this.opp.CC_Fee_invoice__c *
+      PERCENT_TO_PAY_BY_QUOTE_TYPE.get(this.quoteType);
     return new List<PandaDocQuoteToken>{
       new PandaDocQuoteToken('ACCOUNT_NAME', this.opp.Account.Name),
       new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
@@ -166,18 +182,9 @@ public class PandaDocQuoteController {
           .format('MM / dd / yyyy')
       ),
       new PandaDocQuoteToken('INVOICE_NUMBER', this.opp.InvoiceNumber__c),
-      new PandaDocQuoteToken(
-        'SALES_TAX',
-        formatCurrency(taxToCollect)
-      ),
-      new PandaDocQuoteToken(
-        'QUOTE_TOTAL',
-        formatCurrency(amount)
-      ),
-      new PandaDocQuoteToken(
-        'CC_FEE',
-        formatCurrency(ccfee)
-      ),
+      new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
+      new PandaDocQuoteToken('QUOTE_TOTAL', formatCurrency(amount)),
+      new PandaDocQuoteToken('CC_FEE', formatCurrency(ccfee)),
       new PandaDocQuoteToken(
         'SHOOT_DATE',
         this.opp.Shoot_Date__c != null
@@ -187,6 +194,16 @@ public class PandaDocQuoteController {
               )
               .format('MM / dd / yyyy')
           : 'N/A'
+      ),
+      new PandaDocQuoteToken(
+        'PROJECT_DESCRIPTION',
+        String.isNotBlank(this.opp.Lead_Type__c) &&
+          this.opp.Lead_Type__c.contains('-')
+          ? this.opp.Lead_Type__c.substringAfter('-').trim()
+          : String.isNotBlank(this.opp.Lead_Type__c) &&
+              !this.opp.Lead_Type__c.contains('-')
+              ? this.opp.Lead_Type__c
+              : ''
       )
     };
   }
@@ -216,13 +233,7 @@ public class PandaDocQuoteController {
         this.opp.PrimaryContact__r.Email,
         this.opp.PrimaryContact__r.FirstName,
         this.opp.PrimaryContact__r.LastName,
-        'payer'
-      ),
-      new PandadocQuoteRecipient(
-        UserInfo.getUserEmail(),
-        UserInfo.getFirstName(),
-        UserInfo.getLastName(),
-        'sender'
+        'Payer'
       )
     };
   }

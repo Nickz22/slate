@@ -13,13 +13,33 @@ export default class PandaDocQuoteCreator extends LightningElement {
   dotInterval;
   maxPollingAttempts = 30; // Maximum number of polling attempts (60 seconds total)
   pollingAttempts = 0;
+  quoteType = "";
 
   connectedCallback() {
     this.animateDots();
+    this.setQuoteType();
   }
 
   disconnectedCallback() {
     clearInterval(this.dotInterval);
+  }
+
+  // a hack to discern which action launched this component so that I can pass the correct quote type to the Apex method
+  setQuoteType() {
+    const actionName = window.location.href.match(/\/quick\/([^?]+)/)?.[1] || '';
+
+    if (actionName.includes("Generate_Quote")) {
+      this.quoteType = "Estimate";
+    } else if (actionName.includes("Generate_Invoice")) {
+      this.quoteType = "Invoice";
+    } else {
+      console.error("Unknown action name:", actionName);
+      this.quoteType = "Unknown";
+    }
+  }
+
+  get shouldFireWire() {
+    return !!this.recordId && this.quoteType !== "Unknown";
   }
 
   animateDots() {
@@ -36,13 +56,15 @@ export default class PandaDocQuoteCreator extends LightningElement {
 
   @wire(createPandaDocQuote, {
     opportunityId: "$recordId",
-    timestamp: "$timestamp"
+    quoteType: "$quoteType"
   })
   wiredQuoteCreation({ error, data }) {
-    if (data) {
-      this.handleQuoteCreation(data);
-    } else if (error) {
-      this.handleError(error);
+    if (this.shouldFireWire) {
+      if (data) {
+        this.handleQuoteCreation(data);
+      } else if (error) {
+        this.handleError(error);
+      }
     }
   }
 
