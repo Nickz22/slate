@@ -293,7 +293,8 @@ public class PandaDocQuoteController {
 
   private Map<String, String> getMetadata() {
     Map<String, String> metadata = new Map<String, String>();
-    metadata.put('opportunityId', opportunityId);
+    metadata.put('salesforce_opportunity_id', opportunityId);
+    metadata.put('folder', 'opportunity');
     return metadata;
   }
 
