@@ -18,6 +18,7 @@ public with sharing class OpportunitySelector {
               Tax_to_collect__c,
               Shoot_Date__c,
               CC_Fee_invoice__c,
+              Required_Deposit__c,
               PrimaryContact__r.Email,
               PrimaryContact__r.FirstName,
               PrimaryContact__r.LastName,

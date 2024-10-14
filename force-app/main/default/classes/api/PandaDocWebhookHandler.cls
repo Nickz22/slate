@@ -15,14 +15,24 @@ global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstrac
   }
 
   protected override void executeWithErrorHandling() {
-    RestRequest req = RestContext.request;
-    String jsonBody = req.requestBody.toString();
-    List<PandaDocDocumentChange> changes = (List<PandaDocDocumentChange>) JSON.deserialize(
-      jsonBody,
-      List<PandaDocDocumentChange>.class
+    this.syncDocumentStatusToOpportunityStage(
+      (List<PandaDocDocumentChange>) JSON.deserialize(
+        RestContext.request.requestBody.toString(),
+        List<PandaDocDocumentChange>.class
+      )
     );
+  }
 
+  @TestVisible
+  private void syncDocumentStatusToOpportunityStage(
+    List<PandaDocDocumentChange> changes
+  ) {
     for (PandaDocDocumentChange change : changes) {
+      // we don't change the opportunity stage for invoices
+      if (!change.data.template.name.containsIgnoreCase('estimate')) {
+        continue;
+      }
+
       if (change.event == 'document_state_changed') {
         String status = change.data.status;
         String opportunityId = change.data.metadata.salesforce_opportunity_id;
@@ -67,7 +77,7 @@ global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstrac
 
     if (String.isNotBlank(newStage)) {
       opp.StageName = newStage;
-      update opp;
+      Database.update(opp, true);
       System.debug(
         'Updated Opportunity ' + opportunityId + ' to stage: ' + newStage
       );

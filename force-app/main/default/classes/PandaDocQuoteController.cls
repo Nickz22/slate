@@ -11,10 +11,7 @@ public class PandaDocQuoteController {
     INVOICE
   }
 
-  private static final Map<PandaDocQuoteType, Decimal> PERCENT_TO_PAY_BY_QUOTE_TYPE = new Map<PandaDocQuoteType, Decimal>{
-    PandaDocQuoteType.ESTIMATE => 0.7,
-    PandaDocQuoteType.INVOICE => 0.3
-  };
+  private Map<PandaDocQuoteType, Decimal> percentToPayByQuoteType = new Map<PandaDocQuoteType, Decimal>();
 
   public PandaDocQuoteController(Id oppId, String quoteType) {
     this.opportunityId = oppId;
@@ -22,6 +19,14 @@ public class PandaDocQuoteController {
     this.opp = new OpportunitySelector()
       .selectOpportunitiesByIds(new Set<Id>{ oppId })
       .get(0);
+    this.percentToPayByQuoteType.put(
+      PandaDocQuoteType.ESTIMATE,
+      this.opp.Required_Deposit__c
+    );
+    this.percentToPayByQuoteType.put(
+      PandaDocQuoteType.INVOICE,
+      1 - this.opp.Required_Deposit__c
+    );
     this.isCCPayment = this.opp.CC_Payment__c;
     try {
       this.quoteTemplateMapping = new PandadocQuoteMappingSelector()
@@ -150,14 +155,11 @@ public class PandaDocQuoteController {
   private List<PandaDocQuoteToken> getTokens() {
     System.debug(JSON.serializePretty(this.opp));
     Decimal taxToCollect =
-      this.opp.Tax_to_collect__c *
-      PERCENT_TO_PAY_BY_QUOTE_TYPE.get(this.quoteType);
+      this.opp.Tax_to_collect__c * this.percentToPayByQuoteType.get(this.quoteType);
     Decimal amount =
-      this.opp.Invoice_Amount__c *
-      PERCENT_TO_PAY_BY_QUOTE_TYPE.get(this.quoteType);
+      this.opp.Invoice_Amount__c * this.percentToPayByQuoteType.get(this.quoteType);
     Decimal ccfee =
-      this.opp.CC_Fee_invoice__c *
-      PERCENT_TO_PAY_BY_QUOTE_TYPE.get(this.quoteType);
+      this.opp.CC_Fee_invoice__c * this.percentToPayByQuoteType.get(this.quoteType);
     return new List<PandaDocQuoteToken>{
       new PandaDocQuoteToken('ACCOUNT_NAME', this.opp.Account.Name),
       new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
