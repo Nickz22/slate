@@ -1,0 +1,14 @@
+.back-button {
+    background-color: grey;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.back-button:hover {
+    background-color: darkgrey;
+}
