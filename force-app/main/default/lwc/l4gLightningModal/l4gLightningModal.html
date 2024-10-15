@@ -1,12 +1,11 @@
 <template>
-    <lightning-modal-header label="My Modal Heading"></lightning-modal-header>
+    <template lwc:if={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+    </template>
+    <lightning-modal-header label={header}></lightning-modal-header>
     <lightning-modal-body>
-        <lightning-record-edit-form object-api-name="Account" onsuccess={handleSuccess}>
+        <lightning-record-form mode="edit" object-api-name={objectName} onsubmit={handleSubmit} onsuccess={handleSuccess} oncancel={handleCancel} onerror={handleError} layout-type="Compact" record-type-id={recordTypeId}>
             <lightning-messages> </lightning-messages>
-        <lightning-input-field field-name="Name"> </lightning-input-field>
-        </lightning-record-edit-form>
+        </lightning-record-form>
     </lightning-modal-body>
-    <lightning-modal-footer>
-        <lightning-button label="Save" onclick={handleOkay}></lightning-button>
-    </lightning-modal-footer>
 </template>

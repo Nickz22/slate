@@ -1,6 +1,6 @@
 public class L4GController {
     @AuraEnabled(cacheable=true)
-	public static List<FieldWrapper> getFieldSet(String fieldSetName, String objectName) {
+    public static List<FieldWrapper> getFieldSet(String fieldSetName, String objectName) {
         List<FieldWrapper> lstfieldWrapper = new List<FieldWrapper>();
         if (String.isNotBlank(fieldSetName) && String.isNotBlank(ObjectName)) {
             Schema.DescribeSObjectResult describeSObjectResult = Schema.getGlobalDescribe().get(ObjectName).getDescribe();
@@ -52,7 +52,7 @@ public class L4GController {
         }
         return returnList;
     }
-     @AuraEnabled
+    @AuraEnabled
     public static Id getAccountId(String domain) {
         List<Account> acc= [Select Id from Account where Name = :domain];
         if(acc.size()>0){
@@ -72,7 +72,6 @@ public class L4GController {
         }
         return null;
     }
-    // Method to fetch lookup default value 
     @AuraEnabled
     public static sObject fetchDefaultRecord(string recordId , string sObjectApiName) {
         string sRecId = recordId;    
@@ -83,15 +82,65 @@ public class L4GController {
         return null;
     }
     @AuraEnabled
-    public static Id cloneRecord(Id recordId) {
-        Opportunity originalRecord = [SELECT Id, Name, Amount, ContactId, StageName, CloseDate FROM Opportunity WHERE Id = :recordId LIMIT 1];
-        Opportunity clonedRecord = originalRecord.clone(false, true, false, false);
+    public static Id cloneRecord(Id recordId, String emailContent) {
+        List<String> fields = new List<String>(Opportunity.SObjectType.getDescribe().fields.getMap().keySet());
+        String soql = ''
+            + ' select ' + String.join(fields, ',')
+            + ' from Opportunity'
+            + ' where Id = \''+recordId+'\'';
+        List<Opportunity> originalRecord = Database.query(soql);
+        Opportunity clonedRecord = originalRecord[0]?.clone(false, true, false, false);
+        clonedRecord.CloseDate = Date.today();
+        clonedRecord.Additional_Info__c = emailContent;
+        List<OpportunityContactRole> existingOCRs = [SELECT Id, OpportunityId, ContactId, Role, IsPrimary FROM OpportunityContactRole Where OpportunityId = :recordId];
         insert clonedRecord;
+        if(originalRecord[0].SBQQ__PrimaryQuote__c != null){
+            List<String> quoteFields = new List<String>(SBQQ__Quote__c.SObjectType.getDescribe().fields.getMap().keySet());
+            String quoteSoql = ''
+                + ' select ' + String.join(quoteFields, ',')
+                + ' from SBQQ__Quote__c'
+                + ' where Id = \''+originalRecord[0].SBQQ__PrimaryQuote__c+'\'';
+            List<SBQQ__Quote__c> originalQuote = Database.query(quoteSoql);
+            System.debug('originalQuote'+originalQuote);
+            SBQQ__Quote__c clonedQuote = originalQuote[0]?.clone(false, true, false, false);
+            clonedQuote.SBQQ__Opportunity2__c = clonedRecord.Id;
+            insert clonedQuote;
+            clonedRecord.SBQQ__PrimaryQuote__c = clonedQuote.Id;
+            update clonedRecord;
+        }
+        
+        if(clonedRecord.SBQQ__PrimaryQuote__c != null){
+            List<String> quoteFields = new List<String>(SBQQ__QuoteLine__c.SObjectType.getDescribe().fields.getMap().keySet());
+            String quoteLineSoql = ''
+                + ' select ' + String.join(quoteFields, ',')
+                + ' from SBQQ__QuoteLine__c'
+                + ' where SBQQ__Quote__c = \''+originalRecord[0].SBQQ__PrimaryQuote__c+'\'';
+            List<SBQQ__QuoteLine__c> quoteLineItems = Database.query(quoteLineSoql);
+            List<SBQQ__QuoteLine__c> clonedItems = new List<SBQQ__QuoteLine__c>();
+            if(quoteLineItems != null && quoteLineItems.size()>0){
+                for(SBQQ__QuoteLine__c item : quoteLineItems){
+                    SBQQ__QuoteLine__c clonedItem = item.clone(false, true, false, false);
+                    clonedItem.SBQQ__Quote__c = clonedRecord.SBQQ__PrimaryQuote__c;
+                    clonedItems.add(clonedItem);
+                }
+                insert clonedItems;
+            }
+        }
+        if(existingOCRs.size() > 0){
+            List<OpportunityContactRole> contactRolesToInsert = new List<OpportunityContactRole>();
+            for(OpportunityContactRole ocr : existingOCRs){
+                OpportunityContactRole newOcr = ocr.clone(false, true, false, false);
+                newOcr.OpportunityId = clonedRecord.Id;
+                contactRolesToInsert.add(newOcr);
+            }
+            insert contactRolesToInsert;
+        }
+        
         return clonedRecord.Id;
     }
     @AuraEnabled(cacheable=true)
-	public static List<String> getFieldsToView(String fieldSetName, String objectName) {
-    List<String> fields = new List<String>();
+    public static List<String> getFieldsToView(String fieldSetName, String objectName) {
+        List<String> fields = new List<String>();
         if (String.isNotBlank(fieldSetName) && String.isNotBlank(ObjectName)) {
             Schema.DescribeSObjectResult describeSObjectResult = Schema.getGlobalDescribe().get(ObjectName).getDescribe();
             Map<String,Schema.SObjectField> objFieldMap = describeSObjectResult.fields.getMap();
@@ -107,6 +156,18 @@ public class L4GController {
     }
     @AuraEnabled(cacheable=true)
     public static List<Opportunity> getRelatedOpportunities(Id contactId){
-        return [SELECT Id, Name, Amount, StageName, CloseDate FROM Opportunity WHERE ContactId = :contactId];
+        return [SELECT Id, Name, Amount, StageName, CloseDate, 	SBQQ__PrimaryQuote__r.Name, Opportunity_Descriptor__c FROM Opportunity WHERE PrimaryContact__c = :contactId ORDER BY CloseDate DESC];
+    }
+    @AuraEnabled
+    public static List<String> getDivisionNames(){
+        List<String> divisionNames = new List<String>();
+        for(Division__c division :[SELECT Name FROM Division__c WHERE Division_Leader__c = :UserInfo.getUserId()]){
+            divisionNames.add(division.Name);
+        }
+        return divisionNames;
+    }
+    @AuraEnabled(cacheable=true)
+    public static List<Pricebook2> getPricebook() {
+        return [SELECT Id, Name FROM Pricebook2 WHERE IsActive = true];
     }
 }

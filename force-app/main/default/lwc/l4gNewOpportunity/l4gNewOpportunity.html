@@ -1,0 +1,32 @@
+<template>
+    <template lwc:if={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+    </template>
+    <lightning-modal-header label={header}></lightning-modal-header>
+    <lightning-modal-body>
+        <lightning-record-edit-form object-api-name={objectName} onerror={handleError} onsuccess={handleSuccess}
+            oncancel={handleCancel} onsubmit={handleSubmit}>
+            <lightning-messages> </lightning-messages>
+            <lightning-input-field field-name="OwnerId"> </lightning-input-field>
+            <lightning-combobox name="Lead_Type__c" label="Service Type" placeholder="Select Service Type"
+                options={serviceTypeOptions}
+                field-level-help="The Service Type field will drive which Quote Template is automatically applied to the new Opportunity">
+            </lightning-combobox>
+            <lightning-combobox value={defaultStage} name="StageName" label="Stage" placeholder="Select Stage"
+                options={stageOptions}></lightning-combobox>
+            <lightning-input-field field-name="AccountId" value={accountId}> </lightning-input-field>
+            <lightning-input-field field-name="Additional_Info__c" value={initialInquiry}> </lightning-input-field>
+            <lightning-input-field field-name="CloseDate" value={closeDate}> </lightning-input-field>
+            <lightning-input-field field-name="PrimaryContact__c" value={contactId}> </lightning-input-field>
+            <lightning-input-field field-name="Days__c"> </lightning-input-field>
+            <lightning-input-field field-name="Shoot_Date__c"></lightning-input-field>
+            <lightning-input-field field-name="First_Hold_1__c"> </lightning-input-field>
+            <lightning-input-field field-name="Shoot_Hold_1__c"> </lightning-input-field>
+            <div class="slds-m-top_medium slds-align_absolute-center">
+                <lightning-button variant="brand" class="slds-m-right_small" label="Cancel" onclick={handleCancel}>
+                </lightning-button>
+                <lightning-button variant="brand" type="submit" label="Save"></lightning-button>
+            </div>
+        </lightning-record-edit-form>
+    </lightning-modal-body>
+</template>

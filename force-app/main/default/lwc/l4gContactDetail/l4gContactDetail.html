@@ -1,0 +1,20 @@
+<template>
+    <template lwc:if={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+    </template>
+    <div class="back-button" onclick={handleBackClick}>
+        <lightning-icon icon-name="utility:back" alternative-text="Back" size="x-small"></lightning-icon>
+        <span class="slds-p_x-small">Back</span>
+    </div>
+    <lightning-card title="Contact Details" icon-name="standard:contact">
+        <lightning-record-form object-api-name="Contact" record-id={recordId} fields={fields}>
+        </lightning-record-form>
+    </lightning-card>
+    <lightning-card title="Opportunities" icon-name="standard:opportunity">
+        <lightning-button slot="actions" label="New" onclick={handleNewOpportunity} variant="brand"
+            class="slds-m-bottom_small"></lightning-button>
+        <lightning-datatable key-field="Id" data={relatedRecords} columns={columns} hide-checkbox-column="true"
+            onrowaction={handleRowAction}>
+        </lightning-datatable>
+    </lightning-card>
+</template>

@@ -1,6 +1,9 @@
 <template>
     <div lwc:if={showNewContactForm}>
-        <c-l4g-new-contact record-details={recordDetails} object-api-name="Contact" field-set-name="L4G_NewContact"></c-l4g-new-contact>
+        <c-l4g-new-contact initial-inquiry={initialInquiry} record-details={recordDetails} onback={handleBack} object-api-name="Contact" field-set-name="L4G_NewContact"></c-l4g-new-contact>
+    </div>
+    <div lwc:elseif={showContactDetails}>
+        <c-l4g-contact-detail initial-inquiry={initialInquiry} record-id={selectedContactId} onback={handleBack}></c-l4g-contact-detail>
     </div>
     <div lwc:else>
         <lightning-card title="People Details" icon-name="standard:contact">
@@ -15,7 +18,7 @@
                                 </div>
                                 <div class="slds-m-top_medium">
                                     <template if:true={contact.showAddNew}>
-                                        <lightning-button data-email={contact.email} label="Create Contact" variant="brand" onclick={handleAddNew}></lightning-button>
+                                        <lightning-button data-email={contact.email} label="Add to Salesforce" variant="brand" onclick={handleAddNew}></lightning-button>
                                     </template>
                                     <template if:true={contact.showView}>
                                         <lightning-button data-target-id={contact.Id} label="View" variant="neutral" onclick={handleView}></lightning-button>
