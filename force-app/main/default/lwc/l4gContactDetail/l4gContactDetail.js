@@ -4,12 +4,12 @@ import getFieldsToView from "@salesforce/apex/L4GController.getFieldsToView";
 import getRelatedOpportunities from "@salesforce/apex/L4GController.getRelatedOpportunities";
 import { refreshApex } from "@salesforce/apex";
 import l4gNewOpportunity from "c/l4gNewOpportunity";
+import getSfdcURL from "@salesforce/apex/L4GController.getSfdcURL";
 
 export default class L4gContactDetail extends LightningElement {
     @api recordId;
     @api relatedListApiName = "Opportunity";
     @api initialInquiry;
-
     @track relatedRecords;
     @track error;
     @track columns = [];
@@ -17,6 +17,9 @@ export default class L4gContactDetail extends LightningElement {
 
     _wiredMarketData;
     showSpinner = true;
+
+    @wire(getSfdcURL)
+    sfdcUrl;
 
     @wire(getFieldsToView, {
         fieldSetName: "L4G_NewContact",
@@ -36,11 +39,12 @@ export default class L4gContactDetail extends LightningElement {
         return [
             {
                 label: "Name",
-                fieldName: "Name",
+                fieldName: "url",
                 type: "url",
                 typeAttributes: {
                     label: { fieldName: "Name" },
-                    tooltip: { fieldName: "tooltipText" }
+                    tooltip: { fieldName: "tooltipText" },
+                    target: '_blank'
                 }
             },
             {
@@ -64,7 +68,8 @@ export default class L4gContactDetail extends LightningElement {
             this.relatedRecords = data.map((row) => {
                 return {
                     ...row,
-                    tooltipText: this.tooltipContent(row)
+                    tooltipText: this.tooltipContent(row),
+                    url:`${this.sfdcUrl.data}/${row.Id}`
                 };
             });
             this.showSpinner = false;
@@ -85,6 +90,10 @@ export default class L4gContactDetail extends LightningElement {
                 break;
             default:
         }
+    }
+
+    connectedCallback(){
+        refreshApex(this._wiredMarketData);
     }
 
     cloneRecord(row) {
