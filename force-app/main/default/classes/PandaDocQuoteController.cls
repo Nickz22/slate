@@ -21,11 +21,11 @@ public class PandaDocQuoteController {
       .get(0);
     this.percentToPayByQuoteType.put(
       PandaDocQuoteType.ESTIMATE,
-      this.opp.Required_Deposit__c
+      (this.opp.Required_Deposit__c / 100)
     );
     this.percentToPayByQuoteType.put(
       PandaDocQuoteType.INVOICE,
-      1 - this.opp.Required_Deposit__c
+      1 - (this.opp.Required_Deposit__c / 100)
     );
     this.isCCPayment = this.opp.CC_Payment__c;
     try {
@@ -91,6 +91,8 @@ public class PandaDocQuoteController {
       'pricing_tables' => controller.getPricingItems()
     };
 
+    System.debug('requestBody: ' + JSON.serializePretty(requestBody));
+
     try {
       return PandadocApi.createDocument(requestBody);
     } catch (PandadocApi.PandaDocException e) {
@@ -148,11 +150,14 @@ public class PandaDocQuoteController {
 
   private List<PandaDocQuoteToken> getTokens() {
     Decimal taxToCollect =
-      this.opp.Tax_to_collect__c * this.percentToPayByQuoteType.get(this.quoteType);
+      this.opp.Tax_to_collect__c *
+      this.percentToPayByQuoteType.get(this.quoteType);
     Decimal amount =
-      this.opp.Invoice_Amount__c * this.percentToPayByQuoteType.get(this.quoteType);
+      this.opp.Invoice_Amount__c *
+      this.percentToPayByQuoteType.get(this.quoteType);
     Decimal ccfee =
-      this.opp.CC_Fee_invoice__c * this.percentToPayByQuoteType.get(this.quoteType);
+      this.opp.CC_Fee_invoice__c *
+      this.percentToPayByQuoteType.get(this.quoteType);
     return new List<PandaDocQuoteToken>{
       new PandaDocQuoteToken('ACCOUNT_NAME', this.opp.Account.Name),
       new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
@@ -199,7 +204,9 @@ public class PandaDocQuoteController {
               !this.opp.Lead_Type__c.contains('-')
               ? this.opp.Lead_Type__c
               : ''
-      )
+      ),
+      new PandaDocQuoteToken('DEPOSIT', this.opp.Required_Deposit__c),
+      new PandaDocQuoteToken('BALANCE', (100.0 - this.opp.Required_Deposit__c))
     };
   }
 
@@ -276,7 +283,7 @@ public class PandaDocQuoteController {
           'Text_Unit_Cost__c' => qli.SBQQ__ListPrice__c,
           'Quantity' => qli.SBQQ__Quantity__c,
           'QTY' => qli.SBQQ__Quantity__c,
-          'Price' => qli.SBQQ__CustomerTotal__c,
+          'Price' => qli.SBQQ__CustomerPrice__c,
           'Days_Required__c' => qli.SBQQ__SubscriptionTerm__c ?? 0
         }
       };
