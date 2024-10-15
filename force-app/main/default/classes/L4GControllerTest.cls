@@ -105,5 +105,11 @@ public class L4GControllerTest {
         List<OpportunityContactRole> oppContactRoles = [SELECT Id FROM OpportunityContactRole WHERE ContactId = :conId];
         Assert.isTrue(!oppContactRoles.isEmpty());
     }
+    @isTest
+    static void testGetSfdcURL() {
+        String expectedUrl = URL.getOrgDomainURL().toExternalForm();
+        String actualUrl = L4GController.getSfdcURL();
+        Assert.areEqual(expectedUrl, actualUrl, 'The SFDC URL should match the expected URL.');
+    }
 
 }

@@ -170,4 +170,8 @@ public class L4GController {
     public static List<Pricebook2> getPricebook() {
         return [SELECT Id, Name FROM Pricebook2 WHERE IsActive = true];
     }
+    @AuraEnabled(cacheable=true)
+    public static string getSfdcURL(){
+        return URL.getOrgDomainURL().toExternalForm(); 
+    }
 }
