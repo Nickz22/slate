@@ -91,15 +91,9 @@ public class PandaDocQuoteController {
       'pricing_tables' => controller.getPricingItems()
     };
 
-    System.debug(
-      'Pandadoc Request Body \n\n' + JSON.serializePretty(requestBody)
-    );
-
     try {
       return PandadocApi.createDocument(requestBody);
     } catch (PandadocApi.PandaDocException e) {
-      // Log the error
-      System.debug(e.getMessage());
       throw new AuraHandledException(e.getMessage());
     }
   }
@@ -153,7 +147,6 @@ public class PandaDocQuoteController {
   }
 
   private List<PandaDocQuoteToken> getTokens() {
-    System.debug(JSON.serializePretty(this.opp));
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c * this.percentToPayByQuoteType.get(this.quoteType);
     Decimal amount =
