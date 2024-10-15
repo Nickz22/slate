@@ -11,11 +11,15 @@
         <value xsi:type="xsd:string">MK9TxsLF7UNJFPEYdP6dNg</value>
     </values>
     <values>
+        <field>Pandadoc_CC_Fee_Invoice_Template_Id__c</field>
+        <value xsi:type="xsd:string">fGXtr6n8biYxVb8ZMFMBDi</value>
+    </values>
+    <values>
         <field>Pandadoc_Estimate_Template_Id__c</field>
         <value xsi:type="xsd:string">wW4bwJutEe3UN4yBt3CioC</value>
     </values>
     <values>
         <field>Pandadoc_Invoice_Template_Id__c</field>
-        <value xsi:nil="true"/>
+        <value xsi:type="xsd:string">2GGgYCyfgVnQ9dMr3Bp2UY</value>
     </values>
 </CustomMetadata>
