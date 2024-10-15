@@ -80,8 +80,8 @@ export default class L4gNewOpportunity extends LightningModal {
     handleSubmit(event) {
         event.preventDefault();
         let fields = event.detail.fields;
-        fields.ContactId = this.contactId;
         fields.Name = 'x';
+        fields.Pricebook2Id = this.priceBookId;
         const inputs = this.template.querySelectorAll('lightning-combobox');
         inputs.forEach(input => {
             fields[input.name] = input.value;

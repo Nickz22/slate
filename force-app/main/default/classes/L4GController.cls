@@ -156,7 +156,7 @@ public class L4GController {
     }
     @AuraEnabled(cacheable=true)
     public static List<Opportunity> getRelatedOpportunities(Id contactId){
-        return [SELECT Id, Name, Amount, StageName, CloseDate, 	SBQQ__PrimaryQuote__r.Name, Opportunity_Descriptor__c FROM Opportunity WHERE ContactId = :contactId ORDER BY CloseDate DESC];
+        return [SELECT Id, Name, Amount, StageName, CloseDate, 	SBQQ__PrimaryQuote__r.Name, Opportunity_Descriptor__c FROM Opportunity WHERE PrimaryContact__c = :contactId ORDER BY CloseDate DESC];
     }
     @AuraEnabled
     public static List<String> getDivisionNames(){
