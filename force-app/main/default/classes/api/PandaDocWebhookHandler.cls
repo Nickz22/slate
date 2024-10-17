@@ -2,6 +2,7 @@
 global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstractClass {
   public static final String DOCUMENT_SENT_STATUS = 'document.sent';
   public static final String DOCUMENT_PAID_STATUS = 'document.paid';
+  public static final String DOCUMENT_COMPLETED_STATUS = 'document.completed';
 
   public enum DivisionName {
     ALIGN,
@@ -59,7 +60,10 @@ global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstrac
 
     if (status.toLowerCase() == DOCUMENT_SENT_STATUS) {
       newStage = 'Proposal';
-    } else if (status.toLowerCase() == DOCUMENT_PAID_STATUS) {
+    } else if (
+      status.toLowerCase() == DOCUMENT_PAID_STATUS ||
+      status.toLowerCase() == DOCUMENT_COMPLETED_STATUS
+    ) {
       if (
         opp.Division__r.Name.toLowerCase() ==
         DivisionName.ALIGN.name().toLowerCase()

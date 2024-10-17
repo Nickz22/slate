@@ -41,7 +41,8 @@ private class PandaDocQuoteControllerTest {
           PrimaryContact__c = contacts[i].Id,
           Division__c = divisions[i].Id,
           StageName = 'Prospecting',
-          CloseDate = Date.today().addDays(30)
+          CloseDate = Date.today().addDays(30),
+          Lead_Type__c = 'Slate - CGI'
         )
       );
     }
@@ -196,7 +197,7 @@ private class PandaDocQuoteControllerTest {
   static void testAttachDocumentToOpportunity() {
     // GIVEN
     Opportunity opp = [
-      SELECT Id
+      SELECT Id,Division__r.Name,Name
       FROM Opportunity
       WHERE Division__r.Name = 'Slate'
       LIMIT 1
@@ -213,7 +214,8 @@ private class PandaDocQuoteControllerTest {
     PandaDocQuoteController.attachDocumentToOpportunity(
       opp.Id,
       mockDocumentId,
-      mockDocumentName
+      mockDocumentName,
+      'estimate'
     );
     Test.stopTest();
 
@@ -229,8 +231,14 @@ private class PandaDocQuoteControllerTest {
       cdls.size(),
       'One ContentDocumentLink should be created'
     );
+    String nameShouldbe =
+        opp.Division__r.Name.substring(0, 2).toUpperCase() +
+        ' - ' +
+        'EST' +
+        ' - ' +
+        opp.Name;
     System.assertEquals(
-      mockDocumentName,
+      nameShouldbe,
       cdls[0].ContentDocument.Title,
       'Document title should match'
     );
