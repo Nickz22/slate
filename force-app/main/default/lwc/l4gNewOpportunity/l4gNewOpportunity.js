@@ -1,11 +1,12 @@
 import { api, wire, track } from 'lwc';
 import LightningModal from 'lightning/modal';
 import { getPicklistValues } from "lightning/uiObjectInfoApi";
-import getDivisionNames from '@salesforce/apex/L4GController.getDivisionNames';
+import getDivisions from '@salesforce/apex/L4GController.getDivisions';
 import SERVICE_TYPE from "@salesforce/schema/Opportunity.Lead_Type__c";
 import STAGENAME from "@salesforce/schema/Opportunity.StageName";
 import { getRecord } from 'lightning/uiRecordApi';
 import getPricebook from '@salesforce/apex/L4GController.getPricebook';
+import getOpportunityName from '@salesforce/apex/L4GController.getOpportunityName';
 
 
 const FIELDS = ['Contact.AccountId'];
@@ -29,7 +30,16 @@ export default class L4gNewOpportunity extends LightningModal {
     opportunityId;
     accountId;
     priceBookId;
-    showSpinner = false;
+    showSpinner = true; // will be falsed by getDivisions
+
+    connectedCallback() {
+        const setDivisionName = async () => {
+            this.divisions = await getDivisions();
+            this.divisionNames = this.divisions.map(division => division.Name);
+            this.showSpinner = false;
+        }
+        setDivisionName();
+    }
 
     @wire(getRecord, { recordId: '$contactId', fields: FIELDS })
     wiredContact({ error, data }) {
@@ -62,7 +72,9 @@ export default class L4gNewOpportunity extends LightningModal {
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
+        const day = this.divisionNames?.includes("Slate") 
+            ? String(new Date(year, month, 0).getDate()).padStart(2, '0')  // Last day of the month
+            : String(today.getDate()).padStart(2, '0');  // Today's date
 
         return `${year}-${month}-${day}`;
     }
@@ -77,15 +89,17 @@ export default class L4gNewOpportunity extends LightningModal {
     handleOkay() {
         this.template.querySelector('lightning-record-edit-form').submit();
     }
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
         let fields = event.detail.fields;
-        fields.Name = 'x';
         fields.Pricebook2Id = this.priceBookId;
         const inputs = this.template.querySelectorAll('lightning-combobox');
         inputs.forEach(input => {
             fields[input.name] = input.value;
         });
+        const leadType = fields.Lead_Type__c;
+        fields.Name = await getOpportunityName({serviceType: leadType, accountId: this.accountId});
+        fields.Division__c = this.divisions[0].Id;
         this.template.querySelector('lightning-record-edit-form').submit(fields);
         this.showSpinner = true;
     }
@@ -93,16 +107,16 @@ export default class L4gNewOpportunity extends LightningModal {
         console.error(event?.detail?.detail);
         this.showSpinner = false;
     }
-    getDivisions() {
-        getDivisionNames().then((result) => {
-            this.serviceTypeOptions = this.allServiceOptions.filter(option =>
-                result.some(prefix => option.label.startsWith(prefix))
-            );
-            getPricebook().then((data) => {
-                this.priceBookId = data.find(option =>
-                    result.some(prefix => option.Name.includes(prefix))
-                )?.Id;
-            })
-        })
+
+    async getDivisions() {
+        const divisions = await getDivisions();
+        this.serviceTypeOptions = this.allServiceOptions.filter(option =>
+            divisions.some(division => option.label.startsWith(division.Name))
+        );
+
+        const data = await getPricebook();
+        this.priceBookId = data.find(option =>
+            divisions.some(division => option.Name.includes(division.Name))
+        )?.Id;
     }
 }

@@ -123,7 +123,8 @@ export default class PandaDocQuoteCreator extends LightningElement {
       await attachDocumentToOpportunity({
         opportunityId: this.recordId,
         documentId: documentId,
-        documentName: `PandaDoc Quote - ${this.recordId}`
+        documentName: `PandaDoc Quote - ${this.recordId}`,
+        quoteType: this.quoteType
       });
       this.statusMessage =
         "A copy of the Quote has been attached to the Opportunity, you may close this screen.";
