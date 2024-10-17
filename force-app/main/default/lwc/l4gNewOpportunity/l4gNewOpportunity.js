@@ -6,6 +6,7 @@ import SERVICE_TYPE from "@salesforce/schema/Opportunity.Lead_Type__c";
 import STAGENAME from "@salesforce/schema/Opportunity.StageName";
 import { getRecord } from 'lightning/uiRecordApi';
 import getPricebook from '@salesforce/apex/L4GController.getPricebook';
+import getOpportunityName from '@salesforce/apex/L4GController.getOpportunityName';
 
 
 const FIELDS = ['Contact.AccountId'];
@@ -87,15 +88,16 @@ export default class L4gNewOpportunity extends LightningModal {
     handleOkay() {
         this.template.querySelector('lightning-record-edit-form').submit();
     }
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
         let fields = event.detail.fields;
-        fields.Name = 'x';
         fields.Pricebook2Id = this.priceBookId;
         const inputs = this.template.querySelectorAll('lightning-combobox');
         inputs.forEach(input => {
             fields[input.name] = input.value;
         });
+        const leadType = fields.Lead_Type__c;
+        fields.Name = await getOpportunityName({serviceType: leadType, accountId: this.accountId});
         this.template.querySelector('lightning-record-edit-form').submit(fields);
         this.showSpinner = true;
     }

@@ -174,4 +174,9 @@ public class L4GController {
     public static string getSfdcURL(){
         return URL.getOrgDomainURL().toExternalForm(); 
     }
+    @AuraEnabled
+    public static String getOpportunityName(String serviceType, Id accountId){
+        Account account = [SELECT Name FROM Account WHERE Id = :accountId];
+        return OpportunityTriggerHandler.setOppName(serviceType, account.Name);
+    }
 }
