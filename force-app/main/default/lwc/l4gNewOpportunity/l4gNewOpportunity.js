@@ -29,7 +29,15 @@ export default class L4gNewOpportunity extends LightningModal {
     opportunityId;
     accountId;
     priceBookId;
-    showSpinner = false;
+    showSpinner = true; // will be falsed by getDivisionNames
+
+    connectedCallback() {
+        const setDivisionName = async () => {
+            this.divisionNames = await getDivisionNames();
+            this.showSpinner = false;
+        }
+        setDivisionName();
+    }
 
     @wire(getRecord, { recordId: '$contactId', fields: FIELDS })
     wiredContact({ error, data }) {
@@ -62,7 +70,9 @@ export default class L4gNewOpportunity extends LightningModal {
         const today = new Date();
         const year = today.getFullYear();
         const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
+        const day = this.divisionNames?.includes("Slate") 
+            ? String(new Date(year, month, 0).getDate()).padStart(2, '0')  // Last day of the month
+            : String(today.getDate()).padStart(2, '0');  // Today's date
 
         return `${year}-${month}-${day}`;
     }
