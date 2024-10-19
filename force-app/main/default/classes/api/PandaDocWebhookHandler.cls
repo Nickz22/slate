@@ -47,23 +47,67 @@ global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstrac
 
   private static void updateOpportunityStage(
     String opportunityId,
-    String status
+    String documentStatus
   ) {
     Opportunity opp = [
-      SELECT Id, Division__r.Name
+      SELECT Name, Division__r.Name
       FROM Opportunity
       WHERE Id = :opportunityId
       LIMIT 1
     ];
 
-    String newStage;
+    String newStage = getNewStage(opp, documentStatus);
 
-    if (status.toLowerCase() == DOCUMENT_SENT_STATUS) {
+    if (String.isBlank(newStage)) {
+      return;
+    }
+
+    opp.StageName = newStage;
+    Boolean isWon = opp.StageName.containsIgnoreCase('Won');
+
+    if (isWon) {
+      User camUser = [
+        SELECT Id
+        FROM User
+        WHERE Username LIKE 'info@slate-nyc.com%'
+        LIMIT 1
+      ];
+
+      Messaging.CustomNotification notification = new Messaging.CustomNotification();
+
+      CustomNotificationType notificationType = [
+        SELECT Id
+        FROM CustomNotificationType
+        WHERE DeveloperName = 'Won_Opportunity'
+        LIMIT 1
+      ];
+      notification.setNotificationTypeId(notificationType.Id);
+
+      notification.setTitle('Opportunity Won - ' + opp.Name);
+      notification.setBody('Click for opportunity details.');
+
+      notification.setTargetId(opp.Id);
+
+      try {
+        notification.send(new Set<String>{ camUser.Id });
+      } catch (Exception e) {
+        System.debug('Error sending custom notification: ' + e.getMessage());
+      }
+    }
+
+    Database.update(opp, true);
+  }
+
+  private static String getNewStage(Opportunity opp, String documentStatus) {
+    String newStage;
+    Boolean isSent = documentStatus.toLowerCase() == DOCUMENT_SENT_STATUS;
+    Boolean isClosed =
+      documentStatus.toLowerCase() == DOCUMENT_PAID_STATUS ||
+      documentStatus.toLowerCase() == DOCUMENT_COMPLETED_STATUS;
+
+    if (isSent) {
       newStage = 'Proposal';
-    } else if (
-      status.toLowerCase() == DOCUMENT_PAID_STATUS ||
-      status.toLowerCase() == DOCUMENT_COMPLETED_STATUS
-    ) {
+    } else if (isClosed) {
       if (
         opp.Division__r.Name.toLowerCase() ==
         DivisionName.ALIGN.name().toLowerCase()
@@ -79,12 +123,9 @@ global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstrac
       }
     }
 
-    if (String.isNotBlank(newStage)) {
-      opp.StageName = newStage;
-      Database.update(opp, true);
-      System.debug(
-        'Updated Opportunity ' + opportunityId + ' to stage: ' + newStage
-      );
-    }
+    return newStage;
+  }
+
+  private class CustomException extends Exception {
   }
 }
