@@ -288,9 +288,10 @@ public class PandaDocQuoteController {
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
           'Text_Unit_Cost__c' => qli.SBQQ__ListPrice__c,
+          'Text_Customer_Price__c' => qli.SBQQ__CustomerPrice__c,
           'Quantity' => qli.SBQQ__Quantity__c,
-          'QTY' => qli.SBQQ__Quantity__c,
-          'Price' => qli.SBQQ__CustomerPrice__c,
+          'QTY' => 1, // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
+          'Price' => qli.SBQQ__CustomerTotal__c,
           'Days_Required__c' => qli.SBQQ__SubscriptionTerm__c ?? 0
         }
       };
