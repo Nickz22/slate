@@ -1,7 +1,6 @@
 @isTest
 private class PandaDocWebhookHandlerTest {
   private static final String ACCOUNT_NAME = 'Test Account';
-  private static final String OPPORTUNITY_NAME = 'Test Opportunity';
   private static final String CONTACT_EMAIL = 'test@example.com';
 
   @TestSetup
@@ -21,11 +20,12 @@ private class PandaDocWebhookHandlerTest {
 
     // Create test Opportunity
     Opportunity testOpportunity = new Opportunity(
-      Name = OPPORTUNITY_NAME,
+      Name = 'x', // automatically set downstream
       AccountId = testAccount.Id,
       StageName = 'Prospecting',
       CloseDate = Date.today().addDays(30),
-      PrimaryContact__c = testContact.Id
+      PrimaryContact__c = testContact.Id,
+      Lead_Type__c = 'Slate - CGI'
     );
     insert testOpportunity;
   }
@@ -35,7 +35,6 @@ private class PandaDocWebhookHandlerTest {
     Opportunity opp = [
       SELECT Id
       FROM Opportunity
-      WHERE Name = :OPPORTUNITY_NAME
       LIMIT 1
     ];
 
@@ -65,7 +64,6 @@ private class PandaDocWebhookHandlerTest {
     Opportunity opp = [
       SELECT Id, Division__c
       FROM Opportunity
-      WHERE Name = :OPPORTUNITY_NAME
       LIMIT 1
     ];
 
@@ -103,7 +101,6 @@ private class PandaDocWebhookHandlerTest {
     Opportunity opp = [
       SELECT Id, Division__c
       FROM Opportunity
-      WHERE Name = :OPPORTUNITY_NAME
       LIMIT 1
     ];
 
@@ -141,7 +138,6 @@ private class PandaDocWebhookHandlerTest {
     Opportunity opp = [
       SELECT Id, Division__c
       FROM Opportunity
-      WHERE Name = :OPPORTUNITY_NAME
       LIMIT 1
     ];
 
@@ -174,43 +170,80 @@ private class PandaDocWebhookHandlerTest {
     );
   }
 
-    @isTest
-    static void testDocumentDraftStatus() {
-      Opportunity opp = [
-        SELECT Id
-        FROM Opportunity
-        WHERE Name = :OPPORTUNITY_NAME
-        LIMIT 1
-      ];
+  @isTest
+  static void testDocumentDraftStatus() {
+    Opportunity opp = [
+      SELECT Id
+      FROM Opportunity
+      LIMIT 1
+    ];
 
-      Test.startTest();
-      RestContext.request = new RestRequest();
-      RestContext.request.requestBody = Blob.valueOf(
-        JSON.serialize(
-          new List<PandaDocDocumentChange>{
-            createDocumentChange(
-              'document_state_changed',
-              'document.draft',
-              opp.Id
-            )
-          }
-        )
-      );
-      PandaDocWebhookHandler.handleWebhook();
-      Test.stopTest();
+    Test.startTest();
+    RestContext.request = new RestRequest();
+    RestContext.request.requestBody = Blob.valueOf(
+      JSON.serialize(
+        new List<PandaDocDocumentChange>{
+          createDocumentChange(
+            'document_state_changed',
+            'document.draft',
+            opp.Id
+          )
+        }
+      )
+    );
+    PandaDocWebhookHandler.handleWebhook();
+    Test.stopTest();
 
-      opp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
-      System.assertNotEquals(
-        'Proposal',
-        opp.StageName,
-        'Opportunity stage should not be updated for draft status'
+    opp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+    System.assertNotEquals(
+      'Proposal',
+      opp.StageName,
+      'Opportunity stage should not be updated for draft status'
+    );
+    System.assertNotEquals(
+      'Won - Post Production',
+      opp.StageName,
+      'Opportunity stage should not be updated for draft status'
+    );
+  }
+
+  @isTest
+  static void testDocumentSignedStatus_Slate_WithNotification() {
+    Opportunity opp = [
+      SELECT Id, Division__c
+      FROM Opportunity
+      LIMIT 1
+    ];
+
+    // Create a test Division
+    Division__c testDivision = new Division__c(Name = 'Slate');
+    insert testDivision;
+
+    // Update Opportunity with the test Division
+    opp.Division__c = testDivision.Id;
+    update opp;
+
+    Test.startTest();
+
+    new PandaDocWebhookHandler()
+      .syncDocumentStatusToOpportunityStage(
+        new List<PandaDocDocumentChange>{
+          createDocumentChange(
+            'document_state_changed',
+            'document.completed',
+            opp.Id
+          )
+        }
       );
-      System.assertNotEquals(
-        'Won - Post Production',
-        opp.StageName,
-        'Opportunity stage should not be updated for draft status'
-      );
-    }
+    Test.stopTest();
+
+    opp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+    Assert.areEqual(
+      'Won - Production',
+      opp.StageName,
+      'Opportunity stage should be updated to Won - Production'
+    );
+  }
 
   private static PandaDocDocumentChange createDocumentChange(
     String event,
