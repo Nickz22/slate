@@ -113,14 +113,23 @@ public class PandaDocQuoteController {
   public static void attachDocumentToOpportunity(
     Id opportunityId,
     String documentId,
-    String documentName
+    String documentName,
+    String quoteType
   ) {
     try {
       // Fetch the document content from PandaDoc API
       Blob documentContent = PandadocApi.getDocumentContent(documentId);
-
+      Opportunity opp = new OpportunitySelector()
+        .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
+        .get(0);
+      String attachmentName =
+        opp.Division__r.Name.substring(0, 2).toUpperCase() +
+        ' - ' +
+        (quoteType == 'estimate' ? 'EST' : 'INV') +
+        ' - ' +
+        opp.Name;
       ContentVersion cv = new ContentVersion();
-      cv.Title = documentName;
+      cv.Title = attachmentName;
       cv.PathOnClient = documentName + '.pdf';
       cv.VersionData = documentContent;
       cv.IsMajorVersion = true;
