@@ -91,8 +91,6 @@ public class PandaDocQuoteController {
       'pricing_tables' => controller.getPricingItems()
     };
 
-    System.debug('requestBody: ' + JSON.serializePretty(requestBody));
-
     try {
       return PandadocApi.createDocument(requestBody);
     } catch (PandadocApi.PandaDocException e) {
