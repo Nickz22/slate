@@ -1,11 +1,36 @@
 <template>
-    <template lwc:if={showSpinner}>
-        <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+  <template lwc:if={showSpinner}>
+    <lightning-spinner
+      alternative-text="Loading"
+      size="x-small"
+    ></lightning-spinner>
+  </template>
+  <lightning-modal-header label={header}></lightning-modal-header>
+  <lightning-modal-body>
+    <template lwc:if={isAccount}>
+      <c-create-account onaccountcreated={handleSuccess}></c-create-account>
     </template>
-    <lightning-modal-header label={header}></lightning-modal-header>
-    <lightning-modal-body>
-        <lightning-record-form mode="edit" object-api-name={objectName} onsubmit={handleSubmit} onsuccess={handleSuccess} oncancel={handleCancel} onerror={handleError} layout-type="Compact" record-type-id={recordTypeId}>
-            <lightning-messages> </lightning-messages>
-        </lightning-record-form>
-    </lightning-modal-body>
+    <template lwc:else>
+      <lightning-record-form
+        mode="edit"
+        object-api-name={objectName}
+        onsubmit={handleSubmit}
+        onsuccess={handleSuccess}
+        oncancel={handleCancel}
+        onerror={handleError}
+        layout-type="Compact"
+        record-type-id={recordTypeId}
+      >
+        <lightning-messages></lightning-messages>
+      </lightning-record-form>
+    </template>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+    <lightning-button
+      label="Save"
+      variant="brand"
+      onclick={handleOkay}
+    ></lightning-button>
+  </lightning-modal-footer>
 </template>
