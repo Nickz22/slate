@@ -1,0 +1,6 @@
+<aura:component
+  implements="lightning:actionOverride,force:hasRecordId"
+  access="global"
+>
+  <c:l4gNewOpportunity givenAccountId="{!v.recordId}" objectName="Opportunity"></c:l4gNewOpportunity>
+</aura:component>
