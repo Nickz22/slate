@@ -6,6 +6,7 @@ export default class L4gLightningModal extends LightningModal {
   @api objectName;
   @api recordTypeId;
   @api contactId;
+  isLightningForGmail = true;
   showSpinner = false;
   accountId;
 
@@ -26,11 +27,12 @@ export default class L4gLightningModal extends LightningModal {
     this.showSpinner = false;
     this.close(null);
   }
-  handleOkay() {
+  async handleOkay() {
+    this.showSpinner = true;
     if (this.isAccount) {
-      this.template.querySelector("c-create-account").submit();
+      await this.template.querySelector("c-create-account").submit();
     } else {
-      this.template.querySelector("lightning-record-edit-form").submit();
+      await this.template.querySelector("lightning-record-edit-form").submit();
     }
   }
   handleSubmit(event) {

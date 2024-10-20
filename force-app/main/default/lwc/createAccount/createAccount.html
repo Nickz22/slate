@@ -1,12 +1,44 @@
 <template>
-  <lightning-input
-    label="Name"
-    value={name}
-    onchange={handleNameChange}
-  ></lightning-input>
-  <lightning-input
-    label="Website"
-    value={website}
-    onchange={handleWebsiteChange}
-  ></lightning-input>
+  <lightning-card title="New Account" icon-name="standard:account">
+    <div class="slds-m-around_medium">
+      <template if:true={isLightningForGmail}>
+        <!-- Original full-width inputs for modal use -->
+        <lightning-input
+          label="Name"
+          value={name}
+          onchange={handleNameChange}
+        ></lightning-input>
+        <lightning-input
+          label="Website"
+          value={website}
+          onchange={handleWebsiteChange}
+        ></lightning-input>
+      </template>
+      <template if:false={isLightningForGmail}>
+        <!-- New centered, 25% width inputs for standalone use -->
+        <div class="slds-align_absolute-center">
+          <div class="slds-size_1-of-4">
+            <lightning-input
+              label="Name"
+              value={name}
+              onchange={handleNameChange}
+              class="slds-m-bottom_small"
+            ></lightning-input>
+            <lightning-input
+              label="Website"
+              value={website}
+              onchange={handleWebsiteChange}
+              class="slds-m-bottom_small"
+            ></lightning-input>
+            <lightning-button
+              label="Create Account"
+              variant="brand"
+              onclick={submit}
+              class="slds-m-top_small"
+            ></lightning-button>
+          </div>
+        </div>
+      </template>
+    </div>
+  </lightning-card>
 </template>

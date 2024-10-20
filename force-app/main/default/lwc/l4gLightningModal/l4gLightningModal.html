@@ -8,7 +8,10 @@
   <lightning-modal-header label={header}></lightning-modal-header>
   <lightning-modal-body>
     <template lwc:if={isAccount}>
-      <c-create-account onaccountcreated={handleSuccess}></c-create-account>
+      <c-create-account
+        onaccountcreated={handleSuccess}
+        is-lightning-for-gmail={isLightningForGmail}
+      ></c-create-account>
     </template>
     <template lwc:else>
       <lightning-record-form
