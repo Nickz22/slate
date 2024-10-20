@@ -1,0 +1,6 @@
+<aura:component
+  implements="lightning:actionOverride,force:hasRecordId"
+  access="global"
+>
+  <c:createAccount recordId="{!v.recordId}"></c:createAccount>
+</aura:component>

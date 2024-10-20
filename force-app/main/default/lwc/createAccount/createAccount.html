@@ -1,0 +1,49 @@
+<template>
+  <template if:true={isLightningForGmail}>
+    <lightning-card title="New Account" icon-name="standard:account">
+      <div class="slds-m-around_medium">
+        <lightning-input
+          label="Name"
+          value={name}
+          onchange={handleNameChange}
+        ></lightning-input>
+        <lightning-input
+          label="Website"
+          value={website}
+          onchange={handleWebsiteChange}
+        ></lightning-input>
+      </div>
+    </lightning-card>
+  </template>
+
+  <template if:false={isLightningForGmail}>
+    <div class="slds-align_absolute-center">
+      <lightning-card
+        title="New Account"
+        class="slds-size_1-of-3 slds-m-top_xx-large"
+        icon-name="standard:account"
+      >
+        <div class="slds-m-around_medium">
+          <lightning-input
+            label="Name"
+            value={name}
+            onchange={handleNameChange}
+            class="slds-m-bottom_small"
+          ></lightning-input>
+          <lightning-input
+            label="Website"
+            value={website}
+            onchange={handleWebsiteChange}
+            class="slds-m-bottom_small"
+          ></lightning-input>
+          <lightning-button
+            label="Create Account"
+            variant="brand"
+            onclick={submit}
+            class="slds-m-top_small"
+          ></lightning-button>
+        </div>
+      </lightning-card>
+    </div>
+  </template>
+</template>

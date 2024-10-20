@@ -6,23 +6,34 @@ export default class L4gLightningModal extends LightningModal {
   @api objectName;
   @api recordTypeId;
   @api contactId;
+  isLightningForGmail = true;
   showSpinner = false;
   accountId;
+
   get header() {
     return `Create ${this.objectName}`;
   }
+
+  get isAccount() {
+    return this.objectName.toLowerCase() === "account";
+  }
+
   handleSuccess(event) {
     this.showSpinner = false;
     this.accountId = event.detail.id;
     this.close(this.accountId);
-
   }
   handleCancel(event) {
     this.showSpinner = false;
     this.close(null);
   }
-  handleOkay() {
-    this.template.querySelector("lightning-record-edit-form").submit();
+  async handleOkay() {
+    this.showSpinner = true;
+    if (this.isAccount) {
+      await this.template.querySelector("c-create-account").submit();
+    } else {
+      await this.template.querySelector("lightning-record-edit-form").submit();
+    }
   }
   handleSubmit(event) {
     this.showSpinner = true;
@@ -34,7 +45,7 @@ export default class L4gLightningModal extends LightningModal {
     this.template.querySelector("lightning-record-form").submit(fields);
   }
   handleError(event) {
-    console.error("Error",event?.detail?.detail);
+    console.error("Error", event?.detail?.detail);
     this.showSpinner = false;
   }
 }

@@ -1,17 +1,41 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api } from "lwc";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { NavigationMixin } from "lightning/navigation";
 
-export default class CustomContactNew extends LightningElement {
-    @api recordId;
-    @api messageBody;
-    @api subject;
-    @api people;
+export default class CustomContactNew extends NavigationMixin(
+  LightningElement
+) {
+  @api recordId;
 
-    @api source;
+  handleSubmit(event) {
+    event.preventDefault(); // stop the form from submitting
+    const fields = event.detail.fields;
+    this.template.querySelector("lightning-record-edit-form").submit(fields);
+  }
 
-    connectedCallback() {
-        console.log('Custom Contact New component loaded');
-        console.log('Message Body:', this.messageBody);
-        console.log('Subject:', this.subject);
-        console.log('People:', this.people);
-    }
+  handleSuccess(event) {
+    const contactId = event.detail.id;
+    this.showSuccessToast();
+    this.navigateToNewRecord(contactId);
+  }
+
+  navigateToNewRecord(recordId) {
+    this[NavigationMixin.Navigate]({
+      type: "standard__recordPage",
+      attributes: {
+        recordId: recordId,
+        objectApiName: "Contact",
+        actionName: "view"
+      }
+    });
+  }
+
+  showSuccessToast() {
+    const event = new ShowToastEvent({
+      title: "Success",
+      message: "Contact created successfully",
+      variant: "success"
+    });
+    this.dispatchEvent(event);
+  }
 }
