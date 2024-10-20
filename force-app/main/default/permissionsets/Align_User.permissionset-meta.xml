@@ -10,7 +10,7 @@
     </customPermissions>
     <description>Assign to users who need to see Align data and applications</description>
     <fieldPermissions>
-        <editable>false</editable>
+        <editable>true</editable>
         <field>Opportunity.Division_Name__c</field>
         <readable>true</readable>
     </fieldPermissions>
