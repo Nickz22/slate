@@ -5,6 +5,11 @@ private class PandaDocWebhookHandlerTest {
 
   @TestSetup
   static void setupTestData() {
+    Division__c slateDivision = new Division__c(
+      Division_Leader__c = UserInfo.getUserId(),
+      Name = 'Slate'
+    );
+    insert slateDivision;
     // Create test Account
     Account testAccount = new Account(Name = ACCOUNT_NAME);
     insert testAccount;
@@ -25,9 +30,53 @@ private class PandaDocWebhookHandlerTest {
       StageName = 'Prospecting',
       CloseDate = Date.today().addDays(30),
       PrimaryContact__c = testContact.Id,
-      Lead_Type__c = 'Slate - CGI'
+      Lead_Type__c = 'Slate - CGI',
+      Division__c = slateDivision.Id
     );
     insert testOpportunity;
+  }
+
+  @isTest
+  static void testMockError() {
+    Integer numEmails = 0;
+    Test.startTest();
+    PandaDocWebhookHandler.mockError = true;
+    Boolean hitNoSingleEmailPermissionError = false;
+    try {
+      PandaDocWebhookHandler.handleWebhook();
+    } catch (Exception e) {
+      if (e.getMessage().contains('NO_SINGLE_MAIL_PERMISSION')) {
+        hitNoSingleEmailPermissionError = true;
+      }
+    }
+    numEmails += Limits.getEmailInvocations();
+    Test.stopTest();
+
+    Assert.isTrue(
+      numEmails == 1 || hitNoSingleEmailPermissionError,
+      'Error email should be sent or at least attempted to be sent'
+    );
+  }
+
+  @isTest
+  static void testMockErrorWhileSendingErrorEmail() {
+    Test.startTest();
+    PandaDocWebhookHandler.mockError = true;
+    ErrorHandlingAbstractClass.mockError = true;
+    Boolean hasMockErrorHandlingAbstractClassError = false;
+    try {
+      PandaDocWebhookHandler.handleWebhook();
+    } catch (Exception e) {
+      if (e.getMessage().contains('Mock error while sending error email')) {
+        hasMockErrorHandlingAbstractClassError = true;
+      }
+    }
+    Test.stopTest();
+
+    Assert.isTrue(
+      hasMockErrorHandlingAbstractClassError,
+      'Mock error handling abstract class error should be thrown'
+    );
   }
 
   @isTest

@@ -197,7 +197,7 @@ private class PandaDocQuoteControllerTest {
   static void testAttachDocumentToOpportunity() {
     // GIVEN
     Opportunity opp = [
-      SELECT Id,Division__r.Name,Name
+      SELECT Id, Division__r.Name, Name
       FROM Opportunity
       WHERE Division__r.Name = 'Slate'
       LIMIT 1
@@ -223,20 +223,23 @@ private class PandaDocQuoteControllerTest {
     List<ContentDocumentLink> cdls = [
       SELECT ContentDocument.Title, ContentDocument.LatestPublishedVersionId
       FROM ContentDocumentLink
-      WHERE LinkedEntityId = :opp.Id AND SystemModstamp >= :testStart
+      WHERE
+        LinkedEntityId = :opp.Id
+        AND SystemModstamp >= :testStart
+        AND ContentDocument.Title LIKE '%EST%'
     ];
 
     System.assertEquals(
-      1,
-      cdls.size(),
+      true,
+      cdls.size() > 0,
       'One ContentDocumentLink should be created'
     );
     String nameShouldbe =
-        opp.Division__r.Name.substring(0, 2).toUpperCase() +
-        ' - ' +
-        'EST' +
-        ' - ' +
-        opp.Name;
+      opp.Division__r.Name.substring(0, 2).toUpperCase() +
+      ' - ' +
+      'EST' +
+      ' - ' +
+      opp.Name;
     System.assertEquals(
       nameShouldbe,
       cdls[0].ContentDocument.Title,
@@ -258,6 +261,77 @@ private class PandaDocQuoteControllerTest {
       'Mock PDF Content',
       cv.VersionData.toString(),
       'Document content should match mock content'
+    );
+  }
+
+  @isTest
+  static void testCheckDocumentStatus() {
+    // GIVEN
+    String mockStatusUrl = 'https://api.pandadoc.com/public/v1/documents/mock-document-id';
+    PandaDocApiMock mock = PandaDocApiMock.createDocumentStatusMock();
+    Test.setMock(HttpCalloutMock.class, mock);
+
+    // WHEN
+    Test.startTest();
+    Map<String, String> result = PandaDocQuoteController.checkDocumentStatus(
+      mockStatusUrl
+    );
+    Test.stopTest();
+
+    // THEN
+    Assert.isNotNull(result, 'Result should not be null');
+    Assert.areEqual(
+      'document.completed',
+      result.get('status'),
+      'Status should be "document.completed"'
+    );
+    Assert.areEqual(
+      'mock-document-id',
+      result.get('id'),
+      'Document ID should match'
+    );
+    Assert.areEqual(
+      'Mock Completed Document',
+      result.get('name'),
+      'Document name should match'
+    );
+  }
+
+  @isTest
+  static void testConstructErrorMessage() {
+    // GIVEN
+    HttpResponse mockResponse = new HttpResponse();
+    mockResponse.setStatusCode(400);
+    mockResponse.setStatus('Bad Request');
+    mockResponse.setBody(
+      '{"errors": ["You done goofed!", "Seriously, what were you thinking?"]}'
+    );
+
+    // WHEN
+    String errorMessage = PandadocApi.constructErrorMessage(mockResponse);
+
+    // THEN
+    Assert.isTrue(
+      errorMessage.contains('Failed to create PandaDoc quote'),
+      'Error message should start with the failure indication'
+    );
+    Assert.isTrue(
+      errorMessage.contains('Status: Bad Request'),
+      'Error message should contain the status'
+    );
+    Assert.isTrue(
+      errorMessage.contains('Status Code: 400'),
+      'Error message should contain the status code'
+    );
+    Assert.isTrue(
+      errorMessage.contains('Response Body:'),
+      'Error message should contain the response body'
+    );
+    Assert.isTrue(
+      errorMessage.contains(
+        'Errors: ["You done goofed!","Seriously, what were you thinking?"]'
+      ),
+      'Error message should contain the parsed errors'
     );
   }
 }

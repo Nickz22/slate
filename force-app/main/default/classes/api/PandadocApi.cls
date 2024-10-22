@@ -21,7 +21,7 @@ public with sharing class PandadocApi {
     if (res.getStatusCode() == 201) {
       return parseSuccessResponse(res.getBody());
     } else {
-      throw new PandaDocException(constructErrorMessage(res, requestBody));
+      throw new PandaDocException(constructErrorMessage(res));
     }
   }
 
@@ -73,9 +73,8 @@ public with sharing class PandadocApi {
     };
   }
 
-  private static String constructErrorMessage(
-    HttpResponse res,
-    Map<String, Object> requestBody
+  @TestVisible private static String constructErrorMessage(
+    HttpResponse res
   ) {
     String errorMessage =
       'Failed to create PandaDoc quote. Status: ' + res.getStatus();

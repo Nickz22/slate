@@ -75,4 +75,15 @@ global class PandaDocApiMock implements HttpCalloutMock {
     // Return the mock content directly as a Blob, mimicking the real API response
     return new PandaDocApiMock(200, 'OK', EncodingUtil.base64Encode(mockBlob));
   }
+
+  public static PandaDocApiMock createDocumentStatusMock() {
+    String statusBody = JSON.serialize(
+      new Map<String, Object>{
+        'status' => 'document.completed',
+        'id' => 'mock-document-id',
+        'name' => 'Mock Completed Document'
+      }
+    );
+    return new PandaDocApiMock(200, 'OK', statusBody);
+  }
 }
