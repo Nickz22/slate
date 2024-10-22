@@ -1,4 +1,12 @@
 public abstract class ErrorHandlingAbstractClass {
+  String className;
+  @TestVisible
+  static Boolean mockError = false;
+
+  public ErrorHandlingAbstractClass(String className) {
+    this.className = className;
+  }
+
   protected abstract void executeWithErrorHandling();
 
   public void execute() {
@@ -19,6 +27,10 @@ public abstract class ErrorHandlingAbstractClass {
   }
 
   private void sendErrorEmail(Exception e) {
+    if (mockError) {
+      throw new ErrorHandlingException('Mock error while sending error email');
+    }
+
     List<User> admins = [
       SELECT Email
       FROM User
@@ -36,11 +48,11 @@ public abstract class ErrorHandlingAbstractClass {
       return;
     }
 
-    String subject = 'Error in ' + getClassName() + ': ' + e.getMessage();
+    String subject = 'Error in ' + className + ': ' + e.getMessage();
     String body =
       'Error details:\n\n' +
       'Class: ' +
-      getClassName() +
+      className +
       '\n' +
       'Type: ' +
       e.getTypeName() +
@@ -82,11 +94,6 @@ public abstract class ErrorHandlingAbstractClass {
         'Failed to send error email: ' + emailEx.getMessage()
       );
     }
-  }
-
-  // Get the name of the class that's actually using this abstract class
-  private String getClassName() {
-    return String.valueOf(this).split(':')[0];
   }
 
   public class ErrorHandlingException extends Exception {

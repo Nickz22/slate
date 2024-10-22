@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>CloseDate</fullName>
-    <description>This is related to the Opportunity Close Date, which is an important field for following the &apos;Matching Principle&apos; for our Accounting/Bookkeeping. A Close Date equals the date in which the revenue is earned, which is equal to the Confirmed Shoot Date (Start) on Productions and the Date of the Initial Inquiry for Retouching projects. For Retouching Projects, the Close Date will shift to today&apos;s date when the Opportunity Stage is set to &apos;Won - Production - Complete&apos; as Retouching Opportunities are billed when an Opportunity is Completed. Lead Producers should set Close Date as the End of the Month in which the Opportunity is to be performed if a Confirmed Shoot Date is not yet available. Once the Opportunity Confirmed Shoot Date is set, a Flow will match the Close Date to the Confirmed Shoot Date (Start) field.</description>
-    <inlineHelpText>This is related to the Opportunity Close Date, which is an important field for following the &apos;Matching Principle&apos; for our Accounting/Bookkeeping. A Close Date equals the date in which the revenue is earned, which is equal to the Confirmed Shoot Date (Start) on Productions and the Date of the Initial Inquiry for Retouching projects. For Retouching Projects, the Close Date will shift to today&apos;s date when the Opportunity Stage is set to &apos;Won - Production - Complete&apos; as Retouching Opportunities are billed whe</inlineHelpText>
-    <trackFeedHistory>true</trackFeedHistory>
-    <trackHistory>false</trackHistory>
-    <trackTrending>true</trackTrending>
-</CustomField>

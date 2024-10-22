@@ -1,5 +1,6 @@
 @RestResource(urlMapping='/pandadoc/webhook/*')
 global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstractClass {
+  @TestVisible static Boolean mockError = false;
   public static final String DOCUMENT_SENT_STATUS = 'document.sent';
   public static final String DOCUMENT_PAID_STATUS = 'document.paid';
   public static final String DOCUMENT_COMPLETED_STATUS = 'document.completed';
@@ -10,12 +11,20 @@ global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstrac
     PALERMO
   }
 
+  public PandaDocWebhookHandler() {
+    super('PandaDocWebhookHandler');
+  }
+
   @HttpPost
   global static void handleWebhook() {
     new PandaDocWebhookHandler().execute();
   }
 
   protected override void executeWithErrorHandling() {
+    if (mockError) {
+      throw new CustomException('Mock error');
+    }
+
     this.syncDocumentStatusToOpportunityStage(
       (List<PandaDocDocumentChange>) JSON.deserialize(
         RestContext.request.requestBody.toString(),

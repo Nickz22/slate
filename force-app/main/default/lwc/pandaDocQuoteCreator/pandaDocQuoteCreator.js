@@ -1,4 +1,5 @@
 import { LightningElement, api, wire, track } from "lwc";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import createPandaDocQuote from "@salesforce/apex/PandaDocQuoteController.createPandaDocQuote";
 import checkDocumentStatus from "@salesforce/apex/PandaDocQuoteController.checkDocumentStatus";
 import attachDocumentToOpportunity from "@salesforce/apex/PandaDocQuoteController.attachDocumentToOpportunity";
@@ -26,7 +27,8 @@ export default class PandaDocQuoteCreator extends LightningElement {
 
   // a hack to discern which action launched this component so that I can pass the correct quote type to the Apex method
   setQuoteType() {
-    const actionName = window.location.href.match(/\/quick\/([^?]+)/)?.[1] || '';
+    const actionName =
+      window.location.href.match(/\/quick\/([^?]+)/)?.[1] || "";
 
     if (actionName.includes("Generate_Quote")) {
       this.quoteType = "Estimate";
