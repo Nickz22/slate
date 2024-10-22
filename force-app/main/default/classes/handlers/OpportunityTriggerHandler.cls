@@ -20,6 +20,10 @@ public class OpportunityTriggerHandler {
 
   public static void onAfterInsert(Map<Id, Opportunity> newMap) {
     AutoQuoteGeneration.autoQuote(newMap.values()[0].Id);
+    RecordsSharingService.handleAccount_PrimaryContactSharing(newMap.values(), null);
+  }
+  public static void onAfterUpdate(Map<Id, Opportunity> newMap,Map<Id, Opportunity> oldMap) {
+    RecordsSharingService.handleAccount_PrimaryContactSharing(newMap.values(), oldMap);
   }
 
   public static String setOppName(String LeadType, String accountName) {
