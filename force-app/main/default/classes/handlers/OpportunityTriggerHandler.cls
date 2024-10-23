@@ -5,7 +5,6 @@ public class OpportunityTriggerHandler {
 
   public static void onBeforeInsert(List<Opportunity> newOpps) {
     Set<Id> divisionIds = new Set<Id>();
-
     for (Opportunity opp : newOpps) {
       divisionIds.add(opp.Division__c);
     }
