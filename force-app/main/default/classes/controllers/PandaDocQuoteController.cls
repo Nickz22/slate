@@ -8,6 +8,7 @@ public class PandaDocQuoteController {
   private PandaDocQuoteType quoteType;
   enum PandaDocQuoteType {
     ESTIMATE,
+    PROPOSAL,
     INVOICE
   }
 
@@ -21,6 +22,10 @@ public class PandaDocQuoteController {
       .get(0);
     this.percentToPayByQuoteType.put(
       PandaDocQuoteType.ESTIMATE,
+      (this.opp.Required_Deposit__c / 100)
+    );
+    this.percentToPayByQuoteType.put(
+      PandaDocQuoteType.PROPOSAL,
       (this.opp.Required_Deposit__c / 100)
     );
     this.percentToPayByQuoteType.put(
@@ -48,6 +53,11 @@ public class PandaDocQuoteController {
         templateUuid = this.isCCPayment
           ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Estimate_Template_Id__c
           : this.quoteTemplateMapping.Pandadoc_Estimate_Template_Id__c;
+      }
+      when PROPOSAL {
+        templateUuid = this.isCCPayment
+          ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Proposal_Template_Id__c
+          : this.quoteTemplateMapping.Pandadoc_Proposal_Template_Id__c;
       }
       when INVOICE {
         templateUuid = this.isCCPayment

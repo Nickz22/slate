@@ -80,7 +80,7 @@ private class PandaDocWebhookHandlerTest {
   }
 
   @isTest
-  static void testDocumentSentStatus() {
+  static void testQuoteSentStatus_Slate() {
     Opportunity opp = [
       SELECT Id
       FROM Opportunity
@@ -91,7 +91,7 @@ private class PandaDocWebhookHandlerTest {
     new PandaDocWebhookHandler()
       .syncDocumentStatusToOpportunityStage(
         new List<PandaDocDocumentChange>{
-          createDocumentChange(
+          createDocumentChange_Quote(
             'document_state_changed',
             'document.sent',
             opp.Id
@@ -100,16 +100,99 @@ private class PandaDocWebhookHandlerTest {
       );
     Test.stopTest();
 
-    opp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+    opp = [
+      SELECT Stage_Document_Automated__c
+      FROM Opportunity
+      WHERE Id = :opp.Id
+    ];
     System.assertEquals(
-      'Proposal',
-      opp.StageName,
-      'Opportunity stage should be updated to Proposal'
+      'Quote Sent',
+      opp.Stage_Document_Automated__c,
+      'Opportunity Document Automated Stage should be updated to Quote Sent'
     );
   }
 
   @isTest
-  static void testDocumentPaidStatus_Align() {
+  static void testProposalSentStatus_Align() {
+    Opportunity opp = [
+      SELECT Id, Division__c
+      FROM Opportunity
+      LIMIT 1
+    ];
+
+    Division__c alignDivision = new Division__c(Name = 'Align');
+    insert alignDivision;
+
+    opp.Division__c = alignDivision.Id;
+    update opp;
+
+    Test.startTest();
+
+    new PandaDocWebhookHandler()
+      .syncDocumentStatusToOpportunityStage(
+        new List<PandaDocDocumentChange>{
+          createDocumentChange_Proposal(
+            'document_state_changed',
+            PandaDocWebhookHandler.DOCUMENT_SENT_STATUS,
+            opp.Id
+          )
+        }
+      );
+    Test.stopTest();
+
+    Opportunity updatedOpp = [
+      SELECT Stage_Document_Automated__c
+      FROM Opportunity
+      WHERE Id = :opp.Id
+    ];
+
+    Assert.areEqual(
+      'Proposal Sent',
+      updatedOpp.Stage_Document_Automated__c,
+      'Opportunity Document Automated Stage should be "Proposal Sent" for Align division'
+    );
+  }
+
+  @isTest
+  static void testInvoiceSentStatus_Palermo() {
+    Opportunity opp = [SELECT Id, Division__c FROM Opportunity LIMIT 1];
+
+    Division__c palermoDivision = new Division__c(Name = 'Palermo');
+    insert palermoDivision;
+
+    opp.Division__c = palermoDivision.Id;
+    update opp;
+
+    Test.startTest();
+
+    new PandaDocWebhookHandler()
+      .syncDocumentStatusToOpportunityStage(
+        new List<PandaDocDocumentChange>{
+          createDocumentChange_Invoice(
+            'document_state_changed',
+            PandaDocWebhookHandler.DOCUMENT_SENT_STATUS,
+            opp.Id
+          )
+        }
+      );
+
+    Test.stopTest();
+
+    Opportunity updatedOpp = [
+      SELECT Stage_Document_Automated__c
+      FROM Opportunity
+      WHERE Id = :opp.Id
+    ];
+
+    Assert.areEqual(
+      'Invoice Sent',
+      updatedOpp.Stage_Document_Automated__c,
+      'Opportunity Document Automated Stage should be "Invoice Sent".'
+    );
+  }
+
+  @isTest
+  static void testQuoteSignedStatus_Align() {
     Opportunity opp = [
       SELECT Id, Division__c
       FROM Opportunity
@@ -128,16 +211,25 @@ private class PandaDocWebhookHandlerTest {
     new PandaDocWebhookHandler()
       .syncDocumentStatusToOpportunityStage(
         new List<PandaDocDocumentChange>{
-          createDocumentChange(
+          createDocumentChange_Quote(
             'document_state_changed',
-            'document.paid',
+            PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
             opp.Id
           )
         }
       );
     Test.stopTest();
 
-    opp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+    opp = [
+      SELECT Stage_Document_Automated__c, StageName
+      FROM Opportunity
+      WHERE Id = :opp.Id
+    ];
+    System.assertEquals(
+      'Quote Signed',
+      opp.Stage_Document_Automated__c,
+      'Opportunity Document Automated Stage should be updated to Quote Signed'
+    );
     System.assertEquals(
       'Won - Post Production',
       opp.StageName,
@@ -146,7 +238,7 @@ private class PandaDocWebhookHandlerTest {
   }
 
   @isTest
-  static void testDocumentPaidStatus_Palermo() {
+  static void testQuoteSignedStatus_Palermo() {
     Opportunity opp = [
       SELECT Id, Division__c
       FROM Opportunity
@@ -165,16 +257,25 @@ private class PandaDocWebhookHandlerTest {
     new PandaDocWebhookHandler()
       .syncDocumentStatusToOpportunityStage(
         new List<PandaDocDocumentChange>{
-          createDocumentChange(
+          createDocumentChange_Quote(
             'document_state_changed',
-            'document.paid',
+            PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
             opp.Id
           )
         }
       );
     Test.stopTest();
 
-    opp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+    opp = [
+      SELECT Stage_Document_Automated__c, StageName
+      FROM Opportunity
+      WHERE Id = :opp.Id
+    ];
+    System.assertEquals(
+      'Quote Signed',
+      opp.Stage_Document_Automated__c,
+      'Opportunity Document Automated Stage should be updated to Quote Signed'
+    );
     System.assertEquals(
       'Won - Production',
       opp.StageName,
@@ -183,39 +284,111 @@ private class PandaDocWebhookHandlerTest {
   }
 
   @isTest
-  static void testDocumentPaidStatus_Slate() {
+  static void testQuoteSignedStatus_Slate() {
     Opportunity opp = [
       SELECT Id, Division__c
       FROM Opportunity
       LIMIT 1
     ];
 
-    // Create a test Division
-    Division__c testDivision = new Division__c(Name = 'Slate');
-    insert testDivision;
-
-    // Update Opportunity with the test Division
-    opp.Division__c = testDivision.Id;
-    update opp;
-
     Test.startTest();
     new PandaDocWebhookHandler()
       .syncDocumentStatusToOpportunityStage(
         new List<PandaDocDocumentChange>{
-          createDocumentChange(
+          createDocumentChange_Quote(
             'document_state_changed',
-            'document.paid',
+            PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
             opp.Id
           )
         }
       );
     Test.stopTest();
 
-    opp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
+    opp = [
+      SELECT Stage_Document_Automated__c, StageName
+      FROM Opportunity
+      WHERE Id = :opp.Id
+    ];
+    System.assertEquals(
+      'Quote Signed',
+      opp.Stage_Document_Automated__c,
+      'Opportunity Document Automated Stage should be updated to Quote Signed'
+    );
     System.assertEquals(
       'Won - Production',
       opp.StageName,
       'Opportunity stage should be updated to Won - Production'
+    );
+  }
+
+  @isTest
+  static void testProposalSigned_Palermo() {
+    Opportunity opp = [
+      SELECT Stage_Document_Automated__c, StageName
+      FROM Opportunity
+    ];
+
+    Test.startTest();
+
+    new PandaDocWebhookHandler()
+      .syncDocumentStatusToOpportunityStage(
+        new List<PandaDocDocumentChange>{
+          createDocumentChange_Proposal(
+            'document_state_changed',
+            PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
+            opp.Id
+          )
+        }
+      );
+    Test.stopTest();
+
+    opp = [
+      SELECT Stage_Document_Automated__c, StageName
+      FROM Opportunity
+      WHERE Id = :opp.Id
+      WITH USER_MODE
+    ];
+
+    Assert.areEqual(
+      'Proposal Signed',
+      opp.Stage_Document_Automated__c,
+      'The Stage_Document_Automated__c should be "Proposal Signed"!'
+    );
+  }
+
+  @isTest
+  static void testInvoiceSigned_Slate() {
+    Opportunity opp = [
+      SELECT Id, Division__c
+      FROM Opportunity
+      LIMIT 1
+    ];
+
+    Test.startTest();
+
+    new PandaDocWebhookHandler()
+      .syncDocumentStatusToOpportunityStage(
+        new List<PandaDocDocumentChange>{
+          createDocumentChange_Invoice(
+            'document_state_changed',
+            PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
+            opp.Id
+          )
+        }
+      );
+    Test.stopTest();
+
+    opp = [
+      SELECT Stage_Document_Automated__c, StageName
+      FROM Opportunity
+      WHERE Id = :opp.Id
+      WITH USER_MODE
+    ];
+
+    Assert.areEqual(
+      'Invoice Paid',
+      opp.Stage_Document_Automated__c,
+      'The Stage_Document_Automated__c should be "Invoice Signed".'
     );
   }
 
@@ -232,7 +405,7 @@ private class PandaDocWebhookHandlerTest {
     RestContext.request.requestBody = Blob.valueOf(
       JSON.serialize(
         new List<PandaDocDocumentChange>{
-          createDocumentChange(
+          createDocumentChange_Quote(
             'document_state_changed',
             'document.draft',
             opp.Id
@@ -256,45 +429,7 @@ private class PandaDocWebhookHandlerTest {
     );
   }
 
-  @isTest
-  static void testDocumentSignedStatus_Slate_WithNotification() {
-    Opportunity opp = [
-      SELECT Id, Division__c
-      FROM Opportunity
-      LIMIT 1
-    ];
-
-    // Create a test Division
-    Division__c testDivision = new Division__c(Name = 'Slate');
-    insert testDivision;
-
-    // Update Opportunity with the test Division
-    opp.Division__c = testDivision.Id;
-    update opp;
-
-    Test.startTest();
-
-    new PandaDocWebhookHandler()
-      .syncDocumentStatusToOpportunityStage(
-        new List<PandaDocDocumentChange>{
-          createDocumentChange(
-            'document_state_changed',
-            'document.completed',
-            opp.Id
-          )
-        }
-      );
-    Test.stopTest();
-
-    opp = [SELECT StageName FROM Opportunity WHERE Id = :opp.Id];
-    Assert.areEqual(
-      'Won - Production',
-      opp.StageName,
-      'Opportunity stage should be updated to Won - Production'
-    );
-  }
-
-  private static PandaDocDocumentChange createDocumentChange(
+  private static PandaDocDocumentChange createDocumentChange_Quote(
     String event,
     String status,
     Id opportunityId
@@ -307,6 +442,34 @@ private class PandaDocWebhookHandlerTest {
     change.data.metadata.salesforce_opportunity_id = opportunityId;
     change.data.template = new PandaDocDocumentChange.Template();
     change.data.template.name = 'Test Estimate';
+    return change;
+  }
+
+  private static PandaDocDocumentChange createDocumentChange_Proposal(
+    String event,
+    String status,
+    Id opportunityId
+  ) {
+    PandaDocDocumentChange change = createDocumentChange_Quote(
+      event,
+      status,
+      opportunityId
+    );
+    change.data.template.name = 'Test Proposal';
+    return change;
+  }
+
+  private static PandaDocDocumentChange createDocumentChange_Invoice(
+    String event,
+    String status,
+    Id opportunityId
+  ) {
+    PandaDocDocumentChange change = createDocumentChange_Proposal(
+      event,
+      status,
+      opportunityId
+    );
+    change.data.template.name = 'Test Invoice';
     return change;
   }
 }
