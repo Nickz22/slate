@@ -3,7 +3,7 @@
     <fullName>Pandadoc_CC_Fee_Estimate_Template_Id__c</fullName>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <inlineHelpText>The Pandadoc template to use for Quotes that include Credit Card fee</inlineHelpText>
+    <inlineHelpText>The Pandadoc template to use for initial Quotes that include Credit Card fee</inlineHelpText>
     <label>Pandadoc CC Fee Estimate Template Id</label>
     <length>255</length>
     <required>false</required>

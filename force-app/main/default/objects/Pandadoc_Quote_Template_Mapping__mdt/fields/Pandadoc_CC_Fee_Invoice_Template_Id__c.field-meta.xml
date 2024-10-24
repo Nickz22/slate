@@ -3,7 +3,7 @@
     <fullName>Pandadoc_CC_Fee_Invoice_Template_Id__c</fullName>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <inlineHelpText>Maps to a Pandadoc Invoice template which includes a merge field for credit card fee</inlineHelpText>
+    <inlineHelpText>Maps to a Pandadoc final Invoice template which includes a merge field for credit card fee,</inlineHelpText>
     <label>Pandadoc CC Fee Invoice Template Id</label>
     <length>255</length>
     <required>false</required>
