@@ -15,11 +15,19 @@
         <value xsi:type="xsd:string">fcnVq3stgvPgELuYFnFwrS</value>
     </values>
     <values>
+        <field>Pandadoc_CC_Fee_Proposal_Template_Id__c</field>
+        <value xsi:type="xsd:string">LB7xRjQ6BRL9zYGfSF4Xd9</value>
+    </values>
+    <values>
         <field>Pandadoc_Estimate_Template_Id__c</field>
-        <value xsi:type="xsd:string">BZgHVChDZK68fYz6ELk25X</value>
+        <value xsi:type="xsd:string">evzxLZKqV8nf7tXYokMjfg</value>
     </values>
     <values>
         <field>Pandadoc_Invoice_Template_Id__c</field>
         <value xsi:type="xsd:string">PTGpyLEDgmUptmw4yPd4eK</value>
+    </values>
+    <values>
+        <field>Pandadoc_Proposal_Template_Id__c</field>
+        <value xsi:type="xsd:string">BZgHVChDZK68fYz6ELk25X</value>
     </values>
 </CustomMetadata>
