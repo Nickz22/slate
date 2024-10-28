@@ -12,6 +12,12 @@ public class PandaDocQuoteController {
     INVOICE
   }
 
+  private static Map<String, String> companyEmailByUserEmailPhrase = new Map<String, String>{
+    'align' => 'info@align-ny.com',
+    'slate' => 'info@slate-ny.com',
+    'palermo' => 'info@palermo-studio.com'
+  };
+
   private Map<PandaDocQuoteType, Decimal> percentToPayByQuoteType = new Map<PandaDocQuoteType, Decimal>();
 
   public PandaDocQuoteController(Id oppId, String quoteType) {
@@ -91,11 +97,28 @@ public class PandaDocQuoteController {
     controller.opp = freshOpp;
     controller.isCCPayment = freshOpp.CC_Payment__c;
 
+    String ownerEmail = '';
+
+    for (String phrase : companyEmailByUserEmailPhrase.keySet()) {
+      if (
+        UserInfo.getUserEmail().toLowerCase().contains(phrase.toLowerCase())
+      ) {
+        ownerEmail = companyEmailByUserEmailPhrase.get(phrase);
+        break;
+      }
+    }
+
+    if (String.isBlank(ownerEmail)) {
+      throw new PandaDocQuoteException(
+        'Running user must have an email containing "Align", "Slate", or "Palermo" to send a PandaDoc quote.'
+      );
+    }
+
     Map<String, Object> requestBody = new Map<String, Object>{
       'name' => controller.getDocumentName(),
       'template_uuid' => controller.getQuoteTemplateUuid(),
       'recipients' => controller.getRecipients(),
-      'owner' => new Map<String, String>{ 'email' => UserInfo.getUserEmail() },
+      'owner' => new Map<String, String>{ 'email' => ownerEmail },
       'tokens' => controller.getTokens(),
       'metadata' => controller.getMetadata(),
       'pricing_tables' => controller.getPricingItems()
@@ -133,7 +156,9 @@ public class PandaDocQuoteController {
       String attachmentName =
         opp.Division__r.Name.substring(0, 2).toUpperCase() +
         ' - ' +
-        (quoteType == 'estimate' ? 'EST' : 'INV') +
+        (quoteType == 'estimate'
+          ? 'EST'
+          : quoteType == 'proposal' ? 'PRO' : 'INV') +
         ' - ' +
         opp.Name;
       ContentVersion cv = new ContentVersion();
@@ -253,7 +278,8 @@ public class PandaDocQuoteController {
         this.opp.PrimaryContact__r.FirstName,
         this.opp.PrimaryContact__r.LastName,
         'Payer'
-      )
+      ),
+      new PandadocQuoteRecipient(UserInfo.getUserEmail(), '', '', 'Sender')
     };
   }
 

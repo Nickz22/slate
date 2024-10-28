@@ -45,8 +45,9 @@ global without sharing class PandaDocWebhookHandler extends ErrorHandlingAbstrac
     List<PandaDocDocumentChange> changes
   ) {
     for (PandaDocDocumentChange change : changes) {
+      System.debug('change: ' + JSON.serializePretty(change));
       DocumentType thisDocumentType = change.data.template.name.containsIgnoreCase(
-          'Estimate'
+          'Quote'
         )
         ? DocumentType.ESTIMATE
         : change.data.template.name.containsIgnoreCase('Proposal')
