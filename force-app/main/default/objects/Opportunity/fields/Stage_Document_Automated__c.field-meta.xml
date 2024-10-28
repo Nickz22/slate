@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Stage_Document_Automated__c</fullName>
+    <externalId>false</externalId>
+    <inlineHelpText>Stages that are automatically managed by Pandadoc.</inlineHelpText>
+    <label>Stage - Document - Automated</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Quote Sent</fullName>
+                <default>false</default>
+                <label>Quote Sent</label>
+            </value>
+            <value>
+                <fullName>Quote Signed</fullName>
+                <default>false</default>
+                <label>Quote Signed</label>
+            </value>
+            <value>
+                <fullName>Proposal Sent</fullName>
+                <default>false</default>
+                <label>Proposal Sent</label>
+            </value>
+            <value>
+                <fullName>Proposal Signed</fullName>
+                <default>false</default>
+                <label>Proposal Signed</label>
+            </value>
+            <value>
+                <fullName>Invoice Not Sent</fullName>
+                <default>false</default>
+                <label>Invoice Not Sent</label>
+            </value>
+            <value>
+                <fullName>Invoice Sent</fullName>
+                <default>false</default>
+                <label>Invoice Sent</label>
+            </value>
+            <value>
+                <fullName>Invoice Paid</fullName>
+                <default>false</default>
+                <label>Invoice Paid</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

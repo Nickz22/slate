@@ -8,8 +8,15 @@ public class PandaDocQuoteController {
   private PandaDocQuoteType quoteType;
   enum PandaDocQuoteType {
     ESTIMATE,
+    PROPOSAL,
     INVOICE
   }
+
+  private static Map<String, String> companyEmailByUserEmailPhrase = new Map<String, String>{
+    'align' => 'info@align-ny.com',
+    'slate' => 'info@slate-ny.com',
+    'palermo' => 'info@palermo-studio.com'
+  };
 
   private Map<PandaDocQuoteType, Decimal> percentToPayByQuoteType = new Map<PandaDocQuoteType, Decimal>();
 
@@ -21,6 +28,10 @@ public class PandaDocQuoteController {
       .get(0);
     this.percentToPayByQuoteType.put(
       PandaDocQuoteType.ESTIMATE,
+      (this.opp.Required_Deposit__c / 100)
+    );
+    this.percentToPayByQuoteType.put(
+      PandaDocQuoteType.PROPOSAL,
       (this.opp.Required_Deposit__c / 100)
     );
     this.percentToPayByQuoteType.put(
@@ -48,6 +59,11 @@ public class PandaDocQuoteController {
         templateUuid = this.isCCPayment
           ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Estimate_Template_Id__c
           : this.quoteTemplateMapping.Pandadoc_Estimate_Template_Id__c;
+      }
+      when PROPOSAL {
+        templateUuid = this.isCCPayment
+          ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Proposal_Template_Id__c
+          : this.quoteTemplateMapping.Pandadoc_Proposal_Template_Id__c;
       }
       when INVOICE {
         templateUuid = this.isCCPayment
@@ -81,11 +97,28 @@ public class PandaDocQuoteController {
     controller.opp = freshOpp;
     controller.isCCPayment = freshOpp.CC_Payment__c;
 
+    String ownerEmail = '';
+
+    for (String phrase : companyEmailByUserEmailPhrase.keySet()) {
+      if (
+        UserInfo.getUserEmail().toLowerCase().contains(phrase.toLowerCase())
+      ) {
+        ownerEmail = companyEmailByUserEmailPhrase.get(phrase);
+        break;
+      }
+    }
+
+    if (String.isBlank(ownerEmail)) {
+      throw new PandaDocQuoteException(
+        'Running user must have an email containing "Align", "Slate", or "Palermo" to send a PandaDoc quote.'
+      );
+    }
+
     Map<String, Object> requestBody = new Map<String, Object>{
       'name' => controller.getDocumentName(),
       'template_uuid' => controller.getQuoteTemplateUuid(),
       'recipients' => controller.getRecipients(),
-      'owner' => new Map<String, String>{ 'email' => UserInfo.getUserEmail() },
+      'owner' => new Map<String, String>{ 'email' => ownerEmail },
       'tokens' => controller.getTokens(),
       'metadata' => controller.getMetadata(),
       'pricing_tables' => controller.getPricingItems()
@@ -123,7 +156,9 @@ public class PandaDocQuoteController {
       String attachmentName =
         opp.Division__r.Name.substring(0, 2).toUpperCase() +
         ' - ' +
-        (quoteType == 'estimate' ? 'EST' : 'INV') +
+        (quoteType == 'estimate'
+          ? 'EST'
+          : quoteType == 'proposal' ? 'PRO' : 'INV') +
         ' - ' +
         opp.Name;
       ContentVersion cv = new ContentVersion();
@@ -243,7 +278,8 @@ public class PandaDocQuoteController {
         this.opp.PrimaryContact__r.FirstName,
         this.opp.PrimaryContact__r.LastName,
         'Payer'
-      )
+      ),
+      new PandadocQuoteRecipient(UserInfo.getUserEmail(), '', '', 'Sender')
     };
   }
 

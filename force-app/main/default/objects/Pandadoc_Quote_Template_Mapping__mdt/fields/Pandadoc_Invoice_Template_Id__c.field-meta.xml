@@ -3,7 +3,7 @@
     <fullName>Pandadoc_Invoice_Template_Id__c</fullName>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <inlineHelpText>The Pandadoc template Id to use for invoice generation</inlineHelpText>
+    <inlineHelpText>The Pandadoc template Id to use for final invoice generation.</inlineHelpText>
     <label>Pandadoc Invoice Template Id</label>
     <length>255</length>
     <required>false</required>
