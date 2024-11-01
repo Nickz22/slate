@@ -116,15 +116,18 @@ public class PandaDocQuoteController {
 
     Map<String, Object> requestBody = new Map<String, Object>{
       'name' => controller.getDocumentName(),
-      'template_uuid' => controller.getQuoteTemplateUuid(),
+      'template_uuid' => controller.getQuoteTemplateUuid(), 
       'recipients' => controller.getRecipients(),
       'owner' => new Map<String, String>{ 'email' => ownerEmail },
       'tokens' => controller.getTokens(),
       'metadata' => controller.getMetadata(),
-      'pricing_tables' => controller.getPricingItems()
+      'pricing_tables' => controller.getPricingItems(),
+      'payment' => new Map<String, Object>{ 'custom_amount' => 12345.00 }
     };
+    System.debug('PandaDoc Request Body: ' + JSON.serializePretty(requestBody));
 
     try {
+        
       return PandadocApi.createDocument(requestBody);
     } catch (PandadocApi.PandaDocException e) {
       throw new AuraHandledException(e.getMessage());
@@ -194,9 +197,9 @@ public class PandaDocQuoteController {
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c *
       this.percentToPayByQuoteType.get(this.quoteType);
-    Decimal amount =
-      this.opp.Invoice_Amount__c *
-      this.percentToPayByQuoteType.get(this.quoteType);
+    Decimal deposit =
+      (this.opp.Required_Deposit__c / 100) * this.opp.Invoice_Amount__c;
+    Decimal balance = this.opp.Invoice_Amount__c - deposit;
     Decimal ccfee =
       this.opp.CC_Fee_invoice__c *
       this.percentToPayByQuoteType.get(this.quoteType);
@@ -225,7 +228,8 @@ public class PandaDocQuoteController {
       ),
       new PandaDocQuoteToken('INVOICE_NUMBER', this.opp.InvoiceNumber__c),
       new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
-      new PandaDocQuoteToken('QUOTE_TOTAL', formatCurrency(amount)),
+      new PandaDocQuoteToken('QUOTE_DEPOSIT', formatCurrency(deposit)),
+      new PandaDocQuoteToken('QUOTE_BALANCE', formatCurrency(balance)),
       new PandaDocQuoteToken('CC_FEE', formatCurrency(ccfee)),
       new PandaDocQuoteToken(
         'SHOOT_DATE',
@@ -287,6 +291,13 @@ public class PandaDocQuoteController {
     Map<String, Object> table = new Map<String, Object>{
       'name' => PRICING_TABLE_NAME,
       'data_merge' => true,
+      'options' => new Map<String, Object>{
+        'Discount' => new Map<String, Object>{
+          'type' => 'absolute',
+          'name' => 'Global Discount',
+          'value' => 50
+        }
+      },
       'sections' => new List<Map<String, Object>>{
         new Map<String, Object>{
           'title' => 'Products and Services',
@@ -328,6 +339,8 @@ public class PandaDocQuoteController {
           'Quantity' => qli.SBQQ__Quantity__c,
           'QTY' => 1, // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'Price' => qli.SBQQ__CustomerTotal__c,
+          'SBQQ__CustomerTotal__c' => (qli.SBQQ__CustomerTotal__c *
+          this.percentToPayByQuoteType.get(this.quoteType)),
           'Days_Required__c' => qli.SBQQ__SubscriptionTerm__c ?? 0
         }
       };

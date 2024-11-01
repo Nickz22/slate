@@ -2,51 +2,56 @@
 private class PandaDocQuoteControllerTest {
   @TestSetup
   static void setupTestData() {
-    // Create test Divisions
-    List<Division__c> divisions = new List<Division__c>{
-      new Division__c(Name = 'Slate'),
-      new Division__c(Name = 'Palermo'),
-      new Division__c(Name = 'Align')
-    };
-    insert divisions;
+    User u = new User(Id = UserInfo.getUserId(), Email = 'test@slate.com');
+    update u;
 
-    // Create test Accounts
-    List<Account> accounts = new List<Account>();
-    for (Integer i = 0; i < 3; i++) {
-      accounts.add(new Account(Name = 'Test Account ' + i));
-    }
-    insert accounts;
+    System.runAs(u) {
+      // Create test Divisions
+      List<Division__c> divisions = new List<Division__c>{
+        new Division__c(Name = 'Slate'),
+        new Division__c(Name = 'Palermo'),
+        new Division__c(Name = 'Align')
+      };
+      insert divisions;
 
-    // Create test Contacts
-    List<Contact> contacts = new List<Contact>();
-    for (Integer i = 0; i < 3; i++) {
-      contacts.add(
-        new Contact(
-          FirstName = 'Test',
-          LastName = 'Contact ' + i,
-          AccountId = accounts[i].Id,
-          Email = 'test' + i + '@example.com'
-        )
-      );
-    }
-    insert contacts;
+      // Create test Accounts
+      List<Account> accounts = new List<Account>();
+      for (Integer i = 0; i < 3; i++) {
+        accounts.add(new Account(Name = 'Test Account ' + i));
+      }
+      insert accounts;
 
-    // Create test Opportunities
-    List<Opportunity> opportunities = new List<Opportunity>();
-    for (Integer i = 0; i < 3; i++) {
-      opportunities.add(
-        new Opportunity(
-          Name = 'Test Opportunity ' + divisions[i].Name,
-          AccountId = accounts[i].Id,
-          PrimaryContact__c = contacts[i].Id,
-          Division__c = divisions[i].Id,
-          StageName = 'Prospecting',
-          CloseDate = Date.today().addDays(30),
-          Lead_Type__c = 'Slate - CGI'
-        )
-      );
+      // Create test Contacts
+      List<Contact> contacts = new List<Contact>();
+      for (Integer i = 0; i < 3; i++) {
+        contacts.add(
+          new Contact(
+            FirstName = 'Test',
+            LastName = 'Contact ' + i,
+            AccountId = accounts[i].Id,
+            Email = 'test' + i + '@example.com'
+          )
+        );
+      }
+      insert contacts;
+
+      // Create test Opportunities
+      List<Opportunity> opportunities = new List<Opportunity>();
+      for (Integer i = 0; i < 3; i++) {
+        opportunities.add(
+          new Opportunity(
+            Name = 'Test Opportunity ' + divisions[i].Name,
+            AccountId = accounts[i].Id,
+            PrimaryContact__c = contacts[i].Id,
+            Division__c = divisions[i].Id,
+            StageName = 'Prospecting',
+            CloseDate = Date.today().addDays(30),
+            Lead_Type__c = 'Slate - CGI'
+          )
+        );
+      }
+      insert opportunities;
     }
-    insert opportunities;
   }
 
   @isTest
