@@ -109,8 +109,15 @@ export default class PandaDocQuoteCreator extends LightningElement {
 
       if (result && result.status === "document.draft") {
         clearInterval(this.pollingInterval);
-        this.showPreview(result.id);
+        this.statusMessage = "Quote generated successfully, attaching to Opportunity";
+        const attachResult = await this.attachDocumentToOpportunity(result.id);
+        if (attachResult === 200) {
+          this.statusMessage = "Success! Opening Quote in PandaDoc.";
+          this.isLoading = false;
+          setTimeout(() => this.showPreview(result.id), 1250);
+        }
       } else if (result && result.status === "error") {
+        clearInterval(this.pollingInterval);
         throw new Error("An error occurred while generating the quote.");
       }
     } catch (error) {
@@ -119,10 +126,7 @@ export default class PandaDocQuoteCreator extends LightningElement {
     }
   }
 
-  async showPreview(documentId) {
-    const previewUrl = `https://app.pandadoc.com/a/#/documents/${documentId}`;
-    window.open(previewUrl, "_blank");
-
+  async attachDocumentToOpportunity(documentId) {
     try {
       await attachDocumentToOpportunity({
         opportunityId: this.recordId,
@@ -130,13 +134,16 @@ export default class PandaDocQuoteCreator extends LightningElement {
         documentName: `PandaDoc Quote - ${this.recordId}`,
         quoteType: this.quoteType
       });
-      this.statusMessage =
-        "A copy of the Quote has been attached to the Opportunity, you may close this screen.";
-      this.isLoading = false;
-      clearInterval(this.dotInterval);
+      return 200;
     } catch (error) {
       this.handleError(error);
+      return 500;
     }
+  }
+
+  async showPreview(documentId) {
+    const previewUrl = `https://app.pandadoc.com/a/#/documents/${documentId}`;
+    window.open(previewUrl, "_blank");
   }
 
   showToast(title, message, variant) {
