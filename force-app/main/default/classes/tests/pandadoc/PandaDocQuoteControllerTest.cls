@@ -2,7 +2,11 @@
 private class PandaDocQuoteControllerTest {
   @TestSetup
   static void setupTestData() {
-    User u = new User(Id = UserInfo.getUserId(), Email = 'test@slate.com');
+    User u = new User(
+      Id = UserInfo.getUserId(),
+      Email = 'test@slate.com',
+      Username = 'test@slate.com'
+    );
     update u;
 
     System.runAs(u) {

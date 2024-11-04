@@ -28,10 +28,6 @@
                 <field>Opportunity_Descriptor__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>Pandadoc_Quote_Template_Id__c</field>
-            </layoutItems>
-            <layoutItems>
                 <behavior>Edit</behavior>
                 <field>Division_Name__c</field>
             </layoutItems>

@@ -1,5 +1,6 @@
 public with sharing class PandadocApi {
-  private static final String API_KEY = '89384b2c4a6656a6457776748557bde540ed2a71';
+  //   private static final String SANDBOX_API_KEY = '89384b2c4a6656a6457776748557bde540ed2a71';
+  private static final String PRODUCTION_API_KEY = '14546b655c1076dd61665887c9ebe5dfb702254c';
   private static final String ENDPOINT = 'https://api.pandadoc.com/public/v1/documents';
 
   public class PandaDocException extends Exception {
@@ -12,7 +13,7 @@ public with sharing class PandadocApi {
     req.setEndpoint(ENDPOINT);
     req.setMethod('POST');
     req.setHeader('Content-Type', 'application/json');
-    req.setHeader('Authorization', 'API-Key ' + API_KEY);
+    req.setHeader('Authorization', 'API-Key ' + PRODUCTION_API_KEY);
     req.setBody(JSON.serialize(requestBody));
 
     Http http = new Http();
@@ -29,7 +30,7 @@ public with sharing class PandadocApi {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(statusUrl);
     req.setMethod('GET');
-    req.setHeader('Authorization', 'API-Key ' + API_KEY);
+    req.setHeader('Authorization', 'API-Key ' + PRODUCTION_API_KEY);
 
     Http http = new Http();
     HttpResponse res = http.send(req);
@@ -73,9 +74,8 @@ public with sharing class PandadocApi {
     };
   }
 
-  @TestVisible private static String constructErrorMessage(
-    HttpResponse res
-  ) {
+  @TestVisible
+  private static String constructErrorMessage(HttpResponse res) {
     String errorMessage =
       'Failed to create PandaDoc quote. Status: ' + res.getStatus();
     errorMessage += '\nStatus Code: ' + res.getStatusCode();
@@ -105,7 +105,8 @@ public with sharing class PandadocApi {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(endpoint);
     req.setMethod('GET');
-    req.setHeader('Authorization', 'API-Key ' + API_KEY);
+    req.setHeader('Authorization', 'API-Key ' + PRODUCTION_API_KEY);
+    req.setTimeout(120000);
 
     Http http = new Http();
     HttpResponse res = http.send(req);

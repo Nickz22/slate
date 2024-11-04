@@ -3,6 +3,21 @@ private class PandaDocWebhookHandlerTest {
   private static final String ACCOUNT_NAME = 'Test Account';
   private static final String CONTACT_EMAIL = 'test@example.com';
 
+  private static User testAdminUser {
+    get {
+      if (testAdminUser == null) {
+        testAdminUser = [
+          SELECT Id
+          FROM User
+          WHERE Profile.Name = 'System Administrator' AND IsActive = TRUE
+          LIMIT 1
+        ];
+      }
+      return testAdminUser;
+    }
+    set;
+  }
+
   @TestSetup
   static void setupTestData() {
     Division__c slateDivision = new Division__c(
@@ -323,73 +338,103 @@ private class PandaDocWebhookHandlerTest {
 
   @isTest
   static void testProposalSigned_Palermo() {
-    Opportunity opp = [
-      SELECT Stage_Document_Automated__c, StageName
-      FROM Opportunity
-    ];
+    Id palermoPermissionSetId = [
+      SELECT Id
+      FROM PermissionSet
+      WHERE Name = 'Palermo_User'
+      LIMIT 1
+    ]
+    .Id;
 
-    Test.startTest();
-
-    new PandaDocWebhookHandler()
-      .syncDocumentStatusToOpportunityStage(
-        new List<PandaDocDocumentChange>{
-          createDocumentChange_Proposal(
-            'document_state_changed',
-            PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
-            opp.Id
-          )
-        }
-      );
-    Test.stopTest();
-
-    opp = [
-      SELECT Stage_Document_Automated__c, StageName
-      FROM Opportunity
-      WHERE Id = :opp.Id
-      WITH USER_MODE
-    ];
-
-    Assert.areEqual(
-      'Proposal Signed',
-      opp.Stage_Document_Automated__c,
-      'The Stage_Document_Automated__c should be "Proposal Signed"!'
+    insert new PermissionSetAssignment(
+      AssigneeId = testAdminUser.Id,
+      PermissionSetId = palermoPermissionSetId
     );
+
+    System.runAs(testAdminUser) {
+      Opportunity opp = [
+        SELECT Stage_Document_Automated__c, StageName
+        FROM Opportunity
+      ];
+
+      Test.startTest();
+
+      new PandaDocWebhookHandler()
+        .syncDocumentStatusToOpportunityStage(
+          new List<PandaDocDocumentChange>{
+            createDocumentChange_Proposal(
+              'document_state_changed',
+              PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
+              opp.Id
+            )
+          }
+        );
+      Test.stopTest();
+
+      opp = [
+        SELECT Stage_Document_Automated__c, StageName
+        FROM Opportunity
+        WHERE Id = :opp.Id
+        WITH USER_MODE
+      ];
+
+      Assert.areEqual(
+        'Proposal Signed',
+        opp.Stage_Document_Automated__c,
+        'The Stage_Document_Automated__c should be "Proposal Signed"!'
+      );
+    }
   }
 
   @isTest
   static void testInvoiceSigned_Slate() {
-    Opportunity opp = [
-      SELECT Id, Division__c
-      FROM Opportunity
+    Id palermoPermissionSetId = [
+      SELECT Id
+      FROM PermissionSet
+      WHERE Name = 'Palermo_User'
       LIMIT 1
-    ];
+    ]
+    .Id;
 
-    Test.startTest();
-
-    new PandaDocWebhookHandler()
-      .syncDocumentStatusToOpportunityStage(
-        new List<PandaDocDocumentChange>{
-          createDocumentChange_Invoice(
-            'document_state_changed',
-            PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
-            opp.Id
-          )
-        }
-      );
-    Test.stopTest();
-
-    opp = [
-      SELECT Stage_Document_Automated__c, StageName
-      FROM Opportunity
-      WHERE Id = :opp.Id
-      WITH USER_MODE
-    ];
-
-    Assert.areEqual(
-      'Invoice Paid',
-      opp.Stage_Document_Automated__c,
-      'The Stage_Document_Automated__c should be "Invoice Signed".'
+    insert new PermissionSetAssignment(
+      AssigneeId = testAdminUser.Id,
+      PermissionSetId = palermoPermissionSetId
     );
+
+    System.runAs(testAdminUser) {
+      Opportunity opp = [
+        SELECT Id, Division__c
+        FROM Opportunity
+        LIMIT 1
+      ];
+
+      Test.startTest();
+
+      new PandaDocWebhookHandler()
+        .syncDocumentStatusToOpportunityStage(
+          new List<PandaDocDocumentChange>{
+            createDocumentChange_Invoice(
+              'document_state_changed',
+              PandaDocWebhookHandler.DOCUMENT_COMPLETED_STATUS,
+              opp.Id
+            )
+          }
+        );
+      Test.stopTest();
+
+      opp = [
+        SELECT Stage_Document_Automated__c, StageName
+        FROM Opportunity
+        WHERE Id = :opp.Id
+        WITH USER_MODE
+      ];
+
+      Assert.areEqual(
+        'Invoice Paid',
+        opp.Stage_Document_Automated__c,
+        'The Stage_Document_Automated__c should be "Invoice Signed".'
+      );
+    }
   }
 
   @isTest
@@ -441,7 +486,7 @@ private class PandaDocWebhookHandlerTest {
     change.data.metadata = new PandaDocDocumentChange.Metadata();
     change.data.metadata.salesforce_opportunity_id = opportunityId;
     change.data.template = new PandaDocDocumentChange.Template();
-    change.data.template.name = 'Test Estimate';
+    change.data.template.name = 'Test Quote';
     return change;
   }
 
