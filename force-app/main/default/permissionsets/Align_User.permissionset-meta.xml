@@ -107,6 +107,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Opportunity.Required_Deposit__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Opportunity.Stage_Document_Automated__c</field>
         <readable>true</readable>
     </fieldPermissions>
