@@ -1,0 +1,10 @@
+.account-name:hover {
+  background-color: #bbb9b9;
+  transition: background-color 0.2s ease;
+}
+
+.account-name {
+  display: flex;
+  align-items: center;
+  min-height: 2.5rem;
+}

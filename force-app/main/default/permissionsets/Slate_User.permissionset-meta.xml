@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <applicationVisibilities>
-        <application>Align</application>
+        <application>Palermo</application>
         <visible>true</visible>
     </applicationVisibilities>
     <classAccesses>
@@ -82,9 +82,14 @@
     </customMetadataTypeAccesses>
     <customPermissions>
         <enabled>true</enabled>
-        <name>Align_Home</name>
+        <name>Palermo_Home</name>
     </customPermissions>
-    <description>Assign to users who need to see Align data and applications</description>
+    <description>Assign to users who need to see Palermo data and applications</description>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Account.Website</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Contact.AccountId</field>
@@ -1086,7 +1091,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
-    <label>Align User</label>
+    <label>Slate User</label>
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>

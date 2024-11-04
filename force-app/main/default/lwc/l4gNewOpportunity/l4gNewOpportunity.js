@@ -133,7 +133,28 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       serviceType: leadType,
       accountId: fields.AccountId
     });
-    fields.Division__c = this.divisions[0].Id;
+    if (!leadType) {
+      this.handleError({
+        detail: { detail: "Lead Type is required" }
+      });
+      return;
+    }
+    const divisionPrepensionInServiceType = leadType
+      ?.toLowerCase()
+      ?.includes("align")
+      ? "align"
+      : leadType?.toLowerCase()?.includes("slate")
+        ? "slate"
+        : leadType?.toLowerCase()?.includes("palermo")
+          ? "palermo"
+          : null;
+    const divisionId =
+      divisionPrepensionInServiceType &&
+      this.divisions.find(
+        (division) =>
+          division.Name.toLowerCase() === divisionPrepensionInServiceType
+      )?.Id;
+    fields.Division__c = divisionId;
     this.template.querySelector("lightning-record-edit-form").submit(fields);
     this.showSpinner = true;
   }

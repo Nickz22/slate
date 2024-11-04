@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Slate - Estimate Template</label>
+    <protected>false</protected>
+    <values>
+        <field>DocumentId__c</field>
+        <value xsi:type="xsd:string">bPCHXsNhNPyJnsEY5szNvT</value>
+    </values>
+    <values>
+        <field>TemplateName__c</field>
+        <value xsi:type="xsd:string">Template - Slate - Estimate - Client Agreement - Terms &amp; Conditions Copy</value>
+    </values>
+</CustomMetadata>

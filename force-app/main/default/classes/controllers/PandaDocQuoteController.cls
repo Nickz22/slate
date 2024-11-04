@@ -101,7 +101,7 @@ public class PandaDocQuoteController {
 
     for (String phrase : companyEmailByUserEmailPhrase.keySet()) {
       if (
-        UserInfo.getUserEmail().toLowerCase().contains(phrase.toLowerCase())
+        UserInfo.getUserName().toLowerCase().contains(phrase.toLowerCase())
       ) {
         ownerEmail = companyEmailByUserEmailPhrase.get(phrase);
         break;
