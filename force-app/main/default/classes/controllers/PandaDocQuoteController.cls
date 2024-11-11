@@ -12,6 +12,16 @@ public class PandaDocQuoteController {
     INVOICE
   }
 
+  private String quoteTypeShort {
+    get {
+      return this.quoteType == PandaDocQuoteType.ESTIMATE
+        ? 'EST'
+        : this.quoteType == PandaDocQuoteType.PROPOSAL
+            ? 'PRO'
+            : this.quoteType == PandaDocQuoteType.INVOICE ? 'INV' : '';
+    }
+  }
+
   private static Map<String, String> companyEmailByUserEmailPhrase = new Map<String, String>{
     'align' => 'info@align-ny.com',
     'slate' => 'info@slate-nyc.com',
@@ -100,9 +110,7 @@ public class PandaDocQuoteController {
     String ownerEmail = '';
 
     for (String phrase : companyEmailByUserEmailPhrase.keySet()) {
-      if (
-        UserInfo.getUserName().toLowerCase().contains(phrase.toLowerCase())
-      ) {
+      if (UserInfo.getUserName().toLowerCase().contains(phrase.toLowerCase())) {
         ownerEmail = companyEmailByUserEmailPhrase.get(phrase);
         break;
       }
@@ -116,7 +124,7 @@ public class PandaDocQuoteController {
 
     Map<String, Object> requestBody = new Map<String, Object>{
       'name' => controller.getDocumentName(),
-      'template_uuid' => controller.getQuoteTemplateUuid(), 
+      'template_uuid' => controller.getQuoteTemplateUuid(),
       'recipients' => controller.getRecipients(),
       'owner' => new Map<String, String>{ 'email' => ownerEmail },
       'tokens' => controller.getTokens(),
@@ -127,7 +135,6 @@ public class PandaDocQuoteController {
     System.debug('PandaDoc Request Body: ' + JSON.serializePretty(requestBody));
 
     try {
-        
       return PandadocApi.createDocument(requestBody);
     } catch (PandadocApi.PandaDocException e) {
       throw new AuraHandledException(e.getMessage());
@@ -190,7 +197,7 @@ public class PandaDocQuoteController {
 
   // helpers
   private String getDocumentName() {
-    return this.opp.Name;
+    return this.opp.Name + '-' + this.quoteTypeShort;
   }
 
   private List<PandaDocQuoteToken> getTokens() {

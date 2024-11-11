@@ -4,15 +4,6 @@
     <deleteConstraint>SetNull</deleteConstraint>
     <externalId>false</externalId>
     <label>Contact</label>
-    <lookupFilter>
-        <active>true</active>
-        <filterItems>
-            <field>$Source.Lead_Type__c</field>
-            <operation>equals</operation>
-            <valueField>Contact.Service_Type__c</valueField>
-        </filterItems>
-        <isOptional>false</isOptional>
-    </lookupFilter>
     <referenceTo>Contact</referenceTo>
     <relationshipLabel>Quote Lines</relationshipLabel>
     <relationshipName>Quote_Lines</relationshipName>
