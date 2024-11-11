@@ -139,21 +139,36 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       });
       return;
     }
-    const divisionPrepensionInServiceType = leadType
+    const fullServiceType = this.serviceTypeOptions?.find((option) =>
+      option.value.includes(leadType)
+    )?.label;
+    const divisionPrepensionInServiceType = fullServiceType
       ?.toLowerCase()
       ?.includes("align")
       ? "align"
-      : leadType?.toLowerCase()?.includes("slate")
+      : fullServiceType?.toLowerCase()?.includes("slate")
         ? "slate"
-        : leadType?.toLowerCase()?.includes("palermo")
+        : fullServiceType?.toLowerCase()?.includes("palermo")
           ? "palermo"
           : null;
+    if (!divisionPrepensionInServiceType) {
+      this.handleError({
+        detail: { detail: "Division prepension in service type not found" }
+      });
+      return;
+    }
     const divisionId =
       divisionPrepensionInServiceType &&
       this.divisions.find(
         (division) =>
           division.Name.toLowerCase() === divisionPrepensionInServiceType
       )?.Id;
+    if (!divisionId) {
+      this.handleError({
+        detail: { detail: "Division ID not found" }
+      });
+      return;
+    }
     fields.Division__c = divisionId;
     this.template.querySelector("lightning-record-edit-form").submit(fields);
     this.showSpinner = true;

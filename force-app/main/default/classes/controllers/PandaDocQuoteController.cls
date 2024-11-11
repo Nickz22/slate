@@ -14,7 +14,7 @@ public class PandaDocQuoteController {
 
   private static Map<String, String> companyEmailByUserEmailPhrase = new Map<String, String>{
     'align' => 'info@align-ny.com',
-    'slate' => 'info@slate-ny.com',
+    'slate' => 'info@slate-nyc.com',
     'palermo' => 'info@palermo-studio.com'
   };
 
