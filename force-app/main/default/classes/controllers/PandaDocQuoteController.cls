@@ -208,7 +208,7 @@ public class PandaDocQuoteController {
         'OPPORTUNITY_DESCRIPTION',
         this.opp.Upper_Descriptor__c
       ),
-      new PandaDocQuoteToken('ESTIMATE', this.opp.InvoiceNumber__c),
+      new PandaDocQuoteToken('ESTIMATE', opp.Division__r.Name.substring(0, 2).toUpperCase() + '-'+this.opp.InvoiceNumber__c),
       new PandaDocQuoteToken(
         'DUE_DATE',
         DateTime.newInstance(
