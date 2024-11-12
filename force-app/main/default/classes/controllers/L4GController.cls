@@ -123,7 +123,7 @@ public class L4GController {
     return null;
   }
   @AuraEnabled
-  public static Id cloneRecord(Id recordId, String emailContent) {
+  public static Id cloneRecord(Id recordId, Map<String, Object> opportunityData) {
     List<String> fields = new List<String>(
       Opportunity.SObjectType.getDescribe().fields.getMap().keySet()
     );
@@ -138,8 +138,15 @@ public class L4GController {
     List<Opportunity> originalRecord = Database.query(soql);
     Opportunity clonedRecord = originalRecord[0]
       ?.clone(false, true, false, false);
-    clonedRecord.CloseDate = Date.today();
-    clonedRecord.Additional_Info__c = emailContent;
+      for(String field : opportunityData.keySet()){
+          if(field.containsIgnoreCase('date') && opportunityData.get(field) != null){
+              clonedRecord.put(field,Date.valueOf((String)opportunityData.get(field)));
+          }else{
+              clonedRecord.put(field, opportunityData.get(field));
+          }
+      }
+    //clonedRecord.CloseDate = Date.today();
+    clonedRecord.Invoice_Due_Date_Override__c = null;
     clonedRecord.Name = clonedRecord.Name + ' ' + Datetime.now().format('MM/dd/yyyy');
     List<OpportunityContactRole> existingOCRs = [
       SELECT Id, OpportunityId, ContactId, Role, IsPrimary
@@ -236,6 +243,8 @@ public class L4GController {
         StageName,
         CloseDate,
         SBQQ__PrimaryQuote__r.Name,
+        Division__r.Name,
+        toLabel(Lead_Type__c),
         Opportunity_Descriptor__c
       FROM Opportunity
       WHERE PrimaryContact__c = :contactId

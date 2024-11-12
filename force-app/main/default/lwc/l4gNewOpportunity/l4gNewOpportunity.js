@@ -8,6 +8,7 @@ import STAGENAME from "@salesforce/schema/Opportunity.StageName";
 import { getRecord } from "lightning/uiRecordApi";
 import getPricebook from "@salesforce/apex/L4GController.getPricebook";
 import getOpportunityName from "@salesforce/apex/L4GController.getOpportunityName";
+import cloneRecord from "@salesforce/apex/L4GController.cloneRecord";
 
 const FIELDS = ["Contact.AccountId"];
 
@@ -15,6 +16,8 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   @api initialInquiry;
   @api objectName;
   @api contactId;
+  @api recordId;
+  @api isCloned = false;
   @api isLightningForGmail = false;
   // only populated when used in the Opportunity New Override
   @api givenAccountId;
@@ -25,10 +28,16 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     this._allServiceOptions = value;
     this.getDivisions();
   }
+  get isNotOfAlignType(){
+    return !(this.serviceType?.toLowerCase().includes('align') || (this.divisionNames?.length === 1 && this.divisionNames?.indexOf('Align') !== -1));
+  }
   @track serviceTypeOptions;
   @track stageOptions;
   _allServiceOptions;
+  _closeDate;
   defaultStage = "Qualification - Project";
+  defaultServiceType;
+  defaultLeadSource;
   opportunityId;
   get accountId() {
     return this.givenAccountId || this._accountId;
@@ -38,6 +47,8 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   }
   priceBookId;
   showSpinner = true;
+  serviceType;
+
 
   connectedCallback() {
     this.getDivisions();
@@ -70,9 +81,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     if (data) {
       const stageToExclude = [
         "Closed Won",
-        "Closed Lost",
-        "Proposal",
-        "Negotiation"
+        "Closed Lost"
       ];
       this.stageOptions = data?.values?.filter((val) => {
         return !stageToExclude.includes(val.value);
@@ -81,20 +90,40 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   }
 
   get header() {
-    return `Create ${this.objectName}`;
+    return this.isCloned ? `Clone ${this.objectName}`:`Create ${this.objectName}`;
   }
-
+  set closeDate(value){
+    this._closeDate = value;
+  }
   get closeDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = this.divisionNames?.includes("Slate")
-      ? String(new Date(year, month, 0).getDate()).padStart(2, "0") // Last day of the month
-      : String(today.getDate()).padStart(2, "0"); // Today's date
-
-    return `${year}-${month}-${day}`;
+    if(this._closeDate){
+      return this._closeDate;
+    }
+    else{
+      return this.getCloseDate();
+    }  
   }
-
+  handleLoad(event) {
+    if(this.isCloned){
+      const inputFieldValue = event.detail?.records[this.recordId]?.fields?.Lead_Type__c?.value;
+      this.defaultServiceType = inputFieldValue;
+      this.handleCloseDateChange(this.defaultServiceType);
+      const leadSource = this.template.querySelector('lightning-input-field[data-field="LeadSource"]');
+      leadSource.value = 'Return Client';
+      const initialInquiry = this.template.querySelector('lightning-input-field[data-field="initialInquiry"]');
+      initialInquiry.value = this.initialInquiry;
+    }
+}
+  handleServiceTypeChange(event){
+    this.handleCloseDateChange(event.target.value);
+  }
+  handleCloseDateChange(value){
+    const selectedOption = this.allServiceOptions.find(option => option.value === value);
+      if (selectedOption) {
+        this.serviceType = selectedOption.label;
+      }
+    this.closeDate = this.getCloseDate();
+  }
   handleSuccess(event) {
     this.showSpinner = false;
     this.opportunityId = event.detail.id;
@@ -133,6 +162,8 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       serviceType: leadType,
       accountId: fields.AccountId
     });
+    if(!this.isNotOfAlignType) fields.CloseDate = this.closeDate;
+    this.showSpinner = true;
     if (!leadType) {
       this.handleError({
         detail: { detail: "Lead Type is required" }
@@ -155,15 +186,38 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
           division.Name.toLowerCase() === divisionPrepensionInServiceType
       )?.Id;
     fields.Division__c = divisionId;
+    if(this.isCloned){
+      this.cloneOpportunity(this.recordId, fields);
+      return;
+    }
     this.template.querySelector("lightning-record-edit-form").submit(fields);
-    this.showSpinner = true;
   }
 
+  cloneOpportunity(recordId, fields){
+    cloneRecord({ recordId: recordId, opportunityData: fields })
+      .then((data) => {
+        this.showSpinner = false;
+        this.close(data);
+      })
+      .catch((error) => {
+        this.error = error;
+        console.error("Error cloning record:", error);
+      });
+  }
   handleError(event) {
     console.error(event?.detail?.detail);
     this.showSpinner = false;
   }
+  getCloseDate(serviceType){
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = this.serviceType?.includes("Slate")
+      ? String(new Date(year, month, 0).getDate()).padStart(2, "0") // Last day of the month
+      : String(today.getDate()).padStart(2, "0"); // Today's date
 
+    return `${year}-${month}-${day}`;
+  }
   async getDivisions() {
     this.divisions = await getDivisions();
     this.divisionNames = this.divisions.map((division) => division.Name);

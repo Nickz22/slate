@@ -1,0 +1,89 @@
+<template>
+    <template lwc:if={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="x-small"></lightning-spinner>
+    </template>
+    <div>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col">
+                        <div class="slds-truncate" title="Name">Name</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate" title="Stage">Stage</div>
+                    </th>
+                    <th scope="col" class="slds-text-align_right">
+                        <div class="slds-truncate" title="Actions">Actions</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={relatedRecords} for:item="record">
+                    <tr key={record.Id}>
+                        <td>
+                            <div class="slds-truncate slds-line-clamp" style="max-width: 200px;">
+                                <template if:true={record.isEditable}>
+                                    <!-- Apply truncate for editable input -->
+                                    <lightning-input
+                                        value={record.Name}
+                                        data-id={record.Id}
+                                        data-field="Name"
+                                        onchange={handleInputChange}
+                                        type="text"
+                                        class="slds-truncate" style="padding:0px;margin-top:-10px;">
+                                    </lightning-input>
+                                </template>
+                                <template if:false={record.isEditable}>
+                                    <a href={record.url} target="_blank" title={record.tooltipText} class="custom-link">
+                                        {record.Name}
+                                    </a>
+                                </template>
+                            </div>
+                        </td>
+                        <td>
+                            <!-- <div class="slds-dropdown-trigger slds-dropdown-trigger_click slds-line-clamp" style="max-width: 200px;"> -->
+                                <template if:true={record.isEditable}>
+                                    <!-- Apply truncate for editable combobox -->
+                                    <div class="slds-dropdown-trigger slds-dropdown-trigger_click" style="padding:0px;width:12vh;">
+                                    <lightning-combobox
+                                        value={record.StageName}
+                                        data-id={record.Id}
+                                        data-field="StageName"
+                                        onchange={handleInputChange}
+                                        options={stageOptions}
+                                        class="custom-combobox" style="margin-top:-10px;">
+                                    </lightning-combobox>
+                                    </div>
+                                </template>
+                                <template if:false={record.isEditable}>
+                                    <div class="slds-line-clamp">
+                                        {record.StageName}
+                                    </div>
+                                </template>
+                            <!-- </div> -->
+                        </td>
+                        <td class="slds-text-align_right">
+                            <template if:true={record.isEditable}>
+                                <lightning-button-icon icon-name="utility:check" alternative-text="Save"
+                                    onclick={saveRow} class="slds-m-right_x-small">
+                                </lightning-button-icon>
+                                <lightning-button-icon icon-name="utility:close" alternative-text="Cancel"
+                                    onclick={cancelEdit}>
+                                </lightning-button-icon>
+                            </template>
+                            <template if:false={record.isEditable}>
+                                <!-- Replace Actions with Edit and Clone icons -->
+                                <lightning-button-icon data-id={record.Id} icon-name="action:edit" alternative-text="Edit"
+                                    onclick={handleRowAction} title="Edit" class="slds-m-right_x-small">
+                                </lightning-button-icon>
+                                <lightning-button-icon data-id={record.Id} icon-name="action:clone" alternative-text="Clone"
+                                    onclick={handleRowAction} title="Clone">
+                                </lightning-button-icon>
+                            </template>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</template>

@@ -22,7 +22,8 @@ public with sharing class OpportunitySelector {
               PrimaryContact__r.Email,
               PrimaryContact__r.FirstName,
               PrimaryContact__r.LastName,
-              Invoice_Amount__c
+        Invoice_Amount__c,
+        CreatedDate
             FROM Opportunity
             WHERE Id IN :ids
         ];

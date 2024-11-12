@@ -98,15 +98,8 @@ public class PandaDocQuoteController {
     controller.isCCPayment = freshOpp.CC_Payment__c;
 
     String ownerEmail = '';
-
-    for (String phrase : companyEmailByUserEmailPhrase.keySet()) {
-      if (
-        UserInfo.getUserName().toLowerCase().contains(phrase.toLowerCase())
-      ) {
-        ownerEmail = companyEmailByUserEmailPhrase.get(phrase);
-        break;
-      }
-    }
+      String divisionName = freshOpp.Division__r.Name.toLowerCase();
+      ownerEmail = companyEmailByUserEmailPhrase.get(divisionName);
 
     if (String.isBlank(ownerEmail)) {
       throw new PandaDocQuoteException(
@@ -156,14 +149,19 @@ public class PandaDocQuoteController {
       Opportunity opp = new OpportunitySelector()
         .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
         .get(0);
-      String attachmentName =
-        opp.Division__r.Name.substring(0, 2).toUpperCase() +
-        ' - ' +
+        DateTime createdDate = opp.CreatedDate;
+        String month = createdDate.month() < 10 ? '0' + createdDate.month() : String.valueOf(createdDate.month());
+        String day = createdDate.day() < 10 ? '0' + createdDate.day() : String.valueOf(createdDate.day());
+        String year = String.valueOf(createdDate.year());
+
+        String formattedDate = month + '_' + day + '_' + year;
+        String attachmentName =opp.Name+'_'+
+        (opp.Division__r.Name != 'Palermo' ? opp.Division__r.Name.substring(0, 2).toUpperCase() : 'PL') +
+        '_' +
         (quoteType == 'estimate'
           ? 'EST'
           : quoteType == 'proposal' ? 'PRO' : 'INV') +
-        ' - ' +
-        opp.Name;
+        '_' + formattedDate;
       ContentVersion cv = new ContentVersion();
       cv.Title = attachmentName;
       cv.PathOnClient = documentName + '.pdf';

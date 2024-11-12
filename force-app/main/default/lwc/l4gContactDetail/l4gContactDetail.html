@@ -13,8 +13,6 @@
     <lightning-card title="Opportunities" icon-name="standard:opportunity">
         <lightning-button slot="actions" label="New" onclick={handleNewOpportunity} variant="brand"
             class="slds-m-bottom_small"></lightning-button>
-        <lightning-datatable key-field="Id" data={relatedRecords} columns={columns} hide-checkbox-column="true"
-            onrowaction={handleRowAction}>
-        </lightning-datatable>
+       <c-custom-datatable onrefreshdata={handleCloneRecord} related-records={relatedRecords}></c-custom-datatable>
     </lightning-card>
 </template>
