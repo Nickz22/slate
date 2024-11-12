@@ -72,10 +72,8 @@ export default class CustomDatatable extends LightningElement {
                 Name: updatedRecords[0]?.Name,
                 StageName: updatedRecords[0]?.StageName
             };
-            console.log("updatedRecords",updatedRecords,fields);
                 updateRecord({ fields })
                 .then(() => {
-                    console.log("Record Updated Successfully");
                     this.editableRowId = null;
                     this.showSpinner = false;
                     this.originalRecordData = {};
