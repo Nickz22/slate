@@ -1,0 +1,29 @@
+/* Minimal CSS for custom styling */
+.custom-table-container {
+    padding: 1rem;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+}
+.custom-table {
+    max-width: 100%;
+    overflow-x: auto;
+}
+.custom-input {
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+}
+
+.custom-combobox {
+    overflow: visible;
+}
+
+.custom-link {
+    color: #0070d2;
+    text-decoration: underline;
+}
+
+.custom-stage-display {
+    font-weight: bold;
+    color: #333;
+}

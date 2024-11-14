@@ -15,14 +15,19 @@
         onsuccess={handleSuccess}
         oncancel={handleCancel}
         onsubmit={handleSubmit}
+        onload={handleLoad}
+        record-id={recordId}
       >
         <lightning-messages> </lightning-messages>
         <lightning-input-field field-name="OwnerId"> </lightning-input-field>
+        <lightning-input-field class="slds-hide" field-name="Lead_Type__c"> </lightning-input-field>
         <lightning-combobox
           name="Lead_Type__c"
           label="Service Type"
           placeholder="Select Service Type"
           options={serviceTypeOptions}
+          onchange={handleServiceTypeChange}
+          value ={defaultServiceType}
           field-level-help="The Service Type field will drive which Quote Template is automatically applied to the new Opportunity"
         >
         </lightning-combobox>
@@ -35,19 +40,28 @@
         ></lightning-combobox>
         <lightning-input-field field-name="AccountId" value={accountId}>
         </lightning-input-field>
-        <lightning-input-field
+        <lightning-input-field field-name="PrimaryContact__c" value={contactId}>
+        </lightning-input-field>
+        <lightning-input-field class="slds-hide"
           field-name="Additional_Info__c"
+          data-field="initialInquiry"
           value={initialInquiry}
         >
         </lightning-input-field>
-        <lightning-input-field field-name="CloseDate" value={closeDate}>
+        <div lwc:if={isNotOfAlignType}>
+          <lightning-input-field field-name="CloseDate" value={closeDate}>
+          </lightning-input-field>
+        </div>
+        <lightning-input-field field-name="Opportunity_Descriptor__c">
         </lightning-input-field>
-        <lightning-input-field field-name="PrimaryContact__c" value={contactId}>
+        <lightning-input-field field-name="LeadSource" data-field="LeadSource" value={leadSource}>
         </lightning-input-field>
-        <lightning-input-field field-name="Days__c"> </lightning-input-field>
-        <lightning-input-field
-          field-name="Shoot_Date__c"
-        ></lightning-input-field>
+        <div lwc:if={isNotOfAlignType}>
+          <lightning-input-field field-name="Days__c"> </lightning-input-field>
+          <lightning-input-field
+            field-name="Shoot_Date__c"
+          ></lightning-input-field>
+        </div>
         <div class="slds-m-top_medium slds-align_absolute-center">
           <lightning-button
             variant="brand"

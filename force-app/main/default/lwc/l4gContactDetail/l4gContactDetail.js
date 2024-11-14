@@ -1,5 +1,4 @@
 import { LightningElement, wire, api, track } from "lwc";
-import cloneRecord from "@salesforce/apex/L4GController.cloneRecord";
 import getFieldsToView from "@salesforce/apex/L4GController.getFieldsToView";
 import getRelatedOpportunities from "@salesforce/apex/L4GController.getRelatedOpportunities";
 import { refreshApex } from "@salesforce/apex";
@@ -33,38 +32,11 @@ export default class L4gContactDetail extends LightningElement {
     }
   }
 
-  createColumns(fields) {
-    const actions = [{ label: "Clone", name: "clone" }];
-
-    return [
-      {
-        label: "Name",
-        fieldName: "url",
-        type: "url",
-        typeAttributes: {
-          label: { fieldName: "Name" },
-          tooltip: { fieldName: "tooltipText" },
-          target: "_blank"
-        }
-      },
-      {
-        label: "Stage",
-        fieldName: "StageName",
-        type: "Text"
-      },
-      {
-        type: "action",
-        typeAttributes: { rowActions: actions }
-      }
-    ];
-  }
-
   @wire(getRelatedOpportunities, { contactId: "$recordId" })
   wiredRelatedList(wireResult) {
     const { error, data } = wireResult;
     this._wiredMarketData = wireResult;
     if (data) {
-      this.columns = this.createColumns(data.fields);
       this.relatedRecords = data.map((row) => {
         return {
           ...row,
@@ -80,32 +52,12 @@ export default class L4gContactDetail extends LightningElement {
     }
   }
 
-  handleRowAction(event) {
-    const actionName = event.detail.action.name;
-    const row = event.detail.row;
-
-    switch (actionName) {
-      case "clone":
-        this.cloneRecord(row);
-        break;
-      default:
-    }
-  }
-
   connectedCallback() {
     refreshApex(this._wiredMarketData);
   }
 
-  cloneRecord(row) {
-    this.showSpinner = true;
-    cloneRecord({ recordId: row.Id, emailContent: this.initialInquiry })
-      .then(() => {
-        return refreshApex(this._wiredMarketData);
-      })
-      .catch((error) => {
-        this.error = error;
-        console.error("Error cloning record:", error);
-      });
+  handleCloneRecord() {
+    return refreshApex(this._wiredMarketData);
   }
   tooltipContent(data) {
     let description = data["Opportunity_Descriptor__c"]
@@ -114,7 +66,9 @@ export default class L4gContactDetail extends LightningElement {
     let quoteName = data["SBQQ__PrimaryQuote__r"]
       ? data["SBQQ__PrimaryQuote__r"]["Name"]
       : "";
-    return `Descriptor: ${description}\nQuote: ${quoteName}\nCloseDate: ${data["CloseDate"]}\n`;
+    let divisionName = data["Division__r"] ? data["Division__r"]["Name"] : "";
+    let serviceType = data["Lead_Type__c"] ? data["Lead_Type__c"] : "";
+    return `Descriptor: ${description}\nQuote: ${quoteName}\nCloseDate: ${data["CloseDate"]}\nDivision: ${divisionName}\nService Type: ${serviceType}`;
   }
   async handleNewOpportunity() {
     this.showSpinner = true;
