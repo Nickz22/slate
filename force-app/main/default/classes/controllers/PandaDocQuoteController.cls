@@ -14,7 +14,7 @@ public class PandaDocQuoteController {
 
   private static Map<String, String> companyEmailByUserEmailPhrase = new Map<String, String>{
     'align' => 'info@align-ny.com',
-    'slate' => 'info@slate-ny.com',
+    'slate' => 'info@slate-nyc.com',
     'palermo' => 'info@palermo-studio.com'
   };
 
@@ -98,8 +98,13 @@ public class PandaDocQuoteController {
     controller.isCCPayment = freshOpp.CC_Payment__c;
 
     String ownerEmail = '';
-      String divisionName = freshOpp.Division__r.Name.toLowerCase();
-      ownerEmail = companyEmailByUserEmailPhrase.get(divisionName);
+
+    for (String phrase : companyEmailByUserEmailPhrase.keySet()) {
+      if (UserInfo.getUserName().toLowerCase().contains(phrase.toLowerCase())) {
+        ownerEmail = companyEmailByUserEmailPhrase.get(phrase);
+        break;
+      }
+    }
 
     if (String.isBlank(ownerEmail)) {
       throw new PandaDocQuoteException(
@@ -109,7 +114,7 @@ public class PandaDocQuoteController {
 
     Map<String, Object> requestBody = new Map<String, Object>{
       'name' => controller.getDocumentName(),
-      'template_uuid' => controller.getQuoteTemplateUuid(), 
+      'template_uuid' => controller.getQuoteTemplateUuid(),
       'recipients' => controller.getRecipients(),
       'owner' => new Map<String, String>{ 'email' => ownerEmail },
       'tokens' => controller.getTokens(),
@@ -120,7 +125,6 @@ public class PandaDocQuoteController {
     System.debug('PandaDoc Request Body: ' + JSON.serializePretty(requestBody));
 
     try {
-        
       return PandadocApi.createDocument(requestBody);
     } catch (PandadocApi.PandaDocException e) {
       throw new AuraHandledException(e.getMessage());
@@ -274,7 +278,7 @@ public class PandaDocQuoteController {
   }
 
   private List<PandadocQuoteRecipient> getRecipients() {
-    return new List<PandadocQuoteRecipient>{
+    List<PandadocQuoteRecipient> recipients = new List<PandadocQuoteRecipient>{
       new PandadocQuoteRecipient(
         this.opp.PrimaryContact__r.Email,
         this.opp.PrimaryContact__r.FirstName,
@@ -283,6 +287,16 @@ public class PandaDocQuoteController {
       ),
       new PandadocQuoteRecipient(UserInfo.getUserEmail(), '', '', 'Sender')
     };
+
+    if (String.isNotBlank(this.opp.Additional_Client_CC__c)) {
+      for (String email : this.opp.Additional_Client_CC__c.split(',')) {
+        recipients.add(
+          new PandadocQuoteRecipient(email.trim(), '', '', null, 'cc')
+        );
+      }
+    }
+
+    return recipients;
   }
 
   private List<Map<String, Object>> getPricingItems() {

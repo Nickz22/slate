@@ -206,7 +206,7 @@ private class PandaDocQuoteControllerTest {
   static void testAttachDocumentToOpportunity() {
     // GIVEN
     Opportunity opp = [
-      SELECT Id, Division__r.Name, Name
+      SELECT Id, Division__r.Name, Name, CreatedDate
       FROM Opportunity
       WHERE Division__r.Name = 'Slate'
       LIMIT 1
@@ -243,12 +243,25 @@ private class PandaDocQuoteControllerTest {
       cdls.size() > 0,
       'One ContentDocumentLink should be created'
     );
+    Datetime createdDate = opp.CreatedDate;
+    String month = createdDate.month() < 10
+      ? '0' + createdDate.month()
+      : String.valueOf(createdDate.month());
+    String day = createdDate.day() < 10
+      ? '0' + createdDate.day()
+      : String.valueOf(createdDate.day());
+    String year = String.valueOf(createdDate.year());
+    String formattedDate = month + '_' + day + '_' + year;
+
     String nameShouldbe =
-      opp.Division__r.Name.substring(0, 2).toUpperCase() +
-      ' - ' +
-      'EST' +
-      ' - ' +
-      opp.Name;
+      opp.Name +
+      '_' +
+      (opp.Division__r.Name != 'Palermo'
+        ? opp.Division__r.Name.substring(0, 2).toUpperCase()
+        : 'PL') +
+      '_EST_' +
+      formattedDate;
+
     System.assertEquals(
       nameShouldbe,
       cdls[0].ContentDocument.Title,
@@ -342,5 +355,50 @@ private class PandaDocQuoteControllerTest {
       ),
       'Error message should contain the parsed errors'
     );
+  }
+
+  @isTest
+  static void testCreatePandaDocQuote_WithAdditionalCCRecipients() {
+    // GIVEN
+    Opportunity opp = [
+      SELECT Id, Division__c, CC_Payment__c, Additional_Client_CC__c
+      FROM Opportunity
+      WHERE Division__r.Name = 'Slate'
+      LIMIT 1
+    ];
+    opp.CC_Payment__c = false;
+    opp.Additional_Client_CC__c = 'cc1@example.com, cc2@example.com';
+    update opp;
+
+    PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
+    Test.setMock(HttpCalloutMock.class, mock);
+
+    // WHEN
+    Test.startTest();
+    Map<String, String> result = PandaDocQuoteController.createPandaDocQuote(
+      opp.Id,
+      'estimate'
+    );
+    Test.stopTest();
+
+    // THEN
+    System.assertNotEquals(null, result, 'Result should not be null');
+
+    // Verify that the recipients in the request include CC recipients
+    Map<String, Object> sentPayload = mock.lastRequestBody;
+    List<Object> recipients = (List<Object>) sentPayload.get('recipients');
+
+    Integer ccRecipientCount = 0;
+    for (Object recipientObj : recipients) {
+      Map<String, Object> recipient = (Map<String, Object>) recipientObj;
+      if (
+        recipient.containsKey('recipient_type') &&
+        recipient.get('recipient_type') == 'cc'
+      ) {
+        ccRecipientCount++;
+      }
+    }
+
+    System.assertEquals(2, ccRecipientCount, 'There should be 2 CC recipients');
   }
 }
