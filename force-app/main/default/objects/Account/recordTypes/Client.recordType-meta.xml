@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Client</fullName>
+    <active>true</active>
+    <description>For any clients that are not retainers</description>
+    <label>Client</label>
+    <picklistValues>
+        <picklist>AccountSource</picklist>
+        <values>
+            <fullName>Breef</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Directory - Peerspace</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Google Search</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Referral</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Return Client</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Social - Instagram - Direct Message</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>DOZISF__ZoomInfo_Enrich_Status__c</picklist>
+        <values>
+            <fullName>Enriched</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Error</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>No-Match</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>File_Attachments__c</picklist>
+        <values>
+            <fullName>Approved Retouching Hero - General %28PSD%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Client Photography Guidelines %28PDF%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Client Retouching Guidelines %28PDF%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Layer Structure Reference File %28PSD%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Photoshop Actions Created</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Shot List Example %28Excel%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Skin Tone Hero - African American %28PSD%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Skin Tone Hero - Asia Pacific %28PSD%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Skin Tone Hero - Caucasian %28PSD%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Skin Tone Hero - Other %28PSD%29</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Industry</picklist>
+        <values>
+            <fullName>Apparel</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Beauty %26 Cosmetics</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Consumer Goods</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Fashion Accessories</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Food %26 Beverage</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Fragrance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Real Estate</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Technology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Travel %26 Hospitality</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Ownership</picklist>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Private</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Public</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Subsidiary</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Payment_Terms__c</picklist>
+        <values>
+            <fullName>Due on Receipt</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Net 15</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Net 30</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Net 45</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Net 60</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Rating</picklist>
+        <values>
+            <fullName>Cold</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hot</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Warm</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SBQQ__CoTerminationEvent__c</picklist>
+        <values>
+            <fullName>Add-on</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Renewal</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SBQQ__ContractCoTermination__c</picklist>
+        <values>
+            <fullName>Always</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Never</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Prompt</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SBQQ__RenewalModel__c</picklist>
+        <values>
+            <fullName>Asset Based</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Contract Based</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SBQQ__RenewalPricingMethod__c</picklist>
+        <values>
+            <fullName>List</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Same</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Uplift</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>SBQQ__TaxExempt__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type</picklist>
+        <values>
+            <fullName>Client</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Client Prospect</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Competitor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ideal Client Buyer Persona</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ideal Client Buyer Persona - Non New York</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ideal Client Buyer Persona - Non USA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Low Priority Prospect</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>To Delete</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Vendor</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ZoomInfo_Employee_Count__c</picklist>
+        <values>
+            <fullName>1-10</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>10%2C000%2B</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>1001-5000</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>11-50</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>201-500</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>5001-10%2C000</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>501-1000</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>51-200</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

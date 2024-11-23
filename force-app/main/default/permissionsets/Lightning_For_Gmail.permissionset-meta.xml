@@ -71,11 +71,11 @@
     </recordTypeVisibilities>
     <recordTypeVisibilities>
         <recordType>Account.Retainer</recordType>
-        <visible>true</visible>
+        <visible>false</visible>
     </recordTypeVisibilities>
     <recordTypeVisibilities>
         <recordType>Opportunity.Retainer_Record_Type</recordType>
-        <visible>true</visible>
+        <visible>false</visible>
     </recordTypeVisibilities>
     <recordTypeVisibilities>
         <recordType>Opportunity.Standard_Opportunity</recordType>
