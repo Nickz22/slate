@@ -152,19 +152,28 @@ public class PandaDocQuoteController {
       Opportunity opp = new OpportunitySelector()
         .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
         .get(0);
-        DateTime createdDate = opp.CreatedDate;
-        String month = createdDate.month() < 10 ? '0' + createdDate.month() : String.valueOf(createdDate.month());
-        String day = createdDate.day() < 10 ? '0' + createdDate.day() : String.valueOf(createdDate.day());
-        String year = String.valueOf(createdDate.year());
+      DateTime createdDate = opp.CreatedDate;
+      String month = createdDate.month() < 10
+        ? '0' + createdDate.month()
+        : String.valueOf(createdDate.month());
+      String day = createdDate.day() < 10
+        ? '0' + createdDate.day()
+        : String.valueOf(createdDate.day());
+      String year = String.valueOf(createdDate.year());
 
-        String formattedDate = month + '_' + day + '_' + year;
-        String attachmentName =opp.Name+'_'+
-        (opp.Division__r.Name != 'Palermo' ? opp.Division__r.Name.substring(0, 2).toUpperCase() : 'PL') +
+      String formattedDate = month + '_' + day + '_' + year;
+      String attachmentName =
+        opp.Name +
+        '_' +
+        (opp.Division__r.Name != 'Palermo'
+          ? opp.Division__r.Name.substring(0, 2).toUpperCase()
+          : 'PL') +
         '_' +
         (quoteType == 'estimate'
           ? 'EST'
           : quoteType == 'proposal' ? 'PRO' : 'INV') +
-        '_' + formattedDate;
+        '_' +
+        formattedDate;
       ContentVersion cv = new ContentVersion();
       cv.Title = attachmentName;
       cv.PathOnClient = documentName + '.pdf';
@@ -191,7 +200,23 @@ public class PandaDocQuoteController {
 
   // helpers
   private String getDocumentName() {
-    return this.opp.Name;
+    String divisionAbbreviation = this.opp.Division__r.Name.substring(0, 2)
+      .toUpperCase();
+    String typeAbbrev = '';
+    if (this.quoteType == PandaDocQuoteType.Invoice) {
+      typeAbbrev = '_INV';
+    } else if (this.quoteType == PandaDocQuoteType.Estimate) {
+      typeAbbrev = '_EST';
+    } else {
+      typeAbbrev = '_PRO';
+    }
+    String dateFormatted = this.opp.CreatedDate.format('MM_dd_yyyy');
+    return this.opp.Name +
+      typeAbbrev +
+      '_' +
+      divisionAbbreviation +
+      '_' +
+      dateFormatted;
   }
 
   private List<PandaDocQuoteToken> getTokens() {
@@ -211,7 +236,6 @@ public class PandaDocQuoteController {
         'OPPORTUNITY_DESCRIPTION',
         this.opp.Upper_Descriptor__c
       ),
-      new PandaDocQuoteToken('ESTIMATE', opp.Division__r.Name.substring(0, 2).toUpperCase() + '-'+this.opp.InvoiceNumber__c),
       new PandaDocQuoteToken(
         'DUE_DATE',
         DateTime.newInstance(
@@ -227,7 +251,12 @@ public class PandaDocQuoteController {
           )
           .format('MM / dd / yyyy')
       ),
-      new PandaDocQuoteToken('INVOICE_NUMBER', this.opp.InvoiceNumber__c),
+      new PandaDocQuoteToken(
+        'INVOICE_NUMBER',
+        opp.Division__r.Name.substring(0, 2).toUpperCase() +
+          '-' +
+          this.opp.InvoiceNumber__c
+      ),
       new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
       new PandaDocQuoteToken('QUOTE_DEPOSIT', formatCurrency(deposit)),
       new PandaDocQuoteToken('QUOTE_BALANCE', formatCurrency(balance)),
@@ -347,9 +376,13 @@ public class PandaDocQuoteController {
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
           'Text_Unit_Cost__c' => String.valueOf(qli.SBQQ__ListPrice__c),
-          'Text_Customer_Price__c' => String.valueOf(qli.SBQQ__CustomerPrice__c),
+          'Text_Customer_Price__c' => String.valueOf(
+            qli.SBQQ__CustomerPrice__c
+          ),
           'Quantity' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
-          'Days_Required__c' => String.valueOf(Integer.valueOf(qli.Days_Required__c)),
+          'Days_Required__c' => String.valueOf(
+            Integer.valueOf(qli.Days_Required__c)
+          ),
           'QTY' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'Price' => qli.SBQQ__CustomerTotal__c,
           'SBQQ__CustomerTotal__c' => (qli.SBQQ__CustomerTotal__c *
