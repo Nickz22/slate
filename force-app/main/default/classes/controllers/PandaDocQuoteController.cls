@@ -119,8 +119,7 @@ public class PandaDocQuoteController {
       'owner' => new Map<String, String>{ 'email' => ownerEmail },
       'tokens' => controller.getTokens(),
       'metadata' => controller.getMetadata(),
-      'pricing_tables' => controller.getPricingItems(),
-      'payment' => new Map<String, Object>{ 'custom_amount' => 12345.00 }
+      'pricing_tables' => controller.getPricingItems()
     };
     System.debug('PandaDoc Request Body: ' + JSON.serializePretty(requestBody));
 
@@ -331,6 +330,7 @@ public class PandaDocQuoteController {
         SBQQ__ListPrice__c,
         SBQQ__CustomerPrice__c,
         SBQQ__Quantity__c,
+        Days_Required__c,
         SBQQ__CustomerTotal__c,
         SBQQ__SubscriptionTerm__c
       FROM SBQQ__QuoteLine__c
@@ -346,16 +346,18 @@ public class PandaDocQuoteController {
         },
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
-          'Text_Unit_Cost__c' => qli.SBQQ__ListPrice__c,
-          'Text_Customer_Price__c' => qli.SBQQ__CustomerPrice__c,
-          'Quantity' => qli.SBQQ__Quantity__c,
-          'QTY' => 1, // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
+          'Text_Unit_Cost__c' => String.valueOf(qli.SBQQ__ListPrice__c),
+          'Text_Customer_Price__c' => String.valueOf(qli.SBQQ__CustomerPrice__c),
+          'Quantity' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
+          'Days_Required__c' => String.valueOf(Integer.valueOf(qli.Days_Required__c)),
+          'QTY' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'Price' => qli.SBQQ__CustomerTotal__c,
           'SBQQ__CustomerTotal__c' => (qli.SBQQ__CustomerTotal__c *
           this.percentToPayByQuoteType.get(this.quoteType)),
           'Days_Required__c' => qli.SBQQ__SubscriptionTerm__c ?? 0
         }
       };
+      System.debug('Pricing Row: ' + JSON.serializePretty(row));
       rows.add(row);
     }
 
