@@ -174,11 +174,9 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       ?.toLowerCase()
       ?.includes("align")
       ? "align"
-      : leadType?.toLowerCase()?.includes("slate")
-        ? "slate"
-        : leadType?.toLowerCase()?.includes("palermo")
-          ? "palermo"
-          : null;
+      : leadType?.toLowerCase()?.includes("palermo")
+        ? "palermo"
+        : "slate";
     const divisionId =
       divisionPrepensionInServiceType &&
       this.divisions.find(
