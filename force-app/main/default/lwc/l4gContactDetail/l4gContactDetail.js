@@ -13,7 +13,7 @@ export default class L4gContactDetail extends LightningElement {
   @track error;
   @track columns = [];
   @track fields = [];
-
+  @track actions=['edit'];
   _wiredMarketData;
   showSpinner = true;
 
@@ -78,7 +78,8 @@ export default class L4gContactDetail extends LightningElement {
       objectName: "Opportunity",
       contactId: this.recordId,
       initialInquiry: this.initialInquiry,
-      isLightningForGmail: true
+      isLightningForGmail: true,
+      hasExistingOpp : (this.relatedRecords && this.relatedRecords.length > 0)
     });
     this.defaultRecordId = result;
     this.showSpinner = false;

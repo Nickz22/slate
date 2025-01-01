@@ -9,4 +9,7 @@
       </svg>
     </div>
   </div>
+  <template if:true={errorMessage}>
+    <div class="slds-align_absolute-center slds-p-around_medium"><lightning-formatted-text value={errorMessage}></lightning-formatted-text></div>
+  </template>
 </template>

@@ -7,20 +7,32 @@
             <thead>
                 <tr class="slds-text-title_caps">
                     <th scope="col">
-                        <div class="slds-truncate" title="Name">Name</div>
+                        <div class="slds-truncate" title="Name">
+                            <div onclick={sortByName} 
+                                    title="Sort by Name">
+                                <span>Name</span>
+                                <lightning-icon icon-name={nameSortIcon} size="xx-small" class="slds-m-left_x-small"></lightning-icon>
+                        </div>
+                        </div>
                     </th>
                     <th scope="col">
-                        <div class="slds-truncate" title="Stage">Stage</div>
+                        <div class="slds-truncate" title="Stage">
+                            <div  onclick={sortByStage} 
+                                    title="Sort by Stage">
+                                <span>Stage</span>
+                                <lightning-icon icon-name={stageSortIcon} size="xx-small" class="slds-m-left_x-small"></lightning-icon>
+                        </div>
+                        </div>
                     </th>
                     <th scope="col" class="slds-text-align_right">
                         <div class="slds-truncate" title="Actions">Actions</div>
                     </th>
                 </tr>
-            </thead>
+            </thead>            
             <tbody>
                 <template for:each={relatedRecords} for:item="record">
                     <tr key={record.Id}>
-                        <td>
+                        <td style="padding:10px 2px;">
                             <div class="slds-truncate slds-line-clamp" style="max-width: 200px;">
                                 <template if:true={record.isEditable}>
                                     <!-- Apply truncate for editable input -->
@@ -40,7 +52,7 @@
                                 </template>
                             </div>
                         </td>
-                        <td>
+                        <td style="padding:10px 0px;">
                             <!-- <div class="slds-dropdown-trigger slds-dropdown-trigger_click slds-line-clamp" style="max-width: 200px;"> -->
                                 <template if:true={record.isEditable}>
                                     <!-- Apply truncate for editable combobox -->
@@ -62,7 +74,7 @@
                                 </template>
                             <!-- </div> -->
                         </td>
-                        <td class="slds-text-align_right">
+                        <td class="slds-text-align_right" style="padding:10px 0px;">
                             <template if:true={record.isEditable}>
                                 <lightning-button-icon icon-name="utility:check" alternative-text="Save"
                                     onclick={saveRow} class="slds-m-right_x-small">
