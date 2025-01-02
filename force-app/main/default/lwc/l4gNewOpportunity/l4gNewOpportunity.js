@@ -115,7 +115,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       initialInquiry.value = this.initialInquiry;
     }else if(this.hasExistingOpp){
       const leadSource = this.template.querySelector('lightning-input-field[data-field="LeadSource"]');
-      leadSource.value = 'Returning Customer';
+      leadSource.value = 'Return Client';
     }
 }
   handleServiceTypeChange(event){
