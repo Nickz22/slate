@@ -26,6 +26,10 @@ public class PandaDocQuoteController {
     this.opp = new OpportunitySelector()
       .selectOpportunitiesByIds(new Set<Id>{ oppId })
       .get(0);
+
+    if (this.opp.Required_Deposit__c == null) {
+        throw new PandaDocQuoteException('Required deposit cannot be null.');
+    }
     this.percentToPayByQuoteType.put(
       PandaDocQuoteType.ESTIMATE,
       (this.opp.Required_Deposit__c / 100)
@@ -359,7 +363,7 @@ public class PandaDocQuoteController {
         SBQQ__ListPrice__c,
         SBQQ__CustomerPrice__c,
         SBQQ__Quantity__c,
-        Days_Required__c,
+        Days_on_Project5__c,
         SBQQ__CustomerTotal__c,
         SBQQ__SubscriptionTerm__c
       FROM SBQQ__QuoteLine__c
@@ -380,14 +384,11 @@ public class PandaDocQuoteController {
             qli.SBQQ__CustomerPrice__c
           ),
           'Quantity' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
-          'Days_Required__c' => String.valueOf(
-            Integer.valueOf(qli.Days_Required__c)
-          ),
+          'Days_Required__c' => String.valueOf(qli.Days_on_Project5__c),
           'QTY' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'Price' => qli.SBQQ__CustomerTotal__c,
           'SBQQ__CustomerTotal__c' => (qli.SBQQ__CustomerTotal__c *
-          this.percentToPayByQuoteType.get(this.quoteType)),
-          'Days_Required__c' => qli.SBQQ__SubscriptionTerm__c ?? 0
+          this.percentToPayByQuoteType.get(this.quoteType))
         }
       };
       System.debug('Pricing Row: ' + JSON.serializePretty(row));

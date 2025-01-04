@@ -130,7 +130,7 @@ public class L4GController {
     String soql =
       '' +
       ' select ' +
-      String.join(fields, ',') +
+      String.join(fields, ',') + ', Account.Name'+
       ' from Opportunity' +
       ' where Id = \'' +
       recordId +
@@ -147,12 +147,16 @@ public class L4GController {
       }
     //clonedRecord.CloseDate = Date.today();
     clonedRecord.Invoice_Due_Date_Override__c = null;
-    clonedRecord.Name = clonedRecord.Name + ' ' + Datetime.now().format('MM/dd/yyyy');
+    String oppNamee = OpportunityTriggerHandler.setOppName(clonedRecord.Lead_Type__c, originalRecord[0].Account.Name);
+    clonedRecord.Name = oppNamee;
     List<OpportunityContactRole> existingOCRs = [
       SELECT Id, OpportunityId, ContactId, Role, IsPrimary
       FROM OpportunityContactRole
       WHERE OpportunityId = :recordId
     ];
+      if (originalRecord[0].SBQQ__PrimaryQuote__c != null) {
+          OpportunityTriggerHandler.autoGenerateQuote = false;
+      }
     insert clonedRecord;
     if (originalRecord[0].SBQQ__PrimaryQuote__c != null) {
       List<String> quoteFields = new List<String>(

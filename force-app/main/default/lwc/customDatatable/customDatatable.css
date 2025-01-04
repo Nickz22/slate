@@ -5,7 +5,7 @@
     border-radius: 0.25rem;
 }
 .custom-table {
-    max-width: 100%;
+    max-width: 90%;
     overflow-x: auto;
 }
 .custom-input {

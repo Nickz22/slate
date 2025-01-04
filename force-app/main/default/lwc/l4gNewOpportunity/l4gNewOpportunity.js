@@ -17,6 +17,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   @api objectName;
   @api contactId;
   @api recordId;
+  @api hasExistingOpp = false;
   @api isCloned = false;
   @api isLightningForGmail = false;
   // only populated when used in the Opportunity New Override
@@ -112,6 +113,9 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       leadSource.value = 'Return Client';
       const initialInquiry = this.template.querySelector('lightning-input-field[data-field="initialInquiry"]');
       initialInquiry.value = this.initialInquiry;
+    }else if(this.hasExistingOpp){
+      const leadSource = this.template.querySelector('lightning-input-field[data-field="LeadSource"]');
+      leadSource.value = 'Return Client';
     }
 }
   handleServiceTypeChange(event){

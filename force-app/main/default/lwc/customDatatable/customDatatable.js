@@ -5,10 +5,14 @@ import { updateRecord } from 'lightning/uiRecordApi';
 import l4gNewOpportunity from "c/l4gNewOpportunity";
 
 export default class CustomDatatable extends LightningElement {
-    @api actions = [{ name: 'edit', label: 'Edit' },{ name: 'clone', label: 'Clone' }]; 
-    @track editableRowId = null; 
-    @track stageOptions; 
-    _relatedRecords = []; 
+    @api actions = [{ name: 'edit', label: 'Edit' }, { name: 'clone', label: 'Clone' }];
+    @track editableRowId = null;
+    @track stageOptions;
+    @track nameSortDirection = 'asc'; // Default sorting direction
+    @track stageSortDirection = 'asc'; // Default sorting direction
+    @track nameSortIcon = 'utility:arrowup'; // Icon for sorting Name
+    @track stageSortIcon = 'utility:arrowup'; // Icon for sorting Stage
+    _relatedRecords = [];
     originalRecordData = {};
     showSpinner = false;
     @wire(getPicklistValues, {
@@ -51,7 +55,7 @@ export default class CustomDatatable extends LightningElement {
 
         if (actionName === 'Edit') {
             this.startEditing(rowId);
-        } else if(actionName === 'Clone'){
+        } else if (actionName === 'Clone') {
             this.showCloneModal(rowId);
         }
     }
@@ -72,7 +76,7 @@ export default class CustomDatatable extends LightningElement {
                 Name: updatedRecords[0]?.Name,
                 StageName: updatedRecords[0]?.StageName
             };
-                updateRecord({ fields })
+            updateRecord({ fields })
                 .then(() => {
                     this.editableRowId = null;
                     this.showSpinner = false;
@@ -81,34 +85,53 @@ export default class CustomDatatable extends LightningElement {
                 .catch(error => {
                     this.showSpinner = false;
                     this.revertChanges();
-                });   
+                });
         }
     }
     revertChanges() {
         const record = this._relatedRecords.find(rec => rec.Id === this.editableRowId);
-        if (record) Object.assign(record, this.originalRecordData); 
-        this.editableRowId = null; 
+        if (record) Object.assign(record, this.originalRecordData);
+        this.editableRowId = null;
     }
 
     cancelEdit() {
         this.revertChanges();
         this.editableRowId = null;
     }
-    async showCloneModal(rowId){
+
+    async showCloneModal(rowId) {
         this.showSpinner = true;
         const result = await l4gNewOpportunity.open({
-        size: "large",
-        description: "Accessible description of modal's purpose",
-        objectName: "Opportunity",
-        contactId: this.recordId,
-        initialInquiry: this.initialInquiry,
-        isLightningForGmail: true,
-        isCloned : true,
-        recordId : rowId
+            size: "large",
+            description: "Accessible description of modal's purpose",
+            objectName: "Opportunity",
+            contactId: this.recordId,
+            initialInquiry: this.initialInquiry,
+            isLightningForGmail: true,
+            isCloned: true,
+            recordId: rowId
         });
-        //this.defaultRecordId = result;
         this.showSpinner = false;
         this.dispatchEvent(new CustomEvent('refreshdata'));
-        //return refreshApex(this._wiredMarketData);
+    }
+
+    sortByName() {
+        this.nameSortDirection = this.nameSortDirection === 'asc' ? 'desc' : 'asc';
+        this.nameSortIcon = this.nameSortDirection === 'asc' ? 'utility:arrowup' : 'utility:arrowdown';
+        this._relatedRecords.sort((a, b) => {
+            return this.nameSortDirection === 'asc'
+                ? a.Name.localeCompare(b.Name)
+                : b.Name.localeCompare(a.Name);
+        });
+    }
+
+    sortByStage() {
+        this.stageSortDirection = this.stageSortDirection === 'asc' ? 'desc' : 'asc';
+        this.stageSortIcon = this.stageSortDirection === 'asc' ? 'utility:arrowup' : 'utility:arrowdown';
+        this._relatedRecords.sort((a, b) => {
+            return this.stageSortDirection === 'asc'
+                ? a.StageName.localeCompare(b.StageName)
+                : b.StageName.localeCompare(a.StageName);
+        });
     }
 }

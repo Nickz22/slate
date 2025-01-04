@@ -2,7 +2,7 @@ public class OpportunityTriggerHandler {
   public static Boolean ToCreateCalendarRecord = true;
   public static Boolean ToDeleteCalendarRecordOnHoldRecords = true;
   public static Map<Id, Account> accounts = new Map<Id, Account>();
-
+  public static Boolean autoGenerateQuote = true;
   public static void onBeforeInsert(List<Opportunity> newOpps) {
     Set<Id> divisionIds = new Set<Id>();
 
@@ -19,7 +19,9 @@ public class OpportunityTriggerHandler {
   }
 
   public static void onAfterInsert(Map<Id, Opportunity> newMap) {
-    AutoQuoteGeneration.autoQuote(newMap.values()[0].Id);
+      if(autoGenerateQuote){
+          AutoQuoteGeneration.autoQuote(newMap.values()[0].Id);
+      }
   }
 
   public static String setOppName(String LeadType, String accountName) {

@@ -1,0 +1,4 @@
+lightning-layout-item:hover {
+  background-color: #f3f3f3;
+  transition: background-color 0.2s ease;
+}

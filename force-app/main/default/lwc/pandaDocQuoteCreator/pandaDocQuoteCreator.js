@@ -8,6 +8,7 @@ export default class PandaDocQuoteCreator extends LightningElement {
   @api recordId;
   @track statusMessage = "Generating Quote";
   @track isLoading = true;
+  errorMessage;
   statusUrl;
   documentId;
   pollingInterval;
@@ -155,6 +156,7 @@ export default class PandaDocQuoteCreator extends LightningElement {
     clearInterval(this.dotInterval);
     clearInterval(this.pollingInterval);
     this.statusMessage = "An error occurred. Please try again.";
+    this.errorMessage = error.body?.message || error.message;
     this.showToast(
       "Error",
       error.body?.message || error.message || "Unknown error",
