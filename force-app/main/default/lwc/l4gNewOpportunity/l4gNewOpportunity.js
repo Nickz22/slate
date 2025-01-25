@@ -132,7 +132,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       leadSource.value = 'Return Client';
       this.defaultStage = this.latestOpp?.StageName || this.defaultStage;
       let serviceType = this.allServiceOptions.find((service)=>{
-        return service.label === this.latestOpp?.Lead_Type__c
+        return service.label?.toLowerCase() === this.latestOpp?.Lead_Type__c?.toLowerCase();
       } );
       
       this.serviceType = this.serviceType ? this.serviceType : serviceType?.label;
