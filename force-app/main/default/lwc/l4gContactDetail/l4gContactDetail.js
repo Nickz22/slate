@@ -79,7 +79,8 @@ export default class L4gContactDetail extends LightningElement {
       contactId: this.recordId,
       initialInquiry: this.initialInquiry,
       isLightningForGmail: true,
-      hasExistingOpp : (this.relatedRecords && this.relatedRecords.length > 0)
+      hasExistingOpp : (this.relatedRecords && this.relatedRecords.length > 0),
+      latestOpp:(this.relatedRecords && this.relatedRecords.length > 0) ? this.relatedRecords[0] : null
     });
     this.defaultRecordId = result;
     this.showSpinner = false;

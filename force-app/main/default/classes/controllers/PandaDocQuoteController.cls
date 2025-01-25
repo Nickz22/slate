@@ -195,6 +195,7 @@ public class PandaDocQuoteController {
       cdl.LinkedEntityId = opportunityId;
       cdl.ShareType = 'V';
       insert cdl;
+            updateOpportunityDocumentStage(opportunityId,quoteType);
     } catch (Exception e) {
       throw new AuraHandledException(
         'Error attaching document: ' + e.getMessage()
@@ -203,6 +204,22 @@ public class PandaDocQuoteController {
   }
 
   // helpers
+    private static void updateOpportunityDocumentStage(Id opportunityId,String quoteType){
+        String stageValue;
+        if(quoteType == 'Proposal'){
+            stageValue = 'Proposal Generated';
+        }
+        else if(quoteType == 'Invoice'){
+            stageValue = 'Invoice Generated';
+        }
+        else if(quoteType == 'Estimate'){
+            stageValue = 'Quote Generated';
+        }
+        
+        if(stageValue != null){
+            update new Opportunity(Id=opportunityId,Stage_Document_Automated__c=stageValue);
+        }
+    }
   private String getDocumentName() {
     String divisionAbbreviation = this.opp.Division__r.Name.substring(0, 2)
       .toUpperCase();

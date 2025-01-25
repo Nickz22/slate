@@ -454,6 +454,10 @@
     <picklistValues>
         <picklist>Stage_Document_Automated__c</picklist>
         <values>
+            <fullName>Invoice Generated</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Invoice Not Sent</fullName>
             <default>false</default>
         </values>
@@ -466,11 +470,19 @@
             <default>false</default>
         </values>
         <values>
+            <fullName>Proposal Generated</fullName>
+            <default>false</default>
+        </values>
+        <values>
             <fullName>Proposal Sent</fullName>
             <default>false</default>
         </values>
         <values>
             <fullName>Proposal Signed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Quote Generated</fullName>
             <default>false</default>
         </values>
         <values>

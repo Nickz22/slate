@@ -47,6 +47,21 @@
                 <default>false</default>
                 <label>Invoice Paid</label>
             </value>
+            <value>
+                <fullName>Quote Generated</fullName>
+                <default>false</default>
+                <label>Quote Generated</label>
+            </value>
+            <value>
+                <fullName>Proposal Generated</fullName>
+                <default>false</default>
+                <label>Proposal Generated</label>
+            </value>
+            <value>
+                <fullName>Invoice Generated</fullName>
+                <default>false</default>
+                <label>Invoice Generated</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

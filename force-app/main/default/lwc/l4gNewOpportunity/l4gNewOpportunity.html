@@ -48,7 +48,7 @@
           value={initialInquiry}
         >
         </lightning-input-field>
-        <div lwc:if={isNotOfAlignType}>
+        <div lwc:if={showCloseDate}>
           <lightning-input-field field-name="CloseDate" value={closeDate}>
           </lightning-input-field>
         </div>
@@ -56,7 +56,7 @@
         </lightning-input-field>
         <lightning-input-field field-name="LeadSource" data-field="LeadSource" value={leadSource}>
         </lightning-input-field>
-        <div lwc:if={isNotOfAlignType}>
+        <div lwc:if={showShootDates}>
           <lightning-input-field field-name="Days__c"> </lightning-input-field>
           <lightning-input-field
             field-name="Shoot_Date__c"
@@ -121,12 +121,12 @@
               field-name="PrimaryContact__c"
               value={contactId}
             >
-            </lightning-input-field>
-            <lightning-input-field field-name="Days__c">
-            </lightning-input-field>
-            <lightning-input-field
-              field-name="Shoot_Date__c"
-            ></lightning-input-field>
+          </lightning-input-field>
+             <lightning-input-field field-name="Days__c">
+              </lightning-input-field>
+              <lightning-input-field
+                field-name="Shoot_Date__c"
+              ></lightning-input-field>
             <div class="slds-m-top_medium slds-align_absolute-center">
               <lightning-button
                 variant="brand"
