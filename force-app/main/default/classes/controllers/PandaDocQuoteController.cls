@@ -299,7 +299,7 @@ public class PandaDocQuoteController {
       ),
       new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
       new PandaDocQuoteToken('QUOTE_DEPOSIT', formatCurrency(deposit)),
-      new PandaDocQuoteToken('BALANCE_DUE', formatCurrency(balance)),
+      new PandaDocQuoteToken('QUOTE_BALANCE', formatCurrency(balance)),
       new PandaDocQuoteToken('CC_FEE', formatCurrency(ccfee)),
       new PandaDocQuoteToken('QUOTE_TOTAL', formatCurrency(opportunityTotal)),
       new PandaDocQuoteToken(
@@ -417,7 +417,7 @@ public class PandaDocQuoteController {
         },
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
-          'DESCRIPTION' => qli.SBQQ__Description__c,
+          'DESCRIPTION' => String.isNotBlank(qli.SBQQ__Description__c) ? qli.SBQQ__Description__c : '',
           'Text_Unit_Cost__c' => String.valueOf(qli.SBQQ__ListPrice__c),
           'Text_Customer_Price__c' => String.valueOf(
             qli.SBQQ__CustomerPrice__c
