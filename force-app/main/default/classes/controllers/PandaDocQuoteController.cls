@@ -28,7 +28,7 @@ public class PandaDocQuoteController {
       .get(0);
 
     if (this.opp.Required_Deposit__c == null) {
-        throw new PandaDocQuoteException('Required deposit cannot be null.');
+      throw new PandaDocQuoteException('Required deposit cannot be null.');
     }
     this.percentToPayByQuoteType.put(
       PandaDocQuoteType.ESTIMATE,
@@ -128,16 +128,28 @@ public class PandaDocQuoteController {
     System.debug('PandaDoc Request Body: ' + JSON.serializePretty(requestBody));
 
     try {
-      return PandadocApi.createDocument(requestBody);
+      return PandadocApi.createDocument(
+        requestBody,
+        freshOpp.Division__r.Name.toLowerCase()
+      );
     } catch (PandadocApi.PandaDocException e) {
       throw new AuraHandledException(e.getMessage());
     }
   }
 
   @AuraEnabled
-  public static Map<String, String> checkDocumentStatus(String statusUrl) {
+  public static Map<String, String> checkDocumentStatus(
+    String statusUrl,
+    String opportunityId
+  ) {
     try {
-      return PandadocApi.checkDocumentStatus(statusUrl);
+      Opportunity opp = new OpportunitySelector()
+        .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
+        .get(0);
+      return PandadocApi.checkDocumentStatus(
+        statusUrl,
+        opp.Division__r.Name.toLowerCase()
+      );
     } catch (PandadocApi.PandaDocException e) {
       throw new AuraHandledException(e.getMessage());
     }
@@ -152,10 +164,14 @@ public class PandaDocQuoteController {
   ) {
     try {
       // Fetch the document content from PandaDoc API
-      Blob documentContent = PandadocApi.getDocumentContent(documentId);
+
       Opportunity opp = new OpportunitySelector()
         .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
         .get(0);
+      Blob documentContent = PandadocApi.getDocumentContent(
+        documentId,
+        opp.Division__r.Name.toLowerCase()
+      );
       DateTime createdDate = opp.CreatedDate;
       String month = createdDate.month() < 10
         ? '0' + createdDate.month()
@@ -241,15 +257,18 @@ public class PandaDocQuoteController {
   }
 
   private List<PandaDocQuoteToken> getTokens() {
+    Decimal opportunityTotal =
+      this.opp.Invoice_Amount__c +
+      (this.opp.CC_Payment__c ? this.opp.CC_Fee_invoice__c : 0) +
+      this.opp.Tax_to_collect__c;
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c *
       this.percentToPayByQuoteType.get(this.quoteType);
-    Decimal deposit =
-      (this.opp.Required_Deposit__c / 100) * this.opp.Invoice_Amount__c;
-    Decimal balance = this.opp.Invoice_Amount__c - deposit;
     Decimal ccfee =
       this.opp.CC_Fee_invoice__c *
       this.percentToPayByQuoteType.get(this.quoteType);
+    Decimal deposit = opportunityTotal * (this.opp.Required_Deposit__c / 100);
+    Decimal balance = opportunityTotal - deposit;
     return new List<PandaDocQuoteToken>{
       new PandaDocQuoteToken('ACCOUNT_NAME', this.opp.Account.Name),
       new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
@@ -280,8 +299,9 @@ public class PandaDocQuoteController {
       ),
       new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
       new PandaDocQuoteToken('QUOTE_DEPOSIT', formatCurrency(deposit)),
-      new PandaDocQuoteToken('QUOTE_BALANCE', formatCurrency(balance)),
+      new PandaDocQuoteToken('BALANCE_DUE', formatCurrency(balance)),
       new PandaDocQuoteToken('CC_FEE', formatCurrency(ccfee)),
+      new PandaDocQuoteToken('QUOTE_TOTAL', formatCurrency(opportunityTotal)),
       new PandaDocQuoteToken(
         'SHOOT_DATE',
         this.opp.Shoot_Date__c != null
@@ -377,6 +397,7 @@ public class PandaDocQuoteController {
     for (SBQQ__QuoteLine__c qli : [
       SELECT
         SBQQ__Product__r.Name,
+        SBQQ__Description__c,
         SBQQ__ListPrice__c,
         SBQQ__CustomerPrice__c,
         SBQQ__Quantity__c,
@@ -396,6 +417,7 @@ public class PandaDocQuoteController {
         },
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
+          'DESCRIPTION' => qli.SBQQ__Description__c,
           'Text_Unit_Cost__c' => String.valueOf(qli.SBQQ__ListPrice__c),
           'Text_Customer_Price__c' => String.valueOf(
             qli.SBQQ__CustomerPrice__c

@@ -1,36 +1,55 @@
 public with sharing class PandadocApi {
-  //   private static final String SANDBOX_API_KEY = '89384b2c4a6656a6457776748557bde540ed2a71';
-  private static final String PRODUCTION_API_KEY = '14546b655c1076dd61665887c9ebe5dfb702254c';
+  private static final String SLATE_PRODUCTION_API_KEY = '14546b655c1076dd61665887c9ebe5dfb702254c';
+  private static final String ALIGN_PRODUCTION_API_KEY = 'cbc4206ec4ce701c6ce9baa33dfc36022d3d33e1';
+  private static final String PALERMO_PRODUCTION_API_KEY = '6918cc61962a1d26c7fb78eaac2339c054d6a090';
   private static final String ENDPOINT = 'https://api.pandadoc.com/public/v1/documents';
+
+  public static final String SLATE_ORG_TYPE = 'slate';
+  public static final String ALIGN_ORG_TYPE = 'align';
+  public static final String PALERMO_ORG_TYPE = 'palermo';
 
   public class PandaDocException extends Exception {
   }
 
+  private static String getApiKey(String orgType) {
+    if (orgType == SLATE_ORG_TYPE) {
+      return SLATE_PRODUCTION_API_KEY;
+    } else if (orgType == ALIGN_ORG_TYPE) {
+      return ALIGN_PRODUCTION_API_KEY;
+    } else if (orgType == PALERMO_ORG_TYPE) {
+      return PALERMO_PRODUCTION_API_KEY;
+    }
+    return null;
+  }
+
   public static Map<String, String> createDocument(
-    Map<String, Object> requestBody
+    Map<String, Object> requestBody,
+    String orgType
   ) {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(ENDPOINT);
     req.setMethod('POST');
     req.setHeader('Content-Type', 'application/json');
-    req.setHeader('Authorization', 'API-Key ' + PRODUCTION_API_KEY);
+    req.setHeader('Authorization', 'API-Key ' + getApiKey(orgType));
     req.setBody(JSON.serialize(requestBody));
 
     Http http = new Http();
     HttpResponse res = http.send(req);
-
     if (res.getStatusCode() == 201) {
-      return parseSuccessResponse(res.getBody());
+      return parseSuccessResponse(res.getBody(), orgType);
     } else {
       throw new PandaDocException(constructErrorMessage(res));
     }
   }
 
-  public static Map<String, String> checkDocumentStatus(String statusUrl) {
+  public static Map<String, String> checkDocumentStatus(
+    String statusUrl,
+    String orgType
+  ) {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(statusUrl);
     req.setMethod('GET');
-    req.setHeader('Authorization', 'API-Key ' + PRODUCTION_API_KEY);
+    req.setHeader('Authorization', 'API-Key ' + getApiKey(orgType));
 
     Http http = new Http();
     HttpResponse res = http.send(req);
@@ -51,7 +70,10 @@ public with sharing class PandadocApi {
     }
   }
 
-  private static Map<String, String> parseSuccessResponse(String responseBody) {
+  private static Map<String, String> parseSuccessResponse(
+    String responseBody,
+    String orgType
+  ) {
     Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(
       responseBody
     );
@@ -96,7 +118,7 @@ public with sharing class PandadocApi {
     return errorMessage;
   }
 
-  public static Blob getDocumentContent(String documentId) {
+  public static Blob getDocumentContent(String documentId, String orgType) {
     String endpoint =
       'https://api.pandadoc.com/public/v1/documents/' +
       documentId +
@@ -105,12 +127,12 @@ public with sharing class PandadocApi {
     HttpRequest req = new HttpRequest();
     req.setEndpoint(endpoint);
     req.setMethod('GET');
-    req.setHeader('Authorization', 'API-Key ' + PRODUCTION_API_KEY);
+    req.setHeader('Authorization', 'API-Key ' + getApiKey(orgType));
     req.setTimeout(120000);
 
     Http http = new Http();
     HttpResponse res = http.send(req);
-
+    System.debug('res.getBody(): ' + JSON.serialize(res.getBody()));
     if (res.getStatusCode() == 200) {
       return res.getBodyAsBlob();
     } else {
