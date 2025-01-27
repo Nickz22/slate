@@ -14,7 +14,7 @@ const FIELDS = ["Contact.AccountId"];
 const WON_PRODUCTION_TYPES = ['Slate - Brand Content Production','Slate - CGI','Slate - Brand Content','Slate - Motion','Slate - Studio & Eq','Align - Retouch','Palermo - Branding','Palermo - Content'];
 const WON_POST_PRODUCTION_TYPES = ['Slate - Retouch','Align - Retouch'];
 const SLATE_CGI_SERVICE = 'Slate - CGI';
-const SLATE_RETOUCHING_SERVICE = 'Slate - Retouching - Slate';
+const SLATE_RETOUCHING_SERVICE = 'Slate - Retouch';
 const PALERMO_BRANDING_SERVICE = 'Palermo - Branding';
 export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   @api initialInquiry;
