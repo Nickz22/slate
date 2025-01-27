@@ -41,7 +41,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     return this.isNotOfAlignType && !(this.serviceType == SLATE_CGI_SERVICE || this.serviceType == SLATE_RETOUCHING_SERVICE);
   }
   get showShootDates(){
-    return this.showCloseDate && (!this.serviceType == PALERMO_BRANDING_SERVICE);
+    return this.showCloseDate && (this.serviceType != PALERMO_BRANDING_SERVICE);
   }
   @track serviceTypeOptions;
   @track stageOptions;
