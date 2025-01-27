@@ -11,12 +11,17 @@ import getOpportunityName from "@salesforce/apex/L4GController.getOpportunityNam
 import cloneRecord from "@salesforce/apex/L4GController.cloneRecord";
 
 const FIELDS = ["Contact.AccountId"];
-
+const WON_PRODUCTION_TYPES = ['Slate - Brand Content Production','Slate - CGI','Slate - Brand Content','Slate - Motion','Slate - Studio & Eq','Align - Retouch','Palermo - Branding','Palermo - Content'];
+const WON_POST_PRODUCTION_TYPES = ['Slate - Retouch','Align - Retouch'];
+const SLATE_CGI_SERVICE = 'Slate - CGI';
+const SLATE_RETOUCHING_SERVICE = 'Slate - Retouching - Slate';
+const PALERMO_BRANDING_SERVICE = 'Palermo - Branding';
 export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   @api initialInquiry;
   @api objectName;
   @api contactId;
   @api recordId;
+  @api latestOpp;
   @api hasExistingOpp = false;
   @api isCloned = false;
   @api isLightningForGmail = false;
@@ -32,6 +37,12 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   get isNotOfAlignType(){
     return !(this.serviceType?.toLowerCase().includes('align') || (this.divisionNames?.length === 1 && this.divisionNames?.indexOf('Align') !== -1));
   }
+  get showCloseDate(){
+    return this.isNotOfAlignType && !(this.serviceType == SLATE_CGI_SERVICE || this.serviceType == SLATE_RETOUCHING_SERVICE);
+  }
+  get showShootDates(){
+    return this.showCloseDate && (this.serviceType != PALERMO_BRANDING_SERVICE);
+  }
   @track serviceTypeOptions;
   @track stageOptions;
   _allServiceOptions;
@@ -40,6 +51,8 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   defaultServiceType;
   defaultLeadSource;
   opportunityId;
+  wonProductionTypes = WON_PRODUCTION_TYPES;
+  wonPostProductionTypes = WON_POST_PRODUCTION_TYPES;
   get accountId() {
     return this.givenAccountId || this._accountId;
   }
@@ -89,7 +102,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       });
     }
   }
-
+  
   get header() {
     return this.isCloned ? `Clone ${this.objectName}`:`Create ${this.objectName}`;
   }
@@ -108,6 +121,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     if(this.isCloned){
       const inputFieldValue = event.detail?.records[this.recordId]?.fields?.Lead_Type__c?.value;
       this.defaultServiceType = inputFieldValue;
+      this.defaultStage = (this.defaultServiceType.toLowerCase().includes('retouch')||this.defaultServiceType.toLowerCase().includes('retouching'))?'Won - Post Production':'Won - Production';	
       this.handleCloseDateChange(this.defaultServiceType);
       const leadSource = this.template.querySelector('lightning-input-field[data-field="LeadSource"]');
       leadSource.value = 'Return Client';
@@ -116,6 +130,13 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     }else if(this.hasExistingOpp){
       const leadSource = this.template.querySelector('lightning-input-field[data-field="LeadSource"]');
       leadSource.value = 'Return Client';
+      this.defaultStage = this.latestOpp?.StageName || this.defaultStage;
+      let serviceType = this.allServiceOptions.find((service)=>{
+        return service.label?.toLowerCase() === this.latestOpp?.Lead_Type__c?.toLowerCase();
+      } );
+      
+      this.serviceType = this.serviceType ? this.serviceType : serviceType?.label;
+      this.defaultServiceType = serviceType?.value;
     }
 }
   handleServiceTypeChange(event){
@@ -123,7 +144,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   }
   handleCloseDateChange(value){
     const selectedOption = this.allServiceOptions.find(option => option.value === value);
-      if (selectedOption) {
+    if (selectedOption) {
         this.serviceType = selectedOption.label;
       }
     this.closeDate = this.getCloseDate();
@@ -166,7 +187,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       serviceType: leadType,
       accountId: fields.AccountId
     });
-    if(!this.isNotOfAlignType) fields.CloseDate = this.closeDate;
+    if(!this.showCloseDate) fields.CloseDate = this.closeDate;
     this.showSpinner = true;
     if (!leadType) {
       this.handleError({
@@ -214,7 +235,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = this.serviceType?.includes("Slate")
+    const day = (this.serviceType?.includes("Slate") && this.showCloseDate)
       ? String(new Date(year, month, 0).getDate()).padStart(2, "0") // Last day of the month
       : String(today.getDate()).padStart(2, "0"); // Today's date
 
