@@ -296,7 +296,8 @@ private class PandaDocQuoteControllerTest {
     // WHEN
     Test.startTest();
     Map<String, String> result = PandaDocQuoteController.checkDocumentStatus(
-      mockStatusUrl
+      mockStatusUrl,
+      [SELECT Id FROM Opportunity WHERE Division__r.Name = 'Slate' LIMIT 1].Id
     );
     Test.stopTest();
 
