@@ -3,6 +3,7 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import createPandaDocQuote from "@salesforce/apex/PandaDocQuoteController.createPandaDocQuote";
 import checkDocumentStatus from "@salesforce/apex/PandaDocQuoteController.checkDocumentStatus";
 import attachDocumentToOpportunity from "@salesforce/apex/PandaDocQuoteController.attachDocumentToOpportunity";
+import createOrUpdateInvoice from "@salesforce/apex/CreateUpdateQBInvoiceByUser.CreateUpdateInvoice";
 
 export default class PandaDocQuoteCreator extends LightningElement {
   @api recordId;
@@ -31,11 +32,11 @@ export default class PandaDocQuoteCreator extends LightningElement {
     const actionName =
       window.location.href.match(/\/quick\/([^?]+)/)?.[1] || "";
 
-    if (actionName.includes("Generate_Quote")) {
+    if (actionName.toLowerCase().includes("generate_quote")) {
       this.quoteType = "Estimate";
-    } else if (actionName.includes("Generate_Invoice")) {
+    } else if (actionName.toLowerCase().includes("generate_invoice")) {
       this.quoteType = "Invoice";
-    } else if (actionName.includes("Generate_Proposal")) {
+    } else if (actionName.toLowerCase().includes("generate_proposal")) {
       this.quoteType = "Proposal";
     } else {
       console.error("Unknown action name:", actionName);
@@ -105,16 +106,21 @@ export default class PandaDocQuoteCreator extends LightningElement {
 
     try {
       const result = await checkDocumentStatus({
-        statusUrl: this.statusUrl
+        statusUrl: this.statusUrl,
+        opportunityId: this.recordId
       });
 
       if (result && result.status === "document.draft") {
         clearInterval(this.pollingInterval);
-        this.statusMessage = "Quote generated successfully, attaching to Opportunity";
+        this.statusMessage =
+          "Quote generated successfully, attaching to Opportunity";
         const attachResult = await this.attachDocumentToOpportunity(result.id);
         if (attachResult === 200) {
           this.statusMessage = "Success! Opening Quote in PandaDoc.";
           this.isLoading = false;
+          if (this.quoteType === "Invoice") {
+            createOrUpdateInvoice({ recordId: this.recordId });
+          }
           setTimeout(() => this.showPreview(result.id), 1250);
         }
       } else if (result && result.status === "error") {

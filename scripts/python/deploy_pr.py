@@ -46,7 +46,7 @@ def main():
         "-l",
         "RunSpecifiedTests",
         "--target-org",
-        args.org,
+        args.org
     ]
     for cls in test_classes:
         command.extend(["--tests", cls])
