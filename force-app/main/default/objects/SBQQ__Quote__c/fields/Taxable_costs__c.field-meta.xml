@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Taxable_costs__c</fullName>
+    <description>This is a Rollup Field in which the &apos;Total - Sales Tax&apos; field looks up to calculate Total Sales Tax for the Primary Quote
+This is not used on Quote Page Views and functions as a background formula field only</description>
+    <externalId>false</externalId>
+    <inlineHelpText>This is a Rollup Field in which the &apos;Total - Sales Tax&apos; field looks up to calculate Total Sales Tax for the Primary Quote
+This is not used on Quote Page Views and functions as a background formula field only</inlineHelpText>
+    <label>Total - Sales Tax - Taxable costs</label>
+    <summarizedField>SBQQ__QuoteLine__c.SBQQ__CustomerTotal__c</summarizedField>
+    <summaryFilterItems>
+        <field>SBQQ__QuoteLine__c.SBQQ__Taxable__c</field>
+        <operation>equals</operation>
+        <value>True</value>
+    </summaryFilterItems>
+    <summaryForeignKey>SBQQ__QuoteLine__c.SBQQ__Quote__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

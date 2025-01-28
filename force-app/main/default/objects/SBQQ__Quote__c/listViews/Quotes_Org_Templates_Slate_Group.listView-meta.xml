@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Quotes_Org_Templates_Slate_Group</fullName>
+    <columns>NAME</columns>
+    <columns>Is_Template__c</columns>
+    <columns>SBQQ__Notes__c</columns>
+    <columns>Lead_Type__c</columns>
+    <columns>SBQQ__Primary__c</columns>
+    <columns>LAST_UPDATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Is_Template__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>Quote Templates - Slate Group</label>
+</ListView>

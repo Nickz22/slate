@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_tax__c</fullName>
+    <description>This is the Total Amount of Sales Tax on the Primary Quote for the Opportunity
+Quickbooks automatically calculates Sales Tax on all final invoices, however, this is used as a lookup field in Estimate/Invoice creation</description>
+    <externalId>false</externalId>
+    <formula>Taxable_costs__c * 0.08875</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Total - Sales Tax</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

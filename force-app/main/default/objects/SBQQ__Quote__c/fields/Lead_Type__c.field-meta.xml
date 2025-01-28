@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lead_Type__c</fullName>
+    <description>This Field is used to specify Service Type when a quote is being set up as a template for auto quote generation. (AutoQuoteGeneration Apex class) Auto Quote Generation works for all new opportunities created and generates a quote based on the Service Type using 3x Methods. If previous won opportunity for the account with the same service type exists, it clones the primary quote from this previous opportunity. If there isn&apos;t a previous won opportunities, it checks to see whether the account has an account</description>
+    <externalId>false</externalId>
+    <inlineHelpText>This Field is used to specify Service Type when a quote is being set up as a template for auto quote generation. (AutoQuoteGeneration Apex class) Auto Quote Generation works for all new opportunities created and generates a quote based on the Service Type using 3x Methods. If previous won opportunity for the account with the same service type exists, it clones the primary quote from this previous opportunity. If there isn&apos;t a previous won opportunities, it checks to see whether the account has an account</inlineHelpText>
+    <label>Service Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetName>Lead_Type</valueSetName>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Round_Robin_Started__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Used to make sure round robin can not be kicked off twice.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Used to make sure Round Robin can not be kicked off twice.
+This Informs the Lead Producer On the Opportunity Whether a Round Robin Has Started</inlineHelpText>
+    <label>Round-Robin Started</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

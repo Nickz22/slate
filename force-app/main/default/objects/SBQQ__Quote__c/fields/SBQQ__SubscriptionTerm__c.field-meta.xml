@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SBQQ__SubscriptionTerm__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Subscription term used to prorate eligible products by day or month.  This has been set by your administrator.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>This relates to the &apos;Days on Project&apos; Field when Editing Quote Lines
+Enter the # of Days for the Project Here
+This is a Managed Package Field and the Field Name is unable to be revised to &apos;Days on Project&apos; which would be more suited to it&apos;s use in our Organization.</inlineHelpText>
+    <label>Subscription Term</label>
+    <precision>5</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>true</trackHistory>
+    <trackTrending>true</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

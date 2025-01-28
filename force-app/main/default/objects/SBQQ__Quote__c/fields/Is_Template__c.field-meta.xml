@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Template__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>This Field is used to specify that a quote is set up as a template for auto quote generation. (AutoQuoteGeneration Apex class) Auto Quote Generation works for all new opportunities created and generates a quote based on the Service Type using 3x Methods. If previous won opportunity for the account with the same service type exists, it clones the primary quote from this previous opportunity. If there isn&apos;t a previous won opportunities, it checks to see whether the account has an account level template quote for this service type. If not, it uses our Company Level template quote for this service type. The mindset is that quotes from previously won opportunities for an account are the most up to date quotes and our company wide template quotes need most manual adjustments so these are considered as last step.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>This Field is used to specify that a quote is set up as a template for auto quote generation. (AutoQuoteGeneration Apex class) Auto Quote Generation works for all new opportunities created and generates a quote based on the Service Type using 3x Methods. If previous won opportunity for the account with the same service type exists, it clones the primary quote from this previous opportunity. If there isn&apos;t a previous won opportunities, it checks to see whether the account has an account level template quot</inlineHelpText>
+    <label>Is Template</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

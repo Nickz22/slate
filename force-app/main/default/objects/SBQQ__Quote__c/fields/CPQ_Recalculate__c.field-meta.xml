@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CPQ_Recalculate__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Used to trigger a recalculation of a quote. Checking/Unchecking the box will trigger a recalulate.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Changing the value of this field will trigger a quote recalculation.</inlineHelpText>
+    <label>CPQ Recalculate</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

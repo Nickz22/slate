@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Close_Date__c</fullName>
+    <description>This is a Lookup Field to the Opportunity Close Date
+When a Shoot Date is Confirmed, Close Date updates to match Shoot Date
+Our Accounting is Based on the &apos;Matching Princiciple&apos; which states that Revenue is Earned on the Date it&apos;s Actually Earned
+Thus, our Invoice Dates in Quickbooks will always be equal to the Opportunity Close Date
+Close Date for Productions = Initial Shoot Date
+Close Date for Post Productions = Date of Initial Opportunity Lead</description>
+    <externalId>false</externalId>
+    <formula>SBQQ__Opportunity2__r.CloseDate</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>This is a Lookup Field to the Opportunity Close Date
+When a Shoot Date is Confirmed, Close Date updates to match Shoot Date
+Our Accounting is Based on the &apos;Matching Princiciple&apos; which states that Revenue is Earned on the Date it&apos;s Actually Earned
+Thus, our Invoice Dates in Quickbooks will always be equal to the Opportunity Close Date
+Close Date for Productions = Initial Shoot Date
+Close Date for Post Productions = Date of Initial Opportunity Lead</inlineHelpText>
+    <label>Close Date</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Use_Align_Pricebook_if_ServType_is_Align</fullName>
+    <active>false</active>
+    <errorConditionFormula>if(and( SBQQ__PriceBook__r.Name  =&apos;Align Retouch - Standard Price Book&apos;,Opportunity_Service_Type__c &lt;&gt;&apos;Retouching - Align&apos;)=true, true,
+if(and(SBQQ__PriceBook__r.Name  &lt;&gt;&apos;Align Retouch - Standard Price Book&apos;,Opportunity_Service_Type__c =&apos;Retouching - Align&apos;)=true, true,false))</errorConditionFormula>
+    <errorDisplayField>Lead_Type__c</errorDisplayField>
+    <errorMessage>You cannot have a Service Type of Retouching-Align if the Pricebook is not Align - Retouch</errorMessage>
+</ValidationRule>

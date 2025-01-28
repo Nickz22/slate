@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Cost__c</fullName>
+    <description>This is a Rollup Field in which calculates Our Costs for the Project to be Used in the Total Margin Calculations
+This is not used on Quote Page Views and functions as a background formula field only</description>
+    <externalId>false</externalId>
+    <inlineHelpText>This is a Rollup Field in which calculates Our Costs for the Project to be Used in the Total Margin Calculations
+This is not used on Quote Page Views and functions as a background formula field only</inlineHelpText>
+    <label>Total - Our Costs - Rollup</label>
+    <summarizedField>SBQQ__QuoteLine__c.Total_cost__c</summarizedField>
+    <summaryForeignKey>SBQQ__QuoteLine__c.SBQQ__Quote__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Cost_D__c</fullName>
+    <description>This is our Total Cost which is used to reflect our Margin
+It&apos;s a rollup summation field based on the Margin of all Quote Line Items</description>
+    <externalId>false</externalId>
+    <formula>SBQQ__NetAmount__c -  Margin__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>This is our Total Cost which is used to reflect our Margin
+It&apos;s a rollup summation field based on the Margin of all Quote Line Items</inlineHelpText>
+    <label>Total - Our Costs</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

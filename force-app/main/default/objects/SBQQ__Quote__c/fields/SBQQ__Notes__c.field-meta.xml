@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SBQQ__Notes__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Notes printed on the generated PDF document.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Add Notes for Each Quote Created.
+The Notes Help Differentiate Each Quote When Multiple Quote Revisions Are Created
+Add The Changes You&apos;ve Made To The Quote That Differentiates The New Quote From The Previous Quote</inlineHelpText>
+    <label>Notes</label>
+    <length>2000</length>
+    <trackHistory>true</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>
