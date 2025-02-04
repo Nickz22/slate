@@ -417,6 +417,10 @@ public class PandaDocQuoteController {
         },
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
+          /**
+           * both descriptions need to be here
+           */
+          'DESCRIPTION' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
           'Description' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
           'Text_Unit_Cost__c' => String.valueOf(qli.SBQQ__ListPrice__c),
           'Text_Customer_Price__c' => String.valueOf(
