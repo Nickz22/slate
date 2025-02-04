@@ -28,6 +28,6 @@
     </values>
     <values>
         <field>Pandadoc_Proposal_Template_Id__c</field>
-        <value xsi:type="xsd:string">https://app.pandadoc.com/a/#/templates/WEAUtVU5MsSbrbxVMTKcve</value>
+        <value xsi:type="xsd:string">WEAUtVU5MsSbrbxVMTKcve</value>
     </values>
 </CustomMetadata>

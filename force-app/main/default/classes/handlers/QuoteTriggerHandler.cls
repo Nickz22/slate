@@ -1,7 +1,4 @@
 public class QuoteTriggerHandler {
-  public static void handleAfterInsert(List<SBQQ__Quote__c> quotes) {
-    RecordsSharingService.handleQuoteSharing(quotes);
-  }
 
   public static void setDivisionName(List<SBQQ__Quote__c> quotes) {
     Set<Id> opportunityIds = new Set<Id>();

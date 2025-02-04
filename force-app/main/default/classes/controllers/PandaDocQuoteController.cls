@@ -257,10 +257,10 @@ public class PandaDocQuoteController {
   }
 
   private List<PandaDocQuoteToken> getTokens() {
+    // invoice amount already includes tax
     Decimal opportunityTotal =
       this.opp.Invoice_Amount__c +
-      (this.opp.CC_Payment__c ? this.opp.CC_Fee_invoice__c : 0) +
-      this.opp.Tax_to_collect__c;
+      (this.opp.CC_Payment__c ? this.opp.CC_Fee_invoice__c : 0);
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c *
       this.percentToPayByQuoteType.get(this.quoteType);
@@ -397,7 +397,7 @@ public class PandaDocQuoteController {
     for (SBQQ__QuoteLine__c qli : [
       SELECT
         SBQQ__Product__r.Name,
-        SBQQ__Description__c,
+        Client_Info__c,
         SBQQ__ListPrice__c,
         SBQQ__CustomerPrice__c,
         SBQQ__Quantity__c,
@@ -417,7 +417,7 @@ public class PandaDocQuoteController {
         },
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
-          'DESCRIPTION' => String.isNotBlank(qli.SBQQ__Description__c) ? qli.SBQQ__Description__c : '',
+          'Description' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
           'Text_Unit_Cost__c' => String.valueOf(qli.SBQQ__ListPrice__c),
           'Text_Customer_Price__c' => String.valueOf(
             qli.SBQQ__CustomerPrice__c
