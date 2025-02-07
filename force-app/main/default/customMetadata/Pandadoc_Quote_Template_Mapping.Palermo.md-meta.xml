@@ -8,26 +8,26 @@
     </values>
     <values>
         <field>Pandadoc_CC_Fee_Estimate_Template_Id__c</field>
-        <value xsi:type="xsd:string">NGSnSRiZazW4QBhVtxfTfN</value>
+        <value xsi:type="xsd:string">HHcJ3HYTmTpFTc2YWPUAuK</value>
     </values>
     <values>
         <field>Pandadoc_CC_Fee_Invoice_Template_Id__c</field>
-        <value xsi:type="xsd:string">t4Hvbz7Sk9wT2xLtoKPf6c</value>
+        <value xsi:type="xsd:string">RzHnVRnCiWmeqfMBWF34Gi</value>
     </values>
     <values>
         <field>Pandadoc_CC_Fee_Proposal_Template_Id__c</field>
-        <value xsi:type="xsd:string">5w8fy2qbwRT6QatmiUU7JC</value>
+        <value xsi:type="xsd:string">YC9q3JHpDzxVwibaEZJyZM</value>
     </values>
     <values>
         <field>Pandadoc_Estimate_Template_Id__c</field>
-        <value xsi:type="xsd:string">A3cE6ZTJ9gKsQDD85NcWv9</value>
+        <value xsi:type="xsd:string">iwcf7qrnLg4xQj75m4joUN</value>
     </values>
     <values>
         <field>Pandadoc_Invoice_Template_Id__c</field>
-        <value xsi:type="xsd:string">UqZ9VGyw9T4nnwUwZLYP9j</value>
+        <value xsi:type="xsd:string">PxtZCqn3dZjDqnMSTn34zV</value>
     </values>
     <values>
         <field>Pandadoc_Proposal_Template_Id__c</field>
-        <value xsi:type="xsd:string">L3SSYYUvLqn34SPfe2bwyP</value>
+        <value xsi:type="xsd:string">VkvJHa7kpuge67q4BqLTfW</value>
     </values>
 </CustomMetadata>

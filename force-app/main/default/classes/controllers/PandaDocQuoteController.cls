@@ -408,6 +408,7 @@ public class PandaDocQuoteController {
       WHERE
         SBQQ__Quote__r.SBQQ__Opportunity2__c = :this.opportunityId
         AND SBQQ__Quote__r.SBQQ__Primary__c = TRUE
+        AND SBQQ__Quantity__c > 0
     ]) {
       Map<String, Object> row = new Map<String, Object>{
         'options' => new Map<String, Object>{
@@ -426,9 +427,15 @@ public class PandaDocQuoteController {
           'Text_Customer_Price__c' => String.valueOf(
             qli.SBQQ__CustomerPrice__c
           ),
+          /**
+           * both quantities need to be here
+           */
+          'QUANTITY' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
           'Quantity' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
           'Days_Required__c' => String.valueOf(qli.Days_on_Project5__c),
+          'qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'QTY' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
+          'Qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'Price' => qli.SBQQ__CustomerTotal__c,
           'SBQQ__CustomerTotal__c' => (qli.SBQQ__CustomerTotal__c *
           this.percentToPayByQuoteType.get(this.quoteType))
