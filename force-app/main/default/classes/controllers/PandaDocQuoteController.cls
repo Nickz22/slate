@@ -400,6 +400,7 @@ public class PandaDocQuoteController {
       FROM SBQQ__QuoteLine__c
       WHERE
         SBQQ__Quote__r.SBQQ__Opportunity2__c = :this.opportunityId
+        AND SBQQ__Quantity__c > 0
         AND SBQQ__Quote__r.SBQQ__Primary__c = TRUE AND SBQQ__CustomerTotal__c != 0 ORDER BY CreatedDate
     ]) {
       Map<String, Object> row = new Map<String, Object>{
