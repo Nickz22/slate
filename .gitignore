@@ -45,3 +45,4 @@ $RECYCLE.BIN/
 **/venv/
 scripts/soql/account.soql
 scripts/apex/hello.apex
+scripts/python/unused_opp_fields_output.txt
