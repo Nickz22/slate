@@ -3,8 +3,9 @@ import STAGENAME from "@salesforce/schema/Opportunity.StageName";
 import { getPicklistValues } from "lightning/uiObjectInfoApi";
 import { updateRecord } from 'lightning/uiRecordApi';
 import l4gNewOpportunity from "c/l4gNewOpportunity";
+import { NavigationMixin } from "lightning/navigation";
 
-export default class CustomDatatable extends LightningElement {
+export default class CustomDatatable extends NavigationMixin(LightningElement) {
     @api actions = [{ name: 'edit', label: 'Edit' }, { name: 'clone', label: 'Clone' }];
     @track editableRowId = null;
     @track stageOptions;
@@ -15,6 +16,7 @@ export default class CustomDatatable extends LightningElement {
     _relatedRecords = [];
     originalRecordData = {};
     showSpinner = false;
+
     @wire(getPicklistValues, {
         recordTypeId: "012000000000000AAA",
         fieldApiName: STAGENAME
@@ -50,14 +52,30 @@ export default class CustomDatatable extends LightningElement {
     }
 
     handleRowAction(event) {
-        const actionName = event.target.title;
-        const rowId = event.target.dataset.id;
-
-        if (actionName === 'Edit') {
+        const actionName = event.detail.value;
+        const rowId = event.currentTarget.dataset.recordId;
+        if (actionName === 'edit') {
             this.startEditing(rowId);
-        } else if (actionName === 'Clone') {
+        } else if (actionName === 'clone') {
             this.showCloneModal(rowId);
+        }else if (actionName === 'quote') {
+            this.redirectToPrimaryQuote(rowId);
         }
+    }
+
+    redirectToPrimaryQuote(rowId){
+        const record = this._relatedRecords.find(rec => rec.Id === rowId);
+        if(record){
+            this[NavigationMixin.Navigate](
+            {
+                type: "standard__webPage",
+                attributes: {
+                url: record.quoteUrl,
+                },
+            }
+            );
+        }
+        
     }
     startEditing(rowId) {
         this.editableRowId = rowId;

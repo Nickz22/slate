@@ -41,7 +41,8 @@ export default class L4gContactDetail extends LightningElement {
         return {
           ...row,
           tooltipText: this.tooltipContent(row),
-          url: `${this.sfdcUrl.data}/${row.Id}`
+          url: `${this.sfdcUrl.data}/${row.Id}`,
+          quoteUrl : `${this.sfdcUrl.data}/${row.SBQQ__PrimaryQuote__c}`
         };
       });
       this.showSpinner = false;

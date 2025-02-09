@@ -6,7 +6,7 @@
         <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table">
             <thead>
                 <tr class="slds-text-title_caps">
-                    <th scope="col">
+                    <th scope="col" style="padding-left:10px;">
                         <div class="slds-truncate" title="Name">
                             <div onclick={sortByName} 
                                     title="Sort by Name">
@@ -15,7 +15,7 @@
                         </div>
                         </div>
                     </th>
-                    <th scope="col">
+                    <th scope="col" style="padding-left:0px;">
                         <div class="slds-truncate" title="Stage">
                             <div  onclick={sortByStage} 
                                     title="Sort by Stage">
@@ -24,7 +24,7 @@
                         </div>
                         </div>
                     </th>
-                    <th scope="col" class="slds-text-align_right">
+                    <th scope="col" class="slds-text-align_right" style="padding-right:10px;">
                         <div class="slds-truncate" title="Actions">Actions</div>
                     </th>
                 </tr>
@@ -32,7 +32,7 @@
             <tbody>
                 <template for:each={relatedRecords} for:item="record">
                     <tr key={record.Id}>
-                        <td style="padding:10px 2px;">
+                        <td style="padding:10px 10px;">
                             <div class="slds-truncate slds-line-clamp" style="max-width: 200px;">
                                 <template if:true={record.isEditable}>
                                     <!-- Apply truncate for editable input -->
@@ -84,13 +84,12 @@
                                 </lightning-button-icon>
                             </template>
                             <template if:false={record.isEditable}>
-                                <!-- Replace Actions with Edit and Clone icons -->
-                                <lightning-button-icon data-id={record.Id} icon-name="action:edit" alternative-text="Edit"
-                                    onclick={handleRowAction} title="Edit" class="slds-m-right_x-small">
-                                </lightning-button-icon>
-                                <lightning-button-icon data-id={record.Id} icon-name="action:clone" alternative-text="Clone"
-                                    onclick={handleRowAction} title="Clone">
-                                </lightning-button-icon>
+                                <lightning-button-menu alternative-text="Actions" icon-name="utility:down" menu-alignment="right" 
+                                    onselect={handleRowAction} data-record-id={record.Id} class="slds-m-right_small">
+                                    <lightning-menu-item value="edit" label="Edit" icon-name="action:edit"></lightning-menu-item>
+                                    <lightning-menu-item value="clone" label="Clone" icon-name="action:clone"></lightning-menu-item>
+                                    <lightning-menu-item value="quote" label="Primary Quote" icon-name="action:quote"></lightning-menu-item>
+                                </lightning-button-menu>
                             </template>
                         </td>
                     </tr>

@@ -173,29 +173,22 @@ public class PandaDocQuoteController {
         opp.Division__r.Name.toLowerCase()
       );
       DateTime createdDate = opp.CreatedDate;
-      String month = createdDate.month() < 10
-        ? '0' + createdDate.month()
-        : String.valueOf(createdDate.month());
-      String day = createdDate.day() < 10
-        ? '0' + createdDate.day()
-        : String.valueOf(createdDate.day());
-      String year = String.valueOf(createdDate.year());
 
-      String formattedDate = month + '_' + day + '_' + year;
+      String formattedDate = createdDate.format('YYMMDD');
       String attachmentName =
         opp.Name +
-        '_' +
+        ' ' +
         (opp.Division__r.Name != 'Palermo'
           ? opp.Division__r.Name.substring(0, 2).toUpperCase()
           : 'PL') +
-        '_' +
+        ' ' +
         (quoteType == 'estimate'
           ? 'EST'
           : quoteType == 'proposal' ? 'PRO' : 'INV') +
-        '_' +
+        ' ' +
         formattedDate;
       ContentVersion cv = new ContentVersion();
-      cv.Title = attachmentName;
+      cv.Title = attachmentName.replaceAll('_',' ');
       cv.PathOnClient = documentName + '.pdf';
       cv.VersionData = documentContent;
       cv.IsMajorVersion = true;
@@ -241,19 +234,19 @@ public class PandaDocQuoteController {
       .toUpperCase();
     String typeAbbrev = '';
     if (this.quoteType == PandaDocQuoteType.Invoice) {
-      typeAbbrev = '_INV';
+      typeAbbrev = ' INV';
     } else if (this.quoteType == PandaDocQuoteType.Estimate) {
-      typeAbbrev = '_EST';
+      typeAbbrev = ' EST';
     } else {
-      typeAbbrev = '_PRO';
+      typeAbbrev = ' PRO';
     }
-    String dateFormatted = this.opp.CreatedDate.format('MM_dd_yyyy');
-    return this.opp.Name +
+    String dateFormatted = this.opp.CreatedDate.format('YYMMdd');
+    return (this.opp.Name +
       typeAbbrev +
-      '_' +
+      ' ' +
       divisionAbbreviation +
-      '_' +
-      dateFormatted;
+      ' ' +
+      dateFormatted).replaceAll('_',' ');
   }
 
   private List<PandaDocQuoteToken> getTokens() {
@@ -407,8 +400,7 @@ public class PandaDocQuoteController {
       FROM SBQQ__QuoteLine__c
       WHERE
         SBQQ__Quote__r.SBQQ__Opportunity2__c = :this.opportunityId
-        AND SBQQ__Quote__r.SBQQ__Primary__c = TRUE
-        AND SBQQ__Quantity__c > 0
+        AND SBQQ__Quote__r.SBQQ__Primary__c = TRUE AND SBQQ__CustomerTotal__c != 0 ORDER BY CreatedDate
     ]) {
       Map<String, Object> row = new Map<String, Object>{
         'options' => new Map<String, Object>{
