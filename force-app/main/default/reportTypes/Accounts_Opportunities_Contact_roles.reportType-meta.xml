@@ -724,16 +724,6 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
-            <field>UPPER_CLIENT__c</field>
-            <table>Account.Opportunities</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>UPPER_TYPE__c</field>
-            <table>Account.Opportunities</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
             <field>Deposit_Amount__c</field>
             <table>Account.Opportunities</table>
         </columns>

@@ -274,7 +274,7 @@ public class PandaDocQuoteController {
       new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
       new PandaDocQuoteToken(
         'OPPORTUNITY_DESCRIPTION',
-        this.opp.Upper_Descriptor__c
+        this.opp.Opportunity_Descriptor__c?.toUpperCase()
       ),
       new PandaDocQuoteToken(
         'DUE_DATE',

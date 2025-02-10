@@ -3,19 +3,38 @@ import LightningModal from "lightning/modal";
 import { NavigationMixin } from "lightning/navigation";
 import { getPicklistValues } from "lightning/uiObjectInfoApi";
 import getDivisions from "@salesforce/apex/L4GController.getDivisions";
+
+/** imports to block the fields being used by this LWC from being deleted */
 import SERVICE_TYPE from "@salesforce/schema/Opportunity.Lead_Type__c";
 import STAGENAME from "@salesforce/schema/Opportunity.StageName";
-import { getRecord } from "lightning/uiRecordApi";
+import OWNER_ID from "@salesforce/schema/Opportunity.OwnerId";
+import ACCOUNT_ID from "@salesforce/schema/Opportunity.AccountId";
+import PRIMARY_CONTACT from "@salesforce/schema/Opportunity.PrimaryContact__c";
+import ADDITIONAL_INFO from "@salesforce/schema/Opportunity.Additional_Info__c";
+import CLOSE_DATE from "@salesforce/schema/Opportunity.CloseDate";
+import OPPORTUNITY_DESCRIPTOR from "@salesforce/schema/Opportunity.Opportunity_Descriptor__c";
+import LEAD_SOURCE from "@salesforce/schema/Opportunity.LeadSource";
+import DAYS from "@salesforce/schema/Opportunity.Days__c";
+import SHOOT_DATE from "@salesforce/schema/Opportunity.Shoot_Date__c";
 import getPricebook from "@salesforce/apex/L4GController.getPricebook";
 import getOpportunityName from "@salesforce/apex/L4GController.getOpportunityName";
 import cloneRecord from "@salesforce/apex/L4GController.cloneRecord";
 
 const FIELDS = ["Contact.AccountId"];
-const WON_PRODUCTION_TYPES = ['Slate - Brand Content Production','Slate - CGI','Slate - Brand Content','Slate - Motion','Slate - Studio & Eq','Align - Retouch','Palermo - Branding','Palermo - Content'];
-const WON_POST_PRODUCTION_TYPES = ['Slate - Retouch','Align - Retouch'];
-const SLATE_CGI_SERVICE = 'Slate - CGI';
-const SLATE_RETOUCHING_SERVICE = 'Slate - Retouch';
-const PALERMO_BRANDING_SERVICE = 'Palermo - Branding';
+const WON_PRODUCTION_TYPES = [
+  "Slate - Brand Content Production",
+  "Slate - CGI",
+  "Slate - Brand Content",
+  "Slate - Motion",
+  "Slate - Studio & Eq",
+  "Align - Retouch",
+  "Palermo - Branding",
+  "Palermo - Content"
+];
+const WON_POST_PRODUCTION_TYPES = ["Slate - Retouch", "Align - Retouch"];
+const SLATE_CGI_SERVICE = "Slate - CGI";
+const SLATE_RETOUCHING_SERVICE = "Slate - Retouch";
+const PALERMO_BRANDING_SERVICE = "Palermo - Branding";
 export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   @api initialInquiry;
   @api objectName;
@@ -34,14 +53,24 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     this._allServiceOptions = value;
     this.getDivisions();
   }
-  get isNotOfAlignType(){
-    return !(this.serviceType?.toLowerCase().includes('align') || (this.divisionNames?.length === 1 && this.divisionNames?.indexOf('Align') !== -1));
+  get isNotOfAlignType() {
+    return !(
+      this.serviceType?.toLowerCase().includes("align") ||
+      (this.divisionNames?.length === 1 &&
+        this.divisionNames?.indexOf("Align") !== -1)
+    );
   }
-  get showCloseDate(){
-    return this.isNotOfAlignType && !(this.serviceType == SLATE_CGI_SERVICE || this.serviceType == SLATE_RETOUCHING_SERVICE);
+  get showCloseDate() {
+    return (
+      this.isNotOfAlignType &&
+      !(
+        this.serviceType == SLATE_CGI_SERVICE ||
+        this.serviceType == SLATE_RETOUCHING_SERVICE
+      )
+    );
   }
-  get showShootDates(){
-    return this.showCloseDate && (this.serviceType != PALERMO_BRANDING_SERVICE);
+  get showShootDates() {
+    return this.showCloseDate && this.serviceType != PALERMO_BRANDING_SERVICE;
   }
   @track serviceTypeOptions;
   @track stageOptions;
@@ -62,7 +91,6 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   priceBookId;
   showSpinner = true;
   serviceType;
-
 
   connectedCallback() {
     this.getDivisions();
@@ -93,60 +121,76 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   })
   getStageName({ data, error }) {
     if (data) {
-      const stageToExclude = [
-        "Closed Won",
-        "Closed Lost"
-      ];
+      const stageToExclude = ["Closed Won", "Closed Lost"];
       this.stageOptions = data?.values?.filter((val) => {
         return !stageToExclude.includes(val.value);
       });
     }
   }
-  
+
   get header() {
-    return this.isCloned ? `Clone ${this.objectName}`:`Create ${this.objectName}`;
+    return this.isCloned
+      ? `Clone ${this.objectName}`
+      : `Create ${this.objectName}`;
   }
-  set closeDate(value){
+  set closeDate(value) {
     this._closeDate = value;
   }
   get closeDate() {
-    if(this._closeDate){
+    if (this._closeDate) {
       return this._closeDate;
-    }
-    else{
+    } else {
       return this.getCloseDate();
-    }  
+    }
   }
   handleLoad(event) {
-    if(this.isCloned){
-      const inputFieldValue = event.detail?.records[this.recordId]?.fields?.Lead_Type__c?.value;
+    if (this.isCloned) {
+      const inputFieldValue =
+        event.detail?.records[this.recordId]?.fields?.Lead_Type__c?.value;
       this.defaultServiceType = inputFieldValue;
-      this.defaultStage = (this.defaultServiceType.toLowerCase().includes('retouch')||this.defaultServiceType.toLowerCase().includes('retouching'))?'Won - Post Production':'Won - Production';	
+      this.defaultStage =
+        this.defaultServiceType.toLowerCase().includes("retouch") ||
+        this.defaultServiceType.toLowerCase().includes("retouching")
+          ? "Won - Post Production"
+          : "Won - Production";
       this.handleCloseDateChange(this.defaultServiceType);
-      const leadSource = this.template.querySelector('lightning-input-field[data-field="LeadSource"]');
-      leadSource.value = 'Return Client';
-      const initialInquiry = this.template.querySelector('lightning-input-field[data-field="initialInquiry"]');
+      const leadSource = this.template.querySelector(
+        'lightning-input-field[data-field="LeadSource"]'
+      );
+      leadSource.value = "Return Client";
+      const initialInquiry = this.template.querySelector(
+        'lightning-input-field[data-field="initialInquiry"]'
+      );
       initialInquiry.value = this.initialInquiry;
-    }else if(this.hasExistingOpp){
-      const leadSource = this.template.querySelector('lightning-input-field[data-field="LeadSource"]');
-      leadSource.value = 'Return Client';
+    } else if (this.hasExistingOpp) {
+      const leadSource = this.template.querySelector(
+        'lightning-input-field[data-field="LeadSource"]'
+      );
+      leadSource.value = "Return Client";
       this.defaultStage = this.latestOpp?.StageName || this.defaultStage;
-      let serviceType = this.allServiceOptions.find((service)=>{
-        return service.label?.toLowerCase() === this.latestOpp?.Lead_Type__c?.toLowerCase();
-      } );
-      
-      this.serviceType = this.serviceType ? this.serviceType : serviceType?.label;
+      let serviceType = this.allServiceOptions.find((service) => {
+        return (
+          service.label?.toLowerCase() ===
+          this.latestOpp?.Lead_Type__c?.toLowerCase()
+        );
+      });
+
+      this.serviceType = this.serviceType
+        ? this.serviceType
+        : serviceType?.label;
       this.defaultServiceType = serviceType?.value;
     }
-}
-  handleServiceTypeChange(event){
+  }
+  handleServiceTypeChange(event) {
     this.handleCloseDateChange(event.target.value);
   }
-  handleCloseDateChange(value){
-    const selectedOption = this.allServiceOptions.find(option => option.value === value);
+  handleCloseDateChange(value) {
+    const selectedOption = this.allServiceOptions.find(
+      (option) => option.value === value
+    );
     if (selectedOption) {
-        this.serviceType = selectedOption.label;
-      }
+      this.serviceType = selectedOption.label;
+    }
     this.closeDate = this.getCloseDate();
   }
   handleSuccess(event) {
@@ -187,7 +231,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       serviceType: leadType,
       accountId: fields.AccountId
     });
-    if(!this.showCloseDate) fields.CloseDate = this.closeDate;
+    if (!this.showCloseDate) fields.CloseDate = this.closeDate;
     this.showSpinner = true;
     if (!leadType) {
       this.handleError({
@@ -209,14 +253,14 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
           division.Name.toLowerCase() === divisionPrepensionInServiceType
       )?.Id;
     fields.Division__c = divisionId;
-    if(this.isCloned){
+    if (this.isCloned) {
       this.cloneOpportunity(this.recordId, fields);
       return;
     }
     this.template.querySelector("lightning-record-edit-form").submit(fields);
   }
 
-  cloneOpportunity(recordId, fields){
+  cloneOpportunity(recordId, fields) {
     cloneRecord({ recordId: recordId, opportunityData: fields })
       .then((data) => {
         this.showSpinner = false;
@@ -231,13 +275,14 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     console.error(event?.detail?.detail);
     this.showSpinner = false;
   }
-  getCloseDate(serviceType){
+  getCloseDate(serviceType) {
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = (this.serviceType?.includes("Slate") && this.showCloseDate)
-      ? String(new Date(year, month, 0).getDate()).padStart(2, "0") // Last day of the month
-      : String(today.getDate()).padStart(2, "0"); // Today's date
+    const day =
+      this.serviceType?.includes("Slate") && this.showCloseDate
+        ? String(new Date(year, month, 0).getDate()).padStart(2, "0") // Last day of the month
+        : String(today.getDate()).padStart(2, "0"); // Today's date
 
     return `${year}-${month}-${day}`;
   }

@@ -12,7 +12,7 @@ public with sharing class OpportunitySelector {
               Lead_Type__c,
               Division__r.Name,
               Account.Name,
-              Upper_Descriptor__c,
+              Opportunity_Descriptor__c,
               InvoiceNumber__c,
               Payment__c,
               Tax_to_collect__c,
