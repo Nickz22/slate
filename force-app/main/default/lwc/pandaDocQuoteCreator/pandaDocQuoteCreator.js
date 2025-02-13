@@ -31,7 +31,6 @@ export default class PandaDocQuoteCreator extends LightningElement {
   setQuoteType() {
     const actionName =
       window.location.href.match(/\/quick\/([^?]+)/)?.[1] || "";
-
     if (actionName.toLowerCase().includes("generate_quote")) {
       this.quoteType = "Estimate";
     } else if (actionName.toLowerCase().includes("generate_invoice")) {
@@ -42,6 +41,8 @@ export default class PandaDocQuoteCreator extends LightningElement {
       console.error("Unknown action name:", actionName);
       this.quoteType = "Unknown";
     }
+    this.statusMessage =
+      "Generating " + (this.quoteType === "Unknown" ? "Quote" : this.quoteType);
   }
 
   get shouldFireWire() {
@@ -82,7 +83,9 @@ export default class PandaDocQuoteCreator extends LightningElement {
     this.statusUrl = result.statusUrl;
     this.documentId = result.documentId;
     this.statusMessage =
-      "Waiting for the generated Quote to upload to Pandadoc";
+      "Waiting for the generated " +
+      (this.quoteType === "Unknown" ? "Quote" : this.quoteType) +
+      " to upload to Pandadoc";
     this.startPolling();
   }
 
@@ -99,24 +102,29 @@ export default class PandaDocQuoteCreator extends LightningElement {
     if (this.pollingAttempts > this.maxPollingAttempts) {
       clearInterval(this.pollingInterval);
       this.handleError(
-        new Error("Quote generation timed out. Please try again.")
+        new Error(
+          (this.quoteType === "Unknown" ? "Quote" : this.quoteType) +
+            " generation timed out. Please try again."
+        )
       );
       return;
     }
-
     try {
       const result = await checkDocumentStatus({
         statusUrl: this.statusUrl,
         opportunityId: this.recordId
       });
-
       if (result && result.status === "document.draft") {
         clearInterval(this.pollingInterval);
         this.statusMessage =
-          "Quote generated successfully, attaching to Opportunity";
+          (this.quoteType === "Unknown" ? "Quote" : this.quoteType) +
+          " generated successfully, attaching to Opportunity";
         const attachResult = await this.attachDocumentToOpportunity(result.id);
         if (attachResult === 200) {
-          this.statusMessage = "Success! Opening Quote in PandaDoc.";
+          this.statusMessage =
+            "Success! Opening " +
+            (this.quoteType === "Unknown" ? "Quote" : this.quoteType) +
+            " in PandaDoc.";
           this.isLoading = false;
           if (this.quoteType === "Invoice") {
             createOrUpdateInvoice({ recordId: this.recordId });
@@ -125,7 +133,13 @@ export default class PandaDocQuoteCreator extends LightningElement {
         }
       } else if (result && result.status === "error") {
         clearInterval(this.pollingInterval);
-        throw new Error("An error occurred while generating the quote.");
+        throw new Error(
+          "An error occurred while generating the " +
+            (this.quoteType === "Unknown"
+              ? "quote"
+              : this.quoteType.toLowerCase()) +
+            "."
+        );
       }
     } catch (error) {
       clearInterval(this.pollingInterval);
@@ -138,7 +152,7 @@ export default class PandaDocQuoteCreator extends LightningElement {
       await attachDocumentToOpportunity({
         opportunityId: this.recordId,
         documentId: documentId,
-        documentName: `PandaDoc Quote - ${this.recordId}`,
+        documentName: `PandaDoc ${this.quoteType === "Unknown" ? "Quote" : this.quoteType} - ${this.recordId}`,
         quoteType: this.quoteType
       });
       return 200;
