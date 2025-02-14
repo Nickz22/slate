@@ -249,7 +249,8 @@ public class L4GController {
         SBQQ__PrimaryQuote__r.Name,
         Division__r.Name,
         toLabel(Lead_Type__c),
-        Opportunity_Descriptor__c
+        Opportunity_Descriptor__c,
+        SBQQ__PrimaryQuote__c
       FROM Opportunity
       WHERE PrimaryContact__c = :contactId
       ORDER BY CreatedDate DESC
