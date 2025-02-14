@@ -204,7 +204,7 @@ public class PandaDocQuoteController {
       cdl.LinkedEntityId = opportunityId;
       cdl.ShareType = 'V';
       insert cdl;
-            updateOpportunityDocumentStage(opportunityId,quoteType);
+      updateOpportunityDocumentStage(opportunityId,quoteType,documentId);
     } catch (Exception e) {
       throw new AuraHandledException(
         'Error attaching document: ' + e.getMessage()
@@ -213,20 +213,25 @@ public class PandaDocQuoteController {
   }
 
   // helpers
-    private static void updateOpportunityDocumentStage(Id opportunityId,String quoteType){
+    private static void updateOpportunityDocumentStage(Id opportunityId,String quoteType,String documentId){
+        String url = 'https://app.pandadoc.com/a/#/documents/'+documentId;
+        Opportunity oppToUpdate = new Opportunity(Id=opportunityId);
         String stageValue;
         if(quoteType == 'Proposal'){
-            stageValue = 'Proposal Generated';
+            oppToUpdate.Last_Proposal__c = url;
+            oppToUpdate.Stage_Document_Automated__c = 'Proposal Generated';
         }
         else if(quoteType == 'Invoice'){
-            stageValue = 'Invoice Generated';
+            oppToUpdate.Last_Invoice__c = url;
+            oppToUpdate.Stage_Document_Automated__c = 'Invoice Generated';
         }
         else if(quoteType == 'Estimate'){
-            stageValue = 'Quote Generated';
+            oppToUpdate.Last_Estimate__c = url;
+            oppToUpdate.Stage_Document_Automated__c = 'Quote Generated';
         }
         
-        if(stageValue != null){
-            update new Opportunity(Id=opportunityId,Stage_Document_Automated__c=stageValue);
+        if(oppToUpdate.Stage_Document_Automated__c != null){
+            update oppToUpdate;
         }
     }
   private String getDocumentName() {
