@@ -23,7 +23,7 @@ public with sharing class OpportunitySelector {
               PrimaryContact__r.FirstName,
               PrimaryContact__r.LastName,
               Additional_Client_CC__c,
-              Invoice_Amount__c,
+              Amount_QB__c,
               CreatedDate
             FROM Opportunity
             WHERE Id IN :ids

@@ -259,7 +259,7 @@ public class PandaDocQuoteController {
   private List<PandaDocQuoteToken> getTokens() {
     // invoice amount already includes tax
     Decimal opportunityTotal =
-      this.opp.Invoice_Amount__c +
+      this.opp.Amount_QB__c +
       (this.opp.CC_Payment__c ? this.opp.CC_Fee_invoice__c : 0);
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c *
@@ -442,6 +442,27 @@ public class PandaDocQuoteController {
         }
       };
       System.debug('Pricing Row: ' + JSON.serializePretty(row));
+      rows.add(row);
+    }
+
+    if(this.opp.CC_Payment__c){
+      Map<String, Object> row = new Map<String, Object>{
+        'options' => new Map<String, Object>{
+          'optional' => false,
+          'optional_selected' => true,
+          'qty_editable' => false
+        },
+        'data' => new Map<String, Object>{
+          'Name' => 'CC Fee',
+          'Text_Unit_Cost__c' => String.valueOf(this.opp.CC_Fee_invoice__c),
+          'Quantity' => String.valueOf(1),
+          'Days_Required__c' => String.valueOf(0),
+          'qty' => String.valueOf(1),
+          'QTY' => String.valueOf(1),
+          'Price' => this.opp.CC_Fee_invoice__c,
+          'SBQQ__CustomerTotal__c' => this.opp.CC_Fee_invoice__c
+        }
+      };
       rows.add(row);
     }
 
