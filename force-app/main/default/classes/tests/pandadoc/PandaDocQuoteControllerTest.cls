@@ -244,14 +244,8 @@ private class PandaDocQuoteControllerTest {
       'One ContentDocumentLink should be created'
     );
     Datetime createdDate = opp.CreatedDate;
-    String month = createdDate.month() < 10
-      ? '0' + createdDate.month()
-      : String.valueOf(createdDate.month());
-    String day = createdDate.day() < 10
-      ? '0' + createdDate.day()
-      : String.valueOf(createdDate.day());
-    String year = String.valueOf(createdDate.year());
-    String formattedDate = month + '_' + day + '_' + year;
+    
+    String formattedDate = opp.CreatedDate.format('YYMMdd');
 
     String nameShouldbe =
       opp.Name +
