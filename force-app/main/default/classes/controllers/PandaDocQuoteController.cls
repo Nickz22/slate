@@ -177,18 +177,18 @@ public class PandaDocQuoteController {
       String formattedDate = createdDate.format('YYMMDD');
       String attachmentName =
         opp.Name +
-        ' ' +
+        '_' +
         (opp.Division__r.Name != 'Palermo'
           ? opp.Division__r.Name.substring(0, 2).toUpperCase()
           : 'PL') +
-        ' ' +
+        '_' +
         (quoteType == 'estimate'
           ? 'EST'
           : quoteType == 'proposal' ? 'PRO' : 'INV') +
-        ' ' +
+        '_' +
         formattedDate;
       ContentVersion cv = new ContentVersion();
-      cv.Title = attachmentName.replaceAll('_',' ');
+      cv.Title = attachmentName;
       cv.PathOnClient = documentName + '.pdf';
       cv.VersionData = documentContent;
       cv.IsMajorVersion = true;
