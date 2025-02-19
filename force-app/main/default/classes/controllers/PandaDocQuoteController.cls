@@ -173,8 +173,7 @@ public class PandaDocQuoteController {
         opp.Division__r.Name.toLowerCase()
       );
       DateTime createdDate = opp.CreatedDate;
-
-      String formattedDate = createdDate.format('YYMMDD');
+      String formattedDate = createdDate.format('YYMMdd');
       String attachmentName =
         opp.Name +
         '_' +
