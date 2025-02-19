@@ -172,8 +172,7 @@ public class PandaDocQuoteController {
         documentId,
         opp.Division__r.Name.toLowerCase()
       );
-      DateTime createdDate = opp.CreatedDate;
-      String formattedDate = createdDate.format('YYMMdd');
+      String formattedDate = System.now().format('YYMMdd');
       String attachmentName =
         opp.Name +
         '_' +
@@ -244,7 +243,7 @@ public class PandaDocQuoteController {
     } else {
       typeAbbrev = ' PRO';
     }
-    String dateFormatted = this.opp.CreatedDate.format('YYMMdd');
+    String dateFormatted = System.now().format('YYMMdd');
     return (this.opp.Name +
       typeAbbrev +
       ' ' +
