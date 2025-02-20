@@ -16,7 +16,7 @@
     </values>
     <values>
         <field>Pandadoc_CC_Fee_Proposal_Template_Id__c</field>
-        <value xsi:type="xsd:string">GPatkoBAwnugtnummZnYPY</value>
+        <value xsi:type="xsd:string">3SbTUXifh67SnNvZSAtaEd</value>
     </values>
     <values>
         <field>Pandadoc_Estimate_Template_Id__c</field>
@@ -28,6 +28,6 @@
     </values>
     <values>
         <field>Pandadoc_Proposal_Template_Id__c</field>
-        <value xsi:type="xsd:string">WEAUtVU5MsSbrbxVMTKcve</value>
+        <value xsi:type="xsd:string">GPatkoBAwnugtnummZnYPY</value>
     </values>
 </CustomMetadata>
