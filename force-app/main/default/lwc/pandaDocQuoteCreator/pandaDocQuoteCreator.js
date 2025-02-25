@@ -17,6 +17,7 @@ export default class PandaDocQuoteCreator extends LightningElement {
   maxPollingAttempts = 30; // Maximum number of polling attempts (60 seconds total)
   pollingAttempts = 0;
   quoteType = "";
+  previewScheduled = false;
 
   connectedCallback() {
     this.animateDots();
@@ -129,7 +130,10 @@ export default class PandaDocQuoteCreator extends LightningElement {
           if (this.quoteType === "Invoice") {
             createOrUpdateInvoice({ recordId: this.recordId });
           }
-          setTimeout(() => this.showPreview(result.id), 1250);
+          if (!this.previewScheduled) {
+            this.previewScheduled = true;
+            setTimeout(() => this.showPreview(result.id), 1250);
+          }
         }
       } else if (result && result.status === "error") {
         clearInterval(this.pollingInterval);
@@ -182,5 +186,6 @@ export default class PandaDocQuoteCreator extends LightningElement {
       error.body?.message || error.message || "Unknown error",
       "error"
     );
+    this.previewScheduled = false;
   }
 }
