@@ -348,7 +348,7 @@ public class PandaDocQuoteController {
         this.opp.PrimaryContact__r.Email,
         this.opp.PrimaryContact__r.FirstName,
         this.opp.PrimaryContact__r.LastName,
-        'Payer'
+        'Client'
       ),
       new PandadocQuoteRecipient(UserInfo.getUserEmail(), '', '', 'Sender')
     };
