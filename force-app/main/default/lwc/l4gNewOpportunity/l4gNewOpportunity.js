@@ -3,7 +3,7 @@ import LightningModal from "lightning/modal";
 import { NavigationMixin } from "lightning/navigation";
 import { getPicklistValues } from "lightning/uiObjectInfoApi";
 import getDivisions from "@salesforce/apex/L4GController.getDivisions";
-
+import { getRecord } from "lightning/uiRecordApi";
 /** imports to block the fields being used by this LWC from being deleted */
 import SERVICE_TYPE from "@salesforce/schema/Opportunity.Lead_Type__c";
 import STAGENAME from "@salesforce/schema/Opportunity.StageName";
