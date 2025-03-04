@@ -246,12 +246,15 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
       : leadType?.toLowerCase()?.includes("palermo")
         ? "palermo"
         : "slate";
-    const divisionId =
-      divisionPrepensionInServiceType &&
-      this.divisions.find(
-        (division) =>
-          division.Name.toLowerCase() === divisionPrepensionInServiceType
-      )?.Id;
+    const division = this.divisions.find(
+      (division) =>
+        division.Name.toLowerCase() === divisionPrepensionInServiceType
+    );
+    const divisionId = division.Id;
+    const priceBookData = await getPricebook();
+    this.priceBookId = priceBookData.find((option) =>
+      option.Name.includes(division.Name)
+    )?.Id;
     fields.Division__c = divisionId;
     if (this.isCloned) {
       this.cloneOpportunity(this.recordId, fields);
@@ -292,11 +295,6 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     this.serviceTypeOptions = this.allServiceOptions?.filter((option) =>
       this.divisions.some((division) => option.label.startsWith(division.Name))
     );
-
-    const data = await getPricebook();
-    this.priceBookId = data.find((option) =>
-      this.divisions.some((division) => option.Name.includes(division.Name))
-    )?.Id;
     this.showSpinner = false;
   }
 }
