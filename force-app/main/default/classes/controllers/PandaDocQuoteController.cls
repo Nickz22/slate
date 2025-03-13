@@ -202,7 +202,7 @@ public class PandaDocQuoteController {
       cdl.LinkedEntityId = opportunityId;
       cdl.ShareType = 'V';
       insert cdl;
-      updateOpportunityDocumentStage(opportunityId,quoteType,documentId);
+      updateOpportunityDocumentStage(opp,quoteType,documentId);
     } catch (Exception e) {
       throw new AuraHandledException(
         'Error attaching document: ' + e.getMessage()
@@ -211,25 +211,41 @@ public class PandaDocQuoteController {
   }
 
   // helpers
-    private static void updateOpportunityDocumentStage(Id opportunityId,String quoteType,String documentId){
+    private static void updateOpportunityDocumentStage(Opportunity opp,String quoteType,String documentId){
+
         String url = 'https://app.pandadoc.com/a/#/documents/'+documentId;
-        Opportunity oppToUpdate = new Opportunity(Id=opportunityId);
-        String stageValue;
+        Date dueDate = Date.today();
+        
         if(quoteType == 'Proposal'){
-            oppToUpdate.Last_Proposal__c = url;
-            oppToUpdate.Stage_Document_Automated__c = 'Proposal Generated';
+            opp.Last_Proposal__c = url;
+            opp.Stage_Document_Automated__c = 'Proposal Generated';
         }
         else if(quoteType == 'Invoice'){
-            oppToUpdate.Last_Invoice__c = url;
-            oppToUpdate.Stage_Document_Automated__c = 'Invoice Generated';
+            opp.Last_Invoice__c = url;
+            opp.Stage_Document_Automated__c = 'Invoice Generated';
         }
         else if(quoteType == 'Estimate'){
-            oppToUpdate.Last_Estimate__c = url;
-            oppToUpdate.Stage_Document_Automated__c = 'Quote Generated';
+            opp.Last_Estimate__c = url;
+            opp.Stage_Document_Automated__c = 'Quote Generated';
         }
-        
-        if(oppToUpdate.Stage_Document_Automated__c != null){
-            update oppToUpdate;
+        if(opp.Stage_Document_Automated__c == 'Invoice Generated'){
+            switch on opp.Payment__c{
+                when 'Net 15'{
+                    opp.Invoice_Due_Date__c = dueDate.addDays(15);
+                }
+                when 'Net 30'{
+                    opp.Invoice_Due_Date__c = dueDate.addDays(30);
+                }
+                when 'Net 45'{
+                    opp.Invoice_Due_Date__c = dueDate.addDays(45);
+                }
+                when 'Net 60'{
+                    opp.Invoice_Due_Date__c = dueDate.addDays(60);
+                }
+            }
+        }
+        if(opp.Stage_Document_Automated__c != null){
+            update opp;
         }
     }
   private String getDocumentName() {
@@ -255,7 +271,7 @@ public class PandaDocQuoteController {
   private List<PandaDocQuoteToken> getTokens() {
     // invoice amount already includes tax
     Decimal opportunityTotal =
-      this.opp.Amount_QB__c +
+      this.opp.Invoice_Amount__c +
       (this.opp.CC_Payment__c ? this.opp.CC_Fee_invoice__c : 0);
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c *
@@ -270,10 +286,10 @@ public class PandaDocQuoteController {
       new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
       new PandaDocQuoteToken(
         'OPPORTUNITY_DESCRIPTION',
-        this.opp.Opportunity_Descriptor__c?.toUpperCase()
+        this.opp.Upper_Descriptor__c
       ),
       new PandaDocQuoteToken(
-        'DUE_DATE',
+        'Invoice_Due_Date_Override__c',
         DateTime.newInstance(
             Date.today()
               .addDays(
@@ -293,6 +309,7 @@ public class PandaDocQuoteController {
           '-' +
           this.opp.InvoiceNumber__c
       ),
+      new PandaDocQuoteToken('PAYMENT_TERMS', this.opp.Payment__c),
       new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
       new PandaDocQuoteToken('QUOTE_DEPOSIT', formatCurrency(deposit)),
       new PandaDocQuoteToken('QUOTE_BALANCE', formatCurrency(balance)),
