@@ -221,7 +221,6 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
   async handleSubmit(event) {
     event.preventDefault();
     let fields = event.detail.fields;
-    fields.Pricebook2Id = this.priceBookId;
     const inputs = this.template.querySelectorAll("lightning-combobox");
     inputs.forEach((input) => {
       fields[input.name] = input.value;
@@ -255,6 +254,7 @@ export default class L4gNewOpportunity extends NavigationMixin(LightningModal) {
     this.priceBookId = priceBookData.find((option) =>
       option.Name.includes(division.Name)
     )?.Id;
+    fields.Pricebook2Id = this.priceBookId;
     fields.Division__c = divisionId;
     if (this.isCloned) {
       this.cloneOpportunity(this.recordId, fields);
