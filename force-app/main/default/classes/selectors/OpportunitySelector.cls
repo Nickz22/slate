@@ -13,7 +13,6 @@ public with sharing class OpportunitySelector {
               Division__r.Name,
               Invoice_Amount__c,
               Account.Name,
-              Upper_Descriptor__c,
               Opportunity_Descriptor__c,
               InvoiceNumber__c,
               Payment__c,
