@@ -229,6 +229,9 @@ public class updateQBInvoice {
                 when 'Net 30'{
                     dueDate = dueDate.addDays(30);
                 }
+                when 'Net 45'{
+                    dueDate = dueDate.addDays(45);
+                }
                 when 'Net 60'{
                     dueDate = dueDate.addDays(60);
                 }

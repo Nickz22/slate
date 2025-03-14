@@ -1,0 +1,15 @@
+<template>
+    <template if:true={spinner}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+    <div class="slds-modal__header">
+        <h2>Create/Update Invoice</h2>
+    </div>
+    <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+        Are you sure to update or create invoice?
+    </div>
+    <div class="slds-modal__footer">
+        <lightning-button variant="brand" label="Ok" onclick={handleSubmit}></lightning-button>
+        <lightning-button variant="neutral" label="Cancel" onclick={handleClose}></lightning-button>
+    </div>
+</template>
