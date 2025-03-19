@@ -1,5 +1,5 @@
 public class PandadocCallSheetController {
-  private static final String PRICING_TABLE_NAME = 'Pricing_Table';
+  private static final String PRICING_TABLE_NAME = 'Pricing Table 3';
   private Id opportunityId;
   private Opportunity opp;
   private Pandadoc_Quote_Template_Mapping__mdt callSheetTemplateMapping;
@@ -16,14 +16,13 @@ public class PandadocCallSheetController {
       .selectOpportunitiesByIds(new Set<Id>{ oppId })
       .get(0);
 
-    
     try {
       this.callSheetTemplateMapping = new PandadocQuoteMappingSelector()
         .selectPandadocQuoteTemplateMappingByDivisionName(
           this.opp.Division__r.Name
         );
     } catch (Exception e) {
-      throw new PandaDocQuoteException(
+      throw new PandaDocCallsheetException(
         'Error getting call sheet template mapping. Does a Callsheet Template mapping exist for this division? ' +
         e.getMessage()
       );
@@ -35,9 +34,7 @@ public class PandadocCallSheetController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static Map<String, String> createPandaDocCallSheet(
-    Id opportunityId
-  ) {
+  public static Map<String, String> createPandaDocCallSheet(Id opportunityId) {
     PandadocCallSheetController controller = new PandadocCallSheetController(
       opportunityId
     );
@@ -59,7 +56,7 @@ public class PandadocCallSheetController {
     }
 
     if (String.isBlank(ownerEmail)) {
-      throw new PandaDocQuoteException(
+      throw new PandaDocCallsheetException(
         'Running user must have an email containing "Align", "Slate", or "Palermo" to send a PandaDoc quote.'
       );
     }
@@ -85,73 +82,7 @@ public class PandadocCallSheetController {
     }
   }
 
-  @AuraEnabled
-  public static Map<String, String> checkDocumentStatus(
-    String statusUrl,
-    String opportunityId
-  ) {
-    try {
-      Opportunity opp = new OpportunitySelector()
-        .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
-        .get(0);
-      return PandadocApi.checkDocumentStatus(
-        statusUrl,
-        opp.Division__r.Name.toLowerCase()
-      );
-    } catch (PandadocApi.PandaDocException e) {
-      throw new AuraHandledException(e.getMessage());
-    }
-  }
-
-  @AuraEnabled
-  public static void attachDocumentToOpportunity(
-    Id opportunityId,
-    String documentId,
-    String documentName,
-    String quoteType
-  ) {
-    try {
-      // Fetch the document content from PandaDoc API
-
-      Opportunity opp = new OpportunitySelector()
-        .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
-        .get(0);
-      Blob documentContent = PandadocApi.getDocumentContent(
-        documentId,
-        opp.Division__r.Name.toLowerCase()
-      );
-      String formattedDate = System.now().format('YYMMdd');
-      String attachmentName =
-        opp.Name +
-        '_' +
-        (opp.Division__r.Name != 'Palermo'
-          ? opp.Division__r.Name.substring(0, 2).toUpperCase()
-          : 'PL') +
-        '_CS_' +
-        formattedDate;
-      ContentVersion cv = new ContentVersion();
-      cv.Title = attachmentName;
-      cv.PathOnClient = documentName + '.pdf';
-      cv.VersionData = documentContent;
-      cv.IsMajorVersion = true;
-      insert cv;
-
-      ContentDocumentLink cdl = new ContentDocumentLink();
-      cdl.ContentDocumentId = [
-        SELECT ContentDocumentId
-        FROM ContentVersion
-        WHERE Id = :cv.Id
-      ]
-      .ContentDocumentId;
-      cdl.LinkedEntityId = opportunityId;
-      cdl.ShareType = 'V';
-      insert cdl;
-    } catch (Exception e) {
-      throw new AuraHandledException(
-        'Error attaching document: ' + e.getMessage()
-      );
-    }
-  }
+  
 
   private String getDocumentName() {
     String divisionAbbreviation = this.opp.Division__r.Name.substring(0, 2)
@@ -163,18 +94,24 @@ public class PandadocCallSheetController {
       ' ' +
       divisionAbbreviation +
       ' ' +
-      dateFormatted).replaceAll('_',' ');
+      dateFormatted)
+      .replaceAll('_', ' ');
   }
 
   private List<PandaDocQuoteToken> getTokens() {
     // invoice amount already includes tax
-    
+
     return new List<PandaDocQuoteToken>{
       new PandaDocQuoteToken('ACCOUNT_NAME', this.opp.Account.Name),
+      new PandaDocQuoteToken('CALL_TIME', '8:00 AM'),
+      new PandaDocQuoteToken('Lead_Type__c', this.opp.Lead_Type__c),
+          new PandaDocQuoteToken('PRODUCER_NAME', this.opp.Lead_Producer__c),
+          new PandaDocQuoteToken('PRODUCER_EMAIL', this.opp.Lead_Producer_Email__c),
+          new PandaDocQuoteToken('PRODUCER_PHONE', this.opp.PrimaryContact__r.Phone),
       new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
       new PandaDocQuoteToken(
         'OPPORTUNITY_DESCRIPTION',
-        this.opp.Upper_Descriptor__c
+        this.opp.Opportunity_Descriptor__c?.toUpperCase()
       ),
       new PandaDocQuoteToken(
         'DUE_DATE',
@@ -220,32 +157,13 @@ public class PandadocCallSheetController {
     };
   }
 
-  private String formatCurrency(Decimal value) {
-    if (value == null) {
-      return '$0.00';
-    }
-    // Format the value with exactly two decimal places
-    String formattedValue = value.setScale(2).format();
-
-    // Ensure there are always two decimal places
-    if (!formattedValue.contains('.')) {
-      formattedValue += '.00';
-    } else if (formattedValue.endsWith('.')) {
-      formattedValue += '00';
-    } else if (formattedValue.split('\\.')[1].length() == 1) {
-      formattedValue += '0';
-    }
-
-    return '$' + formattedValue;
-  }
-
   private List<PandadocQuoteRecipient> getRecipients() {
     List<PandadocQuoteRecipient> recipients = new List<PandadocQuoteRecipient>{
       new PandadocQuoteRecipient(
         this.opp.PrimaryContact__r.Email,
         this.opp.PrimaryContact__r.FirstName,
         this.opp.PrimaryContact__r.LastName,
-        'Payer'
+        'Client'
       ),
       new PandadocQuoteRecipient(UserInfo.getUserEmail(), '', '', 'Sender')
     };
@@ -262,6 +180,7 @@ public class PandadocCallSheetController {
   }
 
   private List<Map<String, Object>> getPricingItems() {
+      List<Map<String, Object>> rows = getQuoteLineItemRows();
     Map<String, Object> table = new Map<String, Object>{
       'name' => PRICING_TABLE_NAME,
       'data_merge' => true,
@@ -272,19 +191,76 @@ public class PandadocCallSheetController {
           'value' => 50
         }
       },
-      'sections' => new List<Map<String, Object>>{
-        new Map<String, Object>{
-          'title' => 'Products and Services',
-          'default' => true,
-          'rows' => getQuoteLineItemRows()
-        }
-      }
+      'sections' => getSections(rows)
     };
 
     return new List<Map<String, Object>>{ table };
   }
-
-  private List<Map<String, Object>> getQuoteLineItemRows() {
+    
+    private List<Map<String, Object>> getSections(List<Map<String, Object>> rows){
+        List<Callsheet_Section_Mapping__mdt> mappingMetadata = new CallsheetMappingSelector().selectAllMappings();
+        
+        // Map to store sections
+        Map<String, Map<String, Object>> sections = new Map<String, Map<String, Object>>();
+        List<Map<String, Object>> unmatchedRows = new List<Map<String, Object>>();
+        
+        // Loop through rows
+        for (Map<String, Object> row : rows) {
+            if (!row.containsKey('data') || !(row.get('data') instanceof Map<String, Object>)) {
+                continue;
+            }
+            Map<String, Object> data = (Map<String, Object>) row.get('data');
+            Boolean isMatched = false;
+            
+            // Loop through metadata mapping
+            for (Callsheet_Section_Mapping__mdt mapping : mappingMetadata) {
+                String sectionName = mapping.Callsheet_Section_Header__r.Label;
+                String fieldName = mapping.Field_Name__c;
+                String operator = mapping.Operator__c;
+                String value = mapping.Value__c;
+                
+                if (!data.containsKey(fieldName)) {
+                    continue;
+                }
+                
+                String fieldValue = String.valueOf(data.get(fieldName));
+                Boolean match = false;
+                
+                if (operator == 'equals' && fieldValue == value) {
+                    match = true;
+                } else if (operator == 'contains' && fieldValue.contains(value)) {
+                    match = true;
+                }
+                
+                if (match) {
+                    isMatched = true;
+                    if (!sections.containsKey(sectionName)) {
+                        sections.put(sectionName, new Map<String, Object>{
+                            'title' => sectionName,
+                                'rows' => new List<Map<String, Object>>(),
+                                'default' => false
+                                });
+                    }
+                    ((List<Map<String, Object>>) sections.get(sectionName).get('rows')).add(row);
+                }
+            }
+            
+            if (!isMatched) {
+                unmatchedRows.add(row);
+            }
+    }
+    
+    if (!unmatchedRows.isEmpty()) {
+        sections.put('Others', new Map<String, Object>{
+            'title' => 'Others',
+            'rows' => unmatchedRows,
+            'default' => false
+        });
+    }
+    
+    return sections.values();
+    }
+    private List<Map<String, Object>> getQuoteLineItemRows() {
     List<Map<String, Object>> rows = new List<Map<String, Object>>();
 
     for (SBQQ__QuoteLine__c qli : [
@@ -302,7 +278,7 @@ public class PandadocCallSheetController {
       WHERE
         SBQQ__Quote__r.SBQQ__Opportunity2__c = :this.opportunityId
         AND SBQQ__Quote__r.SBQQ__Primary__c = TRUE
-        AND Include_in_Call_Sheet__c = true
+        AND Include_in_Call_Sheet__c = TRUE
     ]) {
       Map<String, Object> row = new Map<String, Object>{
         'options' => new Map<String, Object>{
@@ -313,47 +289,26 @@ public class PandadocCallSheetController {
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
           'Role__c' => qli.SBQQ__Product__r.Name,
-          /**
-           * both descriptions need to be here
-           */
-          'DESCRIPTION' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
-          'Description' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
-          'E_mail__c' => String.isNotBlank(qli.Vendor__r.Email)? qli.Vendor__r.Email : '',
+          'DESCRIPTION' => String.isNotBlank(qli.Client_Info__c)
+            ? qli.Client_Info__c
+            : '',
+          'Description' => String.isNotBlank(qli.Client_Info__c)
+            ? qli.Client_Info__c
+            : '',
+          'E_mail__c' => String.isNotBlank(qli.Vendor__r.Email)
+            ? qli.Vendor__r.Email
+            : '',
+          'CallTime' => '8:00 AM',
           'Text_Customer_Price__c' => String.valueOf(
             qli.SBQQ__CustomerPrice__c
           ),
-          /**
-           * both quantities need to be here
-           */
           'QUANTITY' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
           'Quantity' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
           'Days_Required__c' => String.valueOf(qli.Days_on_Project5__c),
-          'qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
-          'QTY' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
-          'Qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
-          'Price' => qli.SBQQ__CustomerTotal__c
-        }
-      };
-      System.debug('Pricing Row: ' + JSON.serializePretty(row));
-      rows.add(row);
-    }
-
-    if(this.opp.CC_Payment__c){
-      Map<String, Object> row = new Map<String, Object>{
-        'options' => new Map<String, Object>{
-          'optional' => false,
-          'optional_selected' => true,
-          'qty_editable' => false
-        },
-        'data' => new Map<String, Object>{
-          'Name' => 'CC Fee',
-          'Text_Unit_Cost__c' => String.valueOf(this.opp.CC_Fee_invoice__c),
-          'Quantity' => String.valueOf(1),
-          'Days_Required__c' => String.valueOf(0),
           'qty' => String.valueOf(1),
           'QTY' => String.valueOf(1),
-          'Price' => this.opp.CC_Fee_invoice__c,
-          'SBQQ__CustomerTotal__c' => this.opp.CC_Fee_invoice__c
+          'Qty' => String.valueOf(1),
+          'Price' => qli.SBQQ__CustomerTotal__c
         }
       };
       rows.add(row);
@@ -369,6 +324,6 @@ public class PandadocCallSheetController {
     return metadata;
   }
 
-  public class PandaDocQuoteException extends Exception {
+  public class PandaDocCallsheetException extends Exception {
   }
 }
