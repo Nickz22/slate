@@ -205,10 +205,9 @@ public class PandaDocQuoteController {
       cdl.LinkedEntityId = opportunityId;
       cdl.ShareType = 'V';
       insert cdl;
-        if(quoteType!='callsheet'){
-            updateOpportunityDocumentStage(opp,quoteType,documentId);
-        }
-      
+      if(quoteType!='callsheet'){
+        updateOpportunityDocumentStage(opp,quoteType,documentId);
+      }
     } catch (Exception e) {
       throw new AuraHandledException(
         'Error attaching document: ' + e.getMessage()
