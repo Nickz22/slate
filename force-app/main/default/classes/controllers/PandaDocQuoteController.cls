@@ -423,6 +423,10 @@ public class PandaDocQuoteController {
         AND SBQQ__Quantity__c > 0
         AND SBQQ__Quote__r.SBQQ__Primary__c = TRUE AND SBQQ__CustomerTotal__c != 0 ORDER BY CreatedDate
     ]) {
+      Decimal listPriceRoundedToTwoDecimals = qli.SBQQ__ListPrice__c.setScale(2);
+      Decimal customerPriceRoundedToTwoDecimals = qli.SBQQ__CustomerPrice__c.setScale(2);
+      Decimal customerTotalRoundedToTwoDecimals = qli.SBQQ__CustomerTotal__c.setScale(2);
+      
       Map<String, Object> row = new Map<String, Object>{
         'options' => new Map<String, Object>{
           'optional' => false,
@@ -436,9 +440,9 @@ public class PandaDocQuoteController {
            */
           'DESCRIPTION' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
           'Description' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
-          'Text_Unit_Cost__c' => String.valueOf(qli.SBQQ__ListPrice__c),
+          'Text_Unit_Cost__c' => String.valueOf(listPriceRoundedToTwoDecimals),
           'Text_Customer_Price__c' => String.valueOf(
-            qli.SBQQ__CustomerPrice__c
+            customerPriceRoundedToTwoDecimals
           ),
           /**
            * both quantities need to be here
@@ -449,8 +453,8 @@ public class PandaDocQuoteController {
           'qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'QTY' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'Qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
-          'Price' => qli.SBQQ__CustomerTotal__c,
-          'SBQQ__CustomerTotal__c' => (qli.SBQQ__CustomerTotal__c *
+          'Price' => customerTotalRoundedToTwoDecimals,
+          'SBQQ__CustomerTotal__c' => (customerTotalRoundedToTwoDecimals *
           this.percentToPayByQuoteType.get(this.quoteType))
         }
       };
