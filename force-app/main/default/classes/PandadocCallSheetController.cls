@@ -107,7 +107,7 @@ public class PandadocCallSheetController {
       new PandaDocQuoteToken('Lead_Type__c', this.opp.Lead_Type__c),
           new PandaDocQuoteToken('PRODUCER_NAME', this.opp.Lead_Producer__c),
           new PandaDocQuoteToken('PRODUCER_EMAIL', this.opp.Lead_Producer_Email__c),
-          new PandaDocQuoteToken('PRODUCER_PHONE', this.opp.PrimaryContact__r.Phone),
+          new PandaDocQuoteToken('PRODUCER_PHONE', this.opp.Division__r?.Division_Leader__r?.Phone),
       new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
       new PandaDocQuoteToken(
         'OPPORTUNITY_DESCRIPTION',
