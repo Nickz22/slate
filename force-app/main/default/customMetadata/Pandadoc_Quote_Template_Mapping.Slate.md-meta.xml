@@ -19,6 +19,10 @@
         <value xsi:type="xsd:string">ufXjXjSaJEpCEShmV9Mb68</value>
     </values>
     <values>
+        <field>Pandadoc_Call_Sheet_Template_Id__c</field>
+        <value xsi:type="xsd:string">gAZ6oqN2vfuTQC9nex3gS4</value>
+    </values>
+    <values>
         <field>Pandadoc_Estimate_Template_Id__c</field>
         <value xsi:type="xsd:string">KLpKQgQBYnKL8JCMPntfbY</value>
     </values>

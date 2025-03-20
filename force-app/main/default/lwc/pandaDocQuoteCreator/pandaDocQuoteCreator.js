@@ -38,6 +38,8 @@ export default class PandaDocQuoteCreator extends LightningElement {
       this.quoteType = "Invoice";
     } else if (actionName.toLowerCase().includes("generate_proposal")) {
       this.quoteType = "Proposal";
+    }else if (actionName.toLowerCase().includes("generate_callsheet")) {
+      this.quoteType = "Callsheet";
     } else {
       console.error("Unknown action name:", actionName);
       this.quoteType = "Unknown";
