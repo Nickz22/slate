@@ -30,9 +30,10 @@ public with sharing class OpportunitySelector {
               Invoice_Amount__c,
               Invoice_Due_Date__c,
               Payment_Terms__c,
+              CreatedDate, (SELECT Id FROM SBQQ__Quotes2__r WHERE SBQQ__Primary__c = true)
               Lead_Producer__c,
               Lead_Producer_Email__c,
-			Division__r.Division_Leader__r.Phone
+        			Division__r.Division_Leader__r.Phone
             FROM Opportunity
             WHERE Id IN :ids
         ];
