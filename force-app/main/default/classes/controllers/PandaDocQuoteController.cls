@@ -27,6 +27,9 @@ public class PandaDocQuoteController {
       .selectOpportunitiesByIds(new Set<Id>{ oppId })
       .get(0);
 
+      if(quoteType.equalsIgnoreCase('Invoice') && (this.opp.SBQQ__Quotes2__r == null || this.opp.SBQQ__Quotes2__r.isEmpty())){
+          throw new PandaDocQuoteException('No Primary Quote');
+      }
     if (this.opp.Required_Deposit__c == null) {
       throw new PandaDocQuoteException('Required deposit cannot be null.');
     }
@@ -88,6 +91,9 @@ public class PandaDocQuoteController {
     Id opportunityId,
     String quoteType
   ) {
+      if(quoteType.equalsIgnoreCase('Callsheet')){
+          return PandadocCallSheetController.createPandaDocCallSheet(opportunityId);
+      }
     PandaDocQuoteController controller = new PandaDocQuoteController(
       opportunityId,
       quoteType.toLowerCase()
@@ -182,7 +188,7 @@ public class PandaDocQuoteController {
         '_' +
         (quoteType == 'estimate'
           ? 'EST'
-          : quoteType == 'proposal' ? 'PRO' : 'INV') +
+          : quoteType == 'proposal' ? 'PRO' : (quoteType == 'callsheet' ? 'CS' : 'INV')) +
         '_' +
         formattedDate;
       ContentVersion cv = new ContentVersion();
@@ -202,7 +208,9 @@ public class PandaDocQuoteController {
       cdl.LinkedEntityId = opportunityId;
       cdl.ShareType = 'V';
       insert cdl;
-      updateOpportunityDocumentStage(opp,quoteType,documentId);
+      if(quoteType!='callsheet'){
+        updateOpportunityDocumentStage(opp,quoteType,documentId);
+      }
     } catch (Exception e) {
       throw new AuraHandledException(
         'Error attaching document: ' + e.getMessage()

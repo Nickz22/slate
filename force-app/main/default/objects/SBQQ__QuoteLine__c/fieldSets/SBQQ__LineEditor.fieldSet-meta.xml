@@ -213,6 +213,11 @@
         <isRequired>false</isRequired>
     </displayedFields>
     <displayedFields>
+        <field>Include_in_Call_Sheet__c</field>
+        <isFieldManaged>false</isFieldManaged>
+        <isRequired>false</isRequired>
+    </displayedFields>
+    <displayedFields>
         <field>Vendor__c</field>
         <isFieldManaged>false</isFieldManaged>
         <isRequired>false</isRequired>

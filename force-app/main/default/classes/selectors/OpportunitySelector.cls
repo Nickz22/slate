@@ -22,11 +22,17 @@ public with sharing class OpportunitySelector {
               PrimaryContact__r.Email,
               PrimaryContact__r.FirstName,
               PrimaryContact__r.LastName,
+              Stage_Document_Automated__c,
               Additional_Client_CC__c,
               Amount_QB__c,
+              CreatedDate,
+              Invoice_Amount__c,
               Invoice_Due_Date__c,
               Payment_Terms__c,
-              CreatedDate
+              CreatedDate, (SELECT Id FROM SBQQ__Quotes2__r WHERE SBQQ__Primary__c = true)
+              Lead_Producer__c,
+              Lead_Producer_Email__c,
+        			Division__r.Division_Leader__r.Phone
             FROM Opportunity
             WHERE Id IN :ids
         ];
