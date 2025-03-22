@@ -27,7 +27,7 @@ public with sharing class OpportunitySelector {
               Amount_QB__c,
               Invoice_Due_Date__c,
               Payment_Terms__c,
-              CreatedDate
+              CreatedDate, (SELECT Id FROM SBQQ__Quotes2__r WHERE SBQQ__Primary__c = true)
             FROM Opportunity
             WHERE Id IN :ids
         ];

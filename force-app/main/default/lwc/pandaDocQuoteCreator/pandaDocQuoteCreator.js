@@ -181,9 +181,13 @@ export default class PandaDocQuoteCreator extends LightningElement {
     clearInterval(this.pollingInterval);
     this.statusMessage = "An error occurred. Please try again.";
     this.errorMessage = error.body?.message || error.message;
+    let noPrimaryQuoteError = this.errorMessage == 'No Primary Quote';
+    if(noPrimaryQuoteError){
+      this.errorMessage = 'Invoices cannot be generated for Opportunities that are missing primary quotes - please designate a primary quote and try again.';
+    }
     this.showToast(
-      "Error",
-      error.body?.message || error.message || "Unknown error",
+      noPrimaryQuoteError ? 'No Primary Quote' : "Error",
+      noPrimaryQuoteError ? this.errorMessage : (error.body?.message || error.message || "Unknown error"),
       "error"
     );
     this.previewScheduled = false;

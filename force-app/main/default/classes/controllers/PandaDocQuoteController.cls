@@ -27,6 +27,9 @@ public class PandaDocQuoteController {
       .selectOpportunitiesByIds(new Set<Id>{ oppId })
       .get(0);
 
+      if(quoteType.equalsIgnoreCase('Invoice') && (this.opp.SBQQ__Quotes2__r == null || this.opp.SBQQ__Quotes2__r.isEmpty())){
+          throw new PandaDocQuoteException('No Primary Quote');
+      }
     if (this.opp.Required_Deposit__c == null) {
       throw new PandaDocQuoteException('Required deposit cannot be null.');
     }
@@ -271,7 +274,7 @@ public class PandaDocQuoteController {
   private List<PandaDocQuoteToken> getTokens() {
     // invoice amount already includes tax
     Decimal opportunityTotal =
-      this.opp.Invoice_Amount__c +
+      this.opp.Amount_QB__c +
       (this.opp.CC_Payment__c ? this.opp.CC_Fee_invoice__c : 0);
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c *
