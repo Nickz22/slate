@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>True_Margin__c</fullName>
+    <description>This Margin field (True_Margin__c) is a Currency field with no formula applied. Since it doesn&apos;t have a formula, its value is likely being manually entered, imported, or automatically populated by:
+
+Workflows or Processes in Salesforce.
+Apex Triggers that calculate and update the value.
+Third-party integrations (e.g., CPQ, Breadwinner).
+API updates from external systems like QuickBooks or PandaDoc.
+Manual entry by users during opportunity updates.
+
+What to Check Next:
+Go to Setup &gt; Process Builder, Workflow Rules, or Apex Triggers to see if there is any automation updating this field.
+Check if any integration tool (like Breadwinner, CPQ, or external financial systems) is pushing data into this field.
+In the Quote object, verify how its margin field is calculated, as it may use a formula pulling data differently from this manually managed field.</description>
+    <externalId>false</externalId>
+    <label>Margin</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

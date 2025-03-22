@@ -5,9 +5,9 @@
     <description>The percentage of the total that will be billed via the initial estimate.</description>
     <externalId>false</externalId>
     <label>Required Deposit</label>
-    <precision>5</precision>
+    <precision>3</precision>
     <required>false</required>
-    <scale>2</scale>
+    <scale>0</scale>
     <trackFeedHistory>false</trackFeedHistory>
     <trackHistory>false</trackHistory>
     <type>Percent</type>

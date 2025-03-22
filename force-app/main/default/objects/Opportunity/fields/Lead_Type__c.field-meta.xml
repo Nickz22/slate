@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lead_Type__c</fullName>
+    <description>Svc Type (Required) – Must be entered when creating an Opp.
+Syncs with Auto Quote Builder to generate quotes based on Svc Type.</description>
+    <externalId>false</externalId>
+    <label>Service</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Brand Content</fullName>
+                <default>false</default>
+                <label>Slate - Brand Content</label>
+            </value>
+            <value>
+                <fullName>Slate - CGI</fullName>
+                <default>false</default>
+                <label>Slate - CGI</label>
+            </value>
+            <value>
+                <fullName>E-Commerce</fullName>
+                <default>true</default>
+                <label>Slate - eCom</label>
+            </value>
+            <value>
+                <fullName>Motion</fullName>
+                <default>false</default>
+                <label>Slate - Motion</label>
+            </value>
+            <value>
+                <fullName>Retouching</fullName>
+                <default>false</default>
+                <label>Slate - Retouch</label>
+            </value>
+            <value>
+                <fullName>Studio Rental</fullName>
+                <default>false</default>
+                <label>Slate - Studio &amp; Eq</label>
+            </value>
+            <value>
+                <fullName>Retouching - Align</fullName>
+                <default>false</default>
+                <label>Align - Retouch</label>
+            </value>
+            <value>
+                <fullName>Palermo - Branding</fullName>
+                <default>false</default>
+                <label>Palermo - Branding</label>
+            </value>
+            <value>
+                <fullName>Palermo - Video Production</fullName>
+                <default>false</default>
+                <label>Palermo - Content</label>
+            </value>
+            <value>
+                <fullName>Casablanca - Motion Post Production</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Casablanca - Motion Post Production</label>
+            </value>
+            <value>
+                <fullName>Casablanca - Motion Production</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Casablanca - Motion Production</label>
+            </value>
+            <value>
+                <fullName>Palermo - Photo Production</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Palermo - Photo Production</label>
+            </value>
+            <value>
+                <fullName>Origins</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Retouching - Origins</label>
+            </value>
+            <value>
+                <fullName>Social Content</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Social Content</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CloseDate</fullName>
+    <description>The Opportunity Close Date aligns with the Matching Principle for accounting. It represents the date revenue is earned:
+
+Productions → Matches the Confirmed Shoot Date (Start).
+Retouching → Matches the Initial Inquiry Date but shifts to today’s date when the stage is set to &apos;Won - Production - Complete&apos; (since billing occurs upon completion).
+If no Confirmed Shoot Date is available, Lead Producers should set the Close Date to the end of the month in which the Opportunity is expected. Once set, a Flow will sync the Close Date with the Confirmed Shoot Date (Start).</description>
+    <trackFeedHistory>true</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>true</trackTrending>
+</CustomField>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CC_Fee_invoice__c</fullName>
+    <description>Calculates the credit card processing fee as 4.5% of the remaining balance on an opportunity.
+The formula subtracts the Total Amount Paid (breadwinner_qbo__Total_Amount_Paid__c) from the total amount plus tax (Amount + Tax_to_collect__c), then applies a 4.5% fee to the remaining balance.
+
+This ensures that the processing fee reflects only the unpaid portion of the total amount.</description>
+    <externalId>false</externalId>
+    <formula>(Amount +  Tax_to_collect__c - breadwinner_qbo__Total_Amount_Paid__c) * 0.045</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>CC Fee_Inv</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

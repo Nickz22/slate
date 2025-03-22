@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Close_Month_CUSTOM__c</fullName>
+    <description>Used Internally for Reports only
+Not on page views</description>
+    <externalId>false</externalId>
+    <formula>CASE(MONTH( CloseDate  ),
+1, &quot;1. JANUARY&quot;,
+2, &quot;2. FEBRUARY&quot;,
+3, &quot;3. MARCH&quot;,
+4, &quot;4. APRIL&quot;,
+5, &quot;5. MAY&quot;,
+6, &quot;6. JUNE&quot;,
+7, &quot;7. JULY&quot;,
+8, &quot;8. AUGUST&quot;,
+9, &quot;9. SEPTEMBER&quot;,
+10, &quot;91. OCTOBER&quot;,
+11, &quot;92. NOVEMBER&quot;,
+12, &quot;93. DECEMBER&quot;,
+&quot;None&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Close Date, Mo, Text</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

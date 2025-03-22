@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Probability</fullName>
+    <description>This is the Probability that an Opportunity will be &apos;Won&apos; and is a critical field for Monthly, Quarterly, Annual Dashboard Components &amp; Reporting as all Dashboard Components are setup with Probability &lt;90% or &gt;90% instead of by &apos;Won&apos; status. Any &apos;Won&apos; status sets Probability &lt;90%. Probability is Automated based on Opportunity Stages and rarely requires manual entry from a Lead Producer</description>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>true</trackTrending>
+</CustomField>

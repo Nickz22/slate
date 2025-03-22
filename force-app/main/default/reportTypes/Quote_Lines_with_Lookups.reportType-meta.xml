@@ -846,11 +846,6 @@
             <field>SBQQ__Quote__c.SBQQ__Primary__c</field>
             <table>SBQQ__QuoteLine__c</table>
         </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>Revenue_Share__c</field>
-            <table>SBQQ__QuoteLine__c</table>
-        </columns>
         <masterLabel>Quote Lines</masterLabel>
     </sections>
 </ReportType>

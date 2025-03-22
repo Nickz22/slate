@@ -50,6 +50,7 @@ private class PandaDocQuoteControllerTest {
             Division__c = divisions[i].Id,
             StageName = 'Prospecting',
             CloseDate = Date.today().addDays(30),
+            Amount=1000,
             Lead_Type__c = 'Slate - CGI'
           )
         );

@@ -518,11 +518,6 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
-            <field>Revenue_Share__c</field>
-            <table>SBQQ__Quote__c</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
             <field>Division_Name__c</field>
             <table>SBQQ__Quote__c</table>
         </columns>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Shoot_Date__c</fullName>
+    <description>Opp Start Date – Shown as Confirmed Shoot Date on Opp page.
+Syncs to SF Shoot Date Calendar &amp; warns of conflicting Opp dates.</description>
+    <externalId>false</externalId>
+    <label>Job Day</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

@@ -760,11 +760,6 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
-            <field>Revenue_Share__c</field>
-            <table>Account.Opportunities</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
             <field>Payment__c</field>
             <table>Account.Opportunities</table>
         </columns>

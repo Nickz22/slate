@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Amount_QB__c</fullName>
+    <description>Purpose: This field calculates the total invoice amount from QuickBooks.
+Calculation: Derived by adding the Primary Quote Amount and the Sales Tax from the related opportunity.
+Data Source: Auto-pulled from the primary opportunity quote when the Estimate Status is set to Invoice Sent.
+Formula: Amount + Tax_to_collect__c
+Usage: Used to track the invoice amount for reporting, reconciliation, and syncing data with QuickBooks.</description>
+    <externalId>false</externalId>
+    <formula>Amount +  Tax_to_collect__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Invoice Amount (QB)</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

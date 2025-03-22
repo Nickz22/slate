@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Shoot_Date_2__c</fullName>
+    <description>Confirmed Shoot Date
+
+Displays on Opportunity page as End Date.
+Syncs with SF Shoot Date Calendar.
+Issues warnings for conflicting dates during Opportunity creation.</description>
+    <externalId>false</externalId>
+    <label>Job Day, End</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

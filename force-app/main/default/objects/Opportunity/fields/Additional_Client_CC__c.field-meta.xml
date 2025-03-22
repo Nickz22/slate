@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Additional_Client_CC__c</fullName>
+    <description>CC Emails (Customizable) – Comma-separated list for client CCs in Workato invoice flows.
+Defaults to Acct field, but can be customized per Opp.
+For all future Opps, update Acct field; for this Opp only, update here.</description>
+    <externalId>false</externalId>
+    <label>Billing Contact(s)</label>
+    <length>32768</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

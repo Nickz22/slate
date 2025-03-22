@@ -766,11 +766,6 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
-            <field>Revenue_Share__c</field>
-            <table>Opportunity</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
             <field>Payment__c</field>
             <table>Opportunity</table>
         </columns>
@@ -1155,11 +1150,6 @@
         <columns>
             <checkedByDefault>false</checkedByDefault>
             <field>SBQQ__RenewalUpliftRate__c</field>
-            <table>Opportunity.SBQQ__Quotes2__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>Revenue_Share__c</field>
             <table>Opportunity.SBQQ__Quotes2__r</table>
         </columns>
         <columns>
@@ -1958,11 +1948,6 @@
         <columns>
             <checkedByDefault>false</checkedByDefault>
             <field>SBQQ__RequiredBy__c</field>
-            <table>Opportunity.SBQQ__Quotes2__r.SBQQ__LineItems__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
-            <field>Revenue_Share__c</field>
             <table>Opportunity.SBQQ__Quotes2__r.SBQQ__LineItems__r</table>
         </columns>
         <columns>

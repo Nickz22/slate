@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Character_Limit_for_Opportunity_Name</fullName>
+    <active>false</active>
+    <errorConditionFormula>LEN (Name) &gt;30</errorConditionFormula>
+    <errorMessage>Job Name Must Be shorter than 30 characters as this is the Character Limit for Quickbooks Online</errorMessage>
+</ValidationRule>

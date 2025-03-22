@@ -11,7 +11,6 @@ public with sharing class OpportunitySelector {
               CC_Payment__c,
               Lead_Type__c,
               Division__r.Name,
-              Invoice_Amount__c,
               Account.Name,
               Opportunity_Descriptor__c,
               InvoiceNumber__c,

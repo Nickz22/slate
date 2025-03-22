@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invoice_Due_Date_Override__c</fullName>
+    <description>Fill this value to manually set Inv Due Date, bypassing automated logic.</description>
+    <externalId>false</externalId>
+    <label>Invoice Due Override</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Date</type>
+</CustomField>

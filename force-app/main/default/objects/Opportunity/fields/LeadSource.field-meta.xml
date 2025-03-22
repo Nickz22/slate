@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>LeadSource</fullName>
+    <description>This shows the Lead Source where the Opportunity was derived from and is important for Marketing Dashboard Components &amp; Reporting. It also showcases whether the Opportunity came from a Return Client or New Client as we closely measure Marketing based on % of New Client v. Return Clients to ensure our marketing pipeline is generating sufficient new business. Return Clients are generally a Client Retention Metric and have no factor into Marketing efforts.</description>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+</CustomField>

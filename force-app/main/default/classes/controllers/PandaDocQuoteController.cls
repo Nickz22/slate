@@ -271,7 +271,7 @@ public class PandaDocQuoteController {
   private List<PandaDocQuoteToken> getTokens() {
     // invoice amount already includes tax
     Decimal opportunityTotal =
-      this.opp.Invoice_Amount__c +
+      this.opp.Amount_QB__c +
       (this.opp.CC_Payment__c ? this.opp.CC_Fee_invoice__c : 0);
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c *

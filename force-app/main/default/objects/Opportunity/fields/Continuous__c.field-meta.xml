@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Continuous__c</fullName>
+    <defaultValue>true</defaultValue>
+    <description>If no gap in shoot dates, check Continuous
+If gaps in shoot dates, uncheck Continuous</description>
+    <externalId>false</externalId>
+    <label>Job Day, Continous</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

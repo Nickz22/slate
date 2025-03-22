@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CC_Fee_Estimate__c</fullName>
+    <description>Calculates the estimated credit card processing fee as 4.5% of the total amount (including tax).
+
+If Bill_Full_Amount__c is TRUE, the fee is calculated as 4.5% of (Amount + Tax_to_collect__c).
+If Bill_Full_Amount__c is FALSE, the fee is calculated as 4.5% of half of (Amount + Tax_to_collect__c).
+This formula helps estimate processing fees based on whether the full amount is being billed or just a partial amount.</description>
+    <externalId>false</externalId>
+    <formula>IF(Bill_Full_Amount__c = TRUE, (Amount + Tax_to_collect__c) * 0.045, ((Amount + Tax_to_collect__c) / 2) * 0.045)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>CC Fee_Est</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Currency</type>
+</CustomField>

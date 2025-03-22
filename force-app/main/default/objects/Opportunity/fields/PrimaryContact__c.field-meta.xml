@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>PrimaryContact__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Opp_Primary Contact (PrimaryContact__c) is a lookup field linking an Opportunity to its main Contact. It helps track key decision-makers, improve reporting, and enable automation. Used for CRM insights, sales follow-ups, and potential process automation. Ensure it&apos;s populated for accurate reporting and workflow triggers.</description>
+    <externalId>false</externalId>
+    <label>Primary Contact (Opp)</label>
+    <referenceTo>Contact</referenceTo>
+    <relationshipLabel>Opportunities-Primary Contact</relationshipLabel>
+    <relationshipName>Opportunities</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

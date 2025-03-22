@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bill_Full_Amount__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>For small projects, bill Client Full Amount as opposed to billing 50% Deposit/Balance. 
+If we are billing client full amount, check this checkbox. 
+Integrates w. Pandadoc Estimate/Invoice creation and populates Payment Amount fields accordingly.</description>
+    <externalId>false</externalId>
+    <label>Bill In Full</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>
