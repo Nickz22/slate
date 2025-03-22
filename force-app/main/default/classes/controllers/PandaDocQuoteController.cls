@@ -91,6 +91,9 @@ public class PandaDocQuoteController {
     Id opportunityId,
     String quoteType
   ) {
+      if(quoteType.equalsIgnoreCase('Callsheet')){
+          return PandadocCallSheetController.createPandaDocCallSheet(opportunityId);
+      }
     PandaDocQuoteController controller = new PandaDocQuoteController(
       opportunityId,
       quoteType.toLowerCase()
@@ -185,7 +188,7 @@ public class PandaDocQuoteController {
         '_' +
         (quoteType == 'estimate'
           ? 'EST'
-          : quoteType == 'proposal' ? 'PRO' : 'INV') +
+          : quoteType == 'proposal' ? 'PRO' : (quoteType == 'callsheet' ? 'CS' : 'INV')) +
         '_' +
         formattedDate;
       ContentVersion cv = new ContentVersion();
@@ -205,7 +208,9 @@ public class PandaDocQuoteController {
       cdl.LinkedEntityId = opportunityId;
       cdl.ShareType = 'V';
       insert cdl;
-      updateOpportunityDocumentStage(opp,quoteType,documentId);
+      if(quoteType!='callsheet'){
+        updateOpportunityDocumentStage(opp,quoteType,documentId);
+      }
     } catch (Exception e) {
       throw new AuraHandledException(
         'Error attaching document: ' + e.getMessage()
