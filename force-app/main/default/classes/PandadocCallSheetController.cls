@@ -313,7 +313,11 @@ public class PandadocCallSheetController {
       };
       rows.add(row);
     }
-
+    if(rows == null || rows.isEmpty()){
+        throw new PandaDocCallsheetException(
+            'Please designate at least one Quote Line Item to be included in the Call Sheet, then try again.'
+        );
+    }
     return rows;
   }
 
