@@ -28,7 +28,7 @@ public class OpportunityTriggerHandler {
         Set<Id> accIds = new Set<Id>();
         List<Opportunity> closedWonOpportunities = new List<Opportunity>();
         for(Opportunity opp : newRecords){
-            if((opp.StageName.equalsIgnoreCase('Won - Production Complete') || opp.StageName.equalsIgnoreCase('Closed Won')) && opp.StageName != oldMap.get(opp.Id).StageName){
+            if(opp.StageName.contains('Won') && opp.StageName != oldMap.get(opp.Id).StageName){
 				accIds.add(opp.AccountId);
 				closedWonOpportunities.add(opp);                
             }
