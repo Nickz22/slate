@@ -94,6 +94,12 @@ public class PandaDocQuoteController {
       if(quoteType.equalsIgnoreCase('Callsheet')){
           return PandadocCallSheetController.createPandaDocCallSheet(opportunityId);
       }
+      if(!((String)opportunityId).startsWith('006')){
+          Opportunity oppFromQuote = new OpportunitySelector()
+          .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
+          .get(0);
+          opportunityId = oppFromQuote.Id;
+      }
     PandaDocQuoteController controller = new PandaDocQuoteController(
       opportunityId,
       quoteType.toLowerCase()
@@ -149,9 +155,17 @@ public class PandaDocQuoteController {
     String opportunityId
   ) {
     try {
-      Opportunity opp = new OpportunitySelector()
-        .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
-        .get(0);
+        Opportunity opp;
+        if(((String)opportunityId).startsWith('006')){
+            opp = new OpportunitySelector()
+                .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
+                .get(0);
+        }else{
+            opp = new OpportunitySelector()
+                .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
+                .get(0);
+        }
+        
       return PandadocApi.checkDocumentStatus(
         statusUrl,
         opp.Division__r.Name.toLowerCase()
@@ -171,9 +185,17 @@ public class PandaDocQuoteController {
     try {
       // Fetch the document content from PandaDoc API
 
-      Opportunity opp = new OpportunitySelector()
-        .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
-        .get(0);
+        Opportunity opp;
+        if(((String)opportunityId).startsWith('006')){
+            opp = new OpportunitySelector()
+                .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
+                .get(0);
+        }else{
+            opp = new OpportunitySelector()
+                .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
+                .get(0);
+            opportunityId = opp.Id;
+        }
       Blob documentContent = PandadocApi.getDocumentContent(
         documentId,
         opp.Division__r.Name.toLowerCase()
