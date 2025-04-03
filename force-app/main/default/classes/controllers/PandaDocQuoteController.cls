@@ -27,9 +27,12 @@ public class PandaDocQuoteController {
       .selectOpportunitiesByIds(new Set<Id>{ oppId })
       .get(0);
 
-      if(quoteType.equalsIgnoreCase('Invoice') && (this.opp.SBQQ__Quotes2__r == null || this.opp.SBQQ__Quotes2__r.isEmpty())){
-          throw new PandaDocQuoteException('No Primary Quote');
-      }
+    if (
+      quoteType.equalsIgnoreCase('Invoice') &&
+      (this.opp.SBQQ__Quotes2__r == null || this.opp.SBQQ__Quotes2__r.isEmpty())
+    ) {
+      throw new PandaDocQuoteException('No Primary Quote');
+    }
     if (this.opp.Required_Deposit__c == null) {
       throw new PandaDocQuoteException('Required deposit cannot be null.');
     }
@@ -210,7 +213,9 @@ public class PandaDocQuoteController {
         '_' +
         (quoteType == 'estimate'
           ? 'EST'
-          : quoteType == 'proposal' ? 'PRO' : (quoteType == 'callsheet' ? 'CS' : 'INV')) +
+          : quoteType == 'proposal'
+              ? 'PRO'
+              : (quoteType == 'callsheet' ? 'CS' : 'INV')) +
         '_' +
         formattedDate;
       ContentVersion cv = new ContentVersion();
@@ -230,8 +235,8 @@ public class PandaDocQuoteController {
       cdl.LinkedEntityId = opportunityId;
       cdl.ShareType = 'V';
       insert cdl;
-      if(quoteType!='callsheet'){
-        updateOpportunityDocumentStage(opp,quoteType,documentId);
+      if (quoteType != 'callsheet') {
+        updateOpportunityDocumentStage(opp, quoteType, documentId);
       }
     } catch (Exception e) {
       throw new AuraHandledException(
@@ -241,43 +246,44 @@ public class PandaDocQuoteController {
   }
 
   // helpers
-    private static void updateOpportunityDocumentStage(Opportunity opp,String quoteType,String documentId){
+  private static void updateOpportunityDocumentStage(
+    Opportunity opp,
+    String quoteType,
+    String documentId
+  ) {
+    String url = 'https://app.pandadoc.com/a/#/documents/' + documentId;
+    Date dueDate = Date.today();
 
-        String url = 'https://app.pandadoc.com/a/#/documents/'+documentId;
-        Date dueDate = Date.today();
-        
-        if(quoteType == 'Proposal'){
-            opp.Last_Proposal__c = url;
-            opp.Stage_Document_Automated__c = 'Proposal Generated';
-        }
-        else if(quoteType == 'Invoice'){
-            opp.Last_Invoice__c = url;
-            opp.Stage_Document_Automated__c = 'Invoice Generated';
-        }
-        else if(quoteType == 'Estimate'){
-            opp.Last_Estimate__c = url;
-            opp.Stage_Document_Automated__c = 'Quote Generated';
-        }
-        if(opp.Stage_Document_Automated__c == 'Invoice Generated'){
-            switch on opp.Payment__c{
-                when 'Net 15'{
-                    opp.Invoice_Due_Date__c = dueDate.addDays(15);
-                }
-                when 'Net 30'{
-                    opp.Invoice_Due_Date__c = dueDate.addDays(30);
-                }
-                when 'Net 45'{
-                    opp.Invoice_Due_Date__c = dueDate.addDays(45);
-                }
-                when 'Net 60'{
-                    opp.Invoice_Due_Date__c = dueDate.addDays(60);
-                }
-            }
-        }
-        if(opp.Stage_Document_Automated__c != null){
-            update opp;
-        }
+    if (quoteType == 'Proposal') {
+      opp.Last_Proposal__c = url;
+      opp.Stage_Document_Automated__c = 'Proposal Generated';
+    } else if (quoteType == 'Invoice') {
+      opp.Last_Invoice__c = url;
+      opp.Stage_Document_Automated__c = 'Invoice Generated';
+    } else if (quoteType == 'Estimate') {
+      opp.Last_Estimate__c = url;
+      opp.Stage_Document_Automated__c = 'Quote Generated';
     }
+    if (opp.Stage_Document_Automated__c == 'Invoice Generated') {
+      switch on opp.Payment__c {
+        when 'Net 15' {
+          opp.Invoice_Due_Date__c = dueDate.addDays(15);
+        }
+        when 'Net 30' {
+          opp.Invoice_Due_Date__c = dueDate.addDays(30);
+        }
+        when 'Net 45' {
+          opp.Invoice_Due_Date__c = dueDate.addDays(45);
+        }
+        when 'Net 60' {
+          opp.Invoice_Due_Date__c = dueDate.addDays(60);
+        }
+      }
+    }
+    if (opp.Stage_Document_Automated__c != null) {
+      update opp;
+    }
+  }
   private String getDocumentName() {
     String divisionAbbreviation = this.opp.Division__r.Name.substring(0, 2)
       .toUpperCase();
@@ -295,7 +301,8 @@ public class PandaDocQuoteController {
       ' ' +
       divisionAbbreviation +
       ' ' +
-      dateFormatted).replaceAll('_',' ');
+      dateFormatted)
+      .replaceAll('_', ' ');
   }
 
   private List<PandaDocQuoteToken> getTokens() {
@@ -312,11 +319,19 @@ public class PandaDocQuoteController {
     Decimal deposit = opportunityTotal * (this.opp.Required_Deposit__c / 100);
     Decimal balance = opportunityTotal - deposit;
     return new List<PandaDocQuoteToken>{
-      new PandaDocQuoteToken('ACCOUNT_NAME', this.opp.Account.Name),
-      new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
+      new PandaDocQuoteToken(
+        'ACCOUNT_NAME',
+        this.opp.Account.Name != null ? this.opp.Account.Name : 'Do Not Replace'
+      ),
+      new PandaDocQuoteToken(
+        'OPPORTUNITY_NAME',
+        this.opp.Name != null ? this.opp.Name : 'Do Not Replace'
+      ),
       new PandaDocQuoteToken(
         'OPPORTUNITY_DESCRIPTION',
-        this.opp.Opportunity_Descriptor__c?.toUpperCase()
+        this.opp.Opportunity_Descriptor__c != null
+          ? this.opp.Opportunity_Descriptor__c.toUpperCase()
+          : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
         'Invoice_Due_Date_Override__c',
@@ -339,7 +354,10 @@ public class PandaDocQuoteController {
           '-' +
           this.opp.InvoiceNumber__c
       ),
-      new PandaDocQuoteToken('PAYMENT_TERMS', this.opp.Payment__c),
+      new PandaDocQuoteToken(
+        'PAYMENT_TERMS',
+        this.opp.Payment__c != null ? this.opp.Payment__c : 'Do Not Replace'
+      ),
       new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
       new PandaDocQuoteToken('QUOTE_DEPOSIT', formatCurrency(deposit)),
       new PandaDocQuoteToken('QUOTE_BALANCE', formatCurrency(balance)),
@@ -353,7 +371,7 @@ public class PandaDocQuoteController {
                 Time.newInstance(0, 0, 0, 0)
               )
               .format('MM / dd / yyyy')
-          : 'N/A'
+          : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
         'PROJECT_DESCRIPTION',
@@ -363,7 +381,7 @@ public class PandaDocQuoteController {
           : String.isNotBlank(this.opp.Lead_Type__c) &&
               !this.opp.Lead_Type__c.contains('-')
               ? this.opp.Lead_Type__c
-              : ''
+              : 'Do Not Replace'
       ),
       new PandaDocQuoteToken('DEPOSIT', this.opp.Required_Deposit__c),
       new PandaDocQuoteToken('BALANCE', (100.0 - this.opp.Required_Deposit__c))
@@ -451,12 +469,20 @@ public class PandaDocQuoteController {
       WHERE
         SBQQ__Quote__r.SBQQ__Opportunity2__c = :this.opportunityId
         AND SBQQ__Quantity__c > 0
-        AND SBQQ__Quote__r.SBQQ__Primary__c = TRUE AND SBQQ__CustomerTotal__c != 0 ORDER BY SBQQ__Number__c ASC
+        AND SBQQ__Quote__r.SBQQ__Primary__c = TRUE
+        AND SBQQ__CustomerTotal__c != 0
+      ORDER BY SBQQ__Number__c ASC
     ]) {
-      Decimal listPriceRoundedToTwoDecimals = qli.SBQQ__ListPrice__c.setScale(2);
-      Decimal customerPriceRoundedToTwoDecimals = qli.SBQQ__CustomerPrice__c.setScale(2);
-      Decimal customerTotalRoundedToTwoDecimals = qli.SBQQ__CustomerTotal__c.setScale(2);
-      
+      Decimal listPriceRoundedToTwoDecimals = qli.SBQQ__ListPrice__c.setScale(
+        2
+      );
+      Decimal customerPriceRoundedToTwoDecimals = qli.SBQQ__CustomerPrice__c.setScale(
+        2
+      );
+      Decimal customerTotalRoundedToTwoDecimals = qli.SBQQ__CustomerTotal__c.setScale(
+        2
+      );
+
       Map<String, Object> row = new Map<String, Object>{
         'options' => new Map<String, Object>{
           'optional' => false,
@@ -468,8 +494,12 @@ public class PandaDocQuoteController {
           /**
            * both descriptions need to be here
            */
-          'DESCRIPTION' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
-          'Description' => String.isNotBlank(qli.Client_Info__c) ? qli.Client_Info__c : '',
+          'DESCRIPTION' => String.isNotBlank(qli.Client_Info__c)
+            ? qli.Client_Info__c
+            : '',
+          'Description' => String.isNotBlank(qli.Client_Info__c)
+            ? qli.Client_Info__c
+            : '',
           'Text_Unit_Cost__c' => String.valueOf(listPriceRoundedToTwoDecimals),
           'Text_Customer_Price__c' => String.valueOf(
             customerPriceRoundedToTwoDecimals
@@ -492,7 +522,7 @@ public class PandaDocQuoteController {
       rows.add(row);
     }
 
-    if(this.opp.CC_Payment__c){
+    if (this.opp.CC_Payment__c) {
       Map<String, Object> row = new Map<String, Object>{
         'options' => new Map<String, Object>{
           'optional' => false,

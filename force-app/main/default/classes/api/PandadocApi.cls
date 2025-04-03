@@ -53,6 +53,7 @@ public with sharing class PandadocApi {
 
     Http http = new Http();
     HttpResponse res = http.send(req);
+    System.debug('res.getBody(): ' + JSON.serialize(res.getBody()));
 
     if (res.getStatusCode() == 200) {
       Map<String, Object> responseBody = (Map<String, Object>) JSON.deserializeUntyped(
