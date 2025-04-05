@@ -29,6 +29,8 @@ public class OpportunityTriggerHandler {
     if (autoGenerateQuote) {
       AutoQuoteGeneration.autoQuote(newMap.values()[0].Id);
     }
+
+    updateAccountPrimaryContact(newMap.values());
   }
 
   public static void onBeforeUpdate(
@@ -105,6 +107,7 @@ public class OpportunityTriggerHandler {
     }
 
     List<Opportunity> oppsNeedingCCFeeUpdate = new List<Opportunity>();
+    List<Opportunity> oppsNeedingPrimaryContactUpdate = new List<Opportunity>();
     for (Opportunity opp : newRecords) {
       Opportunity oldOpp = oldMap.get(opp.Id);
       if (
@@ -113,10 +116,52 @@ public class OpportunityTriggerHandler {
       ) {
         oppsNeedingCCFeeUpdate.add(opp);
       }
+
+      if (opp.PrimaryContact__c != oldOpp.PrimaryContact__c) {
+        oppsNeedingPrimaryContactUpdate.add(opp);
+      }
     }
 
     if (!oppsNeedingCCFeeUpdate.isEmpty()) {
       handleCCFeeQuoteLineItems(oppsNeedingCCFeeUpdate, oldMap);
+    }
+
+    if (!oppsNeedingPrimaryContactUpdate.isEmpty()) {
+      updateAccountPrimaryContact(oppsNeedingPrimaryContactUpdate);
+    }
+  }
+
+  private static void updateAccountPrimaryContact(
+    List<Opportunity> opportunities
+  ) {
+    Set<Id> accountIds = new Set<Id>();
+    Map<Id, Id> opportunityPrimaryContacts = new Map<Id, Id>();
+
+    for (Opportunity opp : opportunities) {
+      if (opp.PrimaryContact__c != null && opp.AccountId != null) {
+        accountIds.add(opp.AccountId);
+        opportunityPrimaryContacts.put(opp.AccountId, opp.PrimaryContact__c);
+      }
+    }
+
+    if (accountIds.isEmpty()) {
+      return;
+    }
+
+    List<Account> accountsToUpdate = new List<Account>();
+    for (Account acc : [
+      SELECT Id, Contact__c
+      FROM Account
+      WHERE Id IN :accountIds AND Contact__c = NULL
+    ]) {
+      if (opportunityPrimaryContacts.containsKey(acc.Id)) {
+        acc.Contact__c = opportunityPrimaryContacts.get(acc.Id);
+        accountsToUpdate.add(acc);
+      }
+    }
+
+    if (!accountsToUpdate.isEmpty()) {
+      update accountsToUpdate;
     }
   }
 
