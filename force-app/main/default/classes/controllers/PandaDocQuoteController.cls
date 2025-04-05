@@ -298,6 +298,7 @@ public class PandaDocQuoteController {
       ),
       new PandaDocQuoteToken(
         'Invoice_Due_Date_Override__c',
+        this.opp.Payment__c.containsIgnoreCase('receipt') ? this.opp.Payment__c :
         DateTime.newInstance(
             Date.today()
               .addDays(
