@@ -39,9 +39,7 @@ public class OpportunityTriggerHandler {
       divisionIds.add(opp.Division__c);
 
       if (
-        (opp.StageName.equalsIgnoreCase('Won - Production Complete') ||
-        opp.StageName.equalsIgnoreCase('Closed Won')) &&
-        opp.StageName != oldMap.get(opp.Id).StageName
+        opp.StageName.contains('Won') && opp.StageName != oldMap.get(opp.Id).StageName
       ) {
         accIds.add(opp.AccountId);
         closedWonOpportunities.add(opp);
