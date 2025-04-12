@@ -56,6 +56,44 @@ private class PandaDocQuoteControllerTest {
         );
       }
       insert opportunities;
+      //insert quote
+      SBQQ__Quote__c quote = new SBQQ__Quote__c(
+          SBQQ__Opportunity2__c = opportunities[0].Id,
+          SBQQ__Primary__c = TRUE
+      );
+      insert quote;
+      Id pricebookId = Test.getStandardPricebookId();
+      Pricebook2 standardPricebook = new Pricebook2(
+          Id = pricebookId,
+          IsActive = true
+      );
+      update standardPricebook;
+      // Create Product
+      Product2 product = new Product2(
+          Name = 'Test Product',
+          IsActive = TRUE
+      );
+      insert product;
+      
+      PricebookEntry standardPriceEntry = new PricebookEntry(
+          Pricebook2Id = standardPricebook.Id,
+          Product2Id = product.Id,
+          UnitPrice = 100,
+          IsActive = true
+      );
+      insert standardPriceEntry;
+      
+      // Create Quote Line Item
+      SBQQ__QuoteLine__c qli = new SBQQ__QuoteLine__c(
+          SBQQ__Quote__c = quote.Id,
+          SBQQ__Product__c = product.Id,
+          SBQQ__ListPrice__c = 100,
+          SBQQ__Quantity__c = 1,
+          SBQQ__SubscriptionTerm__c = 12,
+          Vendor__c = contacts[0].Id,
+          Client_Info__c = 'Test Client Info'
+      );
+        insert qli;
     }
   }
 
@@ -396,5 +434,22 @@ private class PandaDocQuoteControllerTest {
     }
 
     System.assertEquals(2, ccRecipientCount, 'There should be 2 CC recipients');
+  }
+    @isTest
+  static void testCreatePandaDocQuote_WithQuoteRecord() {
+      SBQQ__Quote__c quote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
+      PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
+      Test.setMock(HttpCalloutMock.class, mock);
+      
+      // WHEN
+      Test.startTest();
+      Map<String, String> result = PandaDocQuoteController.createPandaDocQuote(
+          quote.Id,
+          'estimate'
+      );
+      Test.stopTest();
+      
+      // THEN
+      System.assertNotEquals(null, result, 'Result should not be null');
   }
 }
