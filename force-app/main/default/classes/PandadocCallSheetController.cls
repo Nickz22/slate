@@ -82,8 +82,6 @@ public class PandadocCallSheetController {
     }
   }
 
-  
-
   private String getDocumentName() {
     String divisionAbbreviation = this.opp.Division__r.Name.substring(0, 2)
       .toUpperCase();
@@ -98,20 +96,47 @@ public class PandadocCallSheetController {
       .replaceAll('_', ' ');
   }
 
+  @TestVisible
   private List<PandaDocQuoteToken> getTokens() {
     // invoice amount already includes tax
 
     return new List<PandaDocQuoteToken>{
-      new PandaDocQuoteToken('ACCOUNT_NAME', this.opp.Account.Name),
+      new PandaDocQuoteToken(
+        'ACCOUNT_NAME',
+        this.opp.Account.Name != null ? this.opp.Account.Name : 'Do Not Replace'
+      ),
       new PandaDocQuoteToken('CALL_TIME', '8:00 AM'),
-      new PandaDocQuoteToken('Lead_Type__c', this.opp.Lead_Type__c),
-          new PandaDocQuoteToken('PRODUCER_NAME', this.opp.Lead_Producer__c),
-          new PandaDocQuoteToken('PRODUCER_EMAIL', this.opp.Lead_Producer_Email__c),
-          new PandaDocQuoteToken('PRODUCER_PHONE', this.opp.Division__r?.Division_Leader__r?.Phone),
-      new PandaDocQuoteToken('OPPORTUNITY_NAME', this.opp.Name),
+      new PandaDocQuoteToken(
+        'Lead_Type__c',
+        this.opp.Lead_Type__c != null ? this.opp.Lead_Type__c : 'Do Not Replace'
+      ),
+      new PandaDocQuoteToken(
+        'PRODUCER_NAME',
+        this.opp.Lead_Producer__c != null
+          ? this.opp.Lead_Producer__c
+          : 'Do Not Replace'
+      ),
+      new PandaDocQuoteToken(
+        'PRODUCER_EMAIL',
+        this.opp.Lead_Producer_Email__c != null
+          ? this.opp.Lead_Producer_Email__c
+          : 'Do Not Replace'
+      ),
+      new PandaDocQuoteToken(
+        'PRODUCER_PHONE',
+        this.opp.Division__r?.Division_Leader__r?.Phone != null
+          ? this.opp.Division__r.Division_Leader__r.Phone
+          : 'Do Not Replace'
+      ),
+      new PandaDocQuoteToken(
+        'OPPORTUNITY_NAME',
+        this.opp.Name != null ? this.opp.Name : 'Do Not Replace'
+      ),
       new PandaDocQuoteToken(
         'OPPORTUNITY_DESCRIPTION',
-        this.opp.Opportunity_Descriptor__c?.toUpperCase()
+        this.opp.Opportunity_Descriptor__c != null
+          ? this.opp.Opportunity_Descriptor__c.toUpperCase()
+          : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
         'DUE_DATE',
@@ -142,7 +167,7 @@ public class PandadocCallSheetController {
                 Time.newInstance(0, 0, 0, 0)
               )
               .format('MM / dd / yyyy')
-          : 'N/A'
+          : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
         'PROJECT_DESCRIPTION',
@@ -152,7 +177,7 @@ public class PandadocCallSheetController {
           : String.isNotBlank(this.opp.Lead_Type__c) &&
               !this.opp.Lead_Type__c.contains('-')
               ? this.opp.Lead_Type__c
-              : ''
+              : 'Do Not Replace'
       )
     };
   }
@@ -180,7 +205,7 @@ public class PandadocCallSheetController {
   }
 
   private List<Map<String, Object>> getPricingItems() {
-      List<Map<String, Object>> rows = getQuoteLineItemRows();
+    List<Map<String, Object>> rows = getQuoteLineItemRows();
     Map<String, Object> table = new Map<String, Object>{
       'name' => PRICING_TABLE_NAME,
       'data_merge' => true,
@@ -196,71 +221,84 @@ public class PandadocCallSheetController {
 
     return new List<Map<String, Object>>{ table };
   }
-    
-    private List<Map<String, Object>> getSections(List<Map<String, Object>> rows){
-        List<Callsheet_Section_Mapping__mdt> mappingMetadata = new CallsheetMappingSelector().selectAllMappings();
-        
-        // Map to store sections
-        Map<String, Map<String, Object>> sections = new Map<String, Map<String, Object>>();
-        List<Map<String, Object>> unmatchedRows = new List<Map<String, Object>>();
-        
-        // Loop through rows
-        for (Map<String, Object> row : rows) {
-            if (!row.containsKey('data') || !(row.get('data') instanceof Map<String, Object>)) {
-                continue;
-            }
-            Map<String, Object> data = (Map<String, Object>) row.get('data');
-            Boolean isMatched = false;
-            
-            // Loop through metadata mapping
-            for (Callsheet_Section_Mapping__mdt mapping : mappingMetadata) {
-                String sectionName = mapping.Callsheet_Section_Header__r.Label;
-                String fieldName = mapping.Field_Name__c;
-                String operator = mapping.Operator__c;
-                String value = mapping.Value__c;
-                
-                if (!data.containsKey(fieldName)) {
-                    continue;
-                }
-                
-                String fieldValue = String.valueOf(data.get(fieldName));
-                Boolean match = false;
-                
-                if (operator == 'equals' && fieldValue == value) {
-                    match = true;
-                } else if (operator == 'contains' && fieldValue.contains(value)) {
-                    match = true;
-                }
-                
-                if (match) {
-                    isMatched = true;
-                    if (!sections.containsKey(sectionName)) {
-                        sections.put(sectionName, new Map<String, Object>{
-                            'title' => sectionName,
-                                'rows' => new List<Map<String, Object>>(),
-                                'default' => false
-                                });
-                    }
-                    ((List<Map<String, Object>>) sections.get(sectionName).get('rows')).add(row);
-                }
-            }
-            
-            if (!isMatched) {
-                unmatchedRows.add(row);
-            }
+
+  private List<Map<String, Object>> getSections(
+    List<Map<String, Object>> rows
+  ) {
+    List<Callsheet_Section_Mapping__mdt> mappingMetadata = new CallsheetMappingSelector()
+      .selectAllMappings();
+
+    // Map to store sections
+    Map<String, Map<String, Object>> sections = new Map<String, Map<String, Object>>();
+    List<Map<String, Object>> unmatchedRows = new List<Map<String, Object>>();
+
+    // Loop through rows
+    for (Map<String, Object> row : rows) {
+      if (
+        !row.containsKey('data') ||
+        !(row.get('data') instanceof Map<String, Object>)
+      ) {
+        continue;
+      }
+      Map<String, Object> data = (Map<String, Object>) row.get('data');
+      Boolean isMatched = false;
+
+      // Loop through metadata mapping
+      for (Callsheet_Section_Mapping__mdt mapping : mappingMetadata) {
+        String sectionName = mapping.Callsheet_Section_Header__r.Label;
+        String fieldName = mapping.Field_Name__c;
+        String operator = mapping.Operator__c;
+        String value = mapping.Value__c;
+
+        if (!data.containsKey(fieldName)) {
+          continue;
+        }
+
+        String fieldValue = String.valueOf(data.get(fieldName));
+        Boolean match = false;
+
+        if (operator == 'equals' && fieldValue == value) {
+          match = true;
+        } else if (operator == 'contains' && fieldValue.contains(value)) {
+          match = true;
+        }
+
+        if (match) {
+          isMatched = true;
+          if (!sections.containsKey(sectionName)) {
+            sections.put(
+              sectionName,
+              new Map<String, Object>{
+                'title' => sectionName,
+                'rows' => new List<Map<String, Object>>(),
+                'default' => false
+              }
+            );
+          }
+          ((List<Map<String, Object>>) sections.get(sectionName).get('rows'))
+            .add(row);
+        }
+      }
+
+      if (!isMatched) {
+        unmatchedRows.add(row);
+      }
     }
-    
+
     if (!unmatchedRows.isEmpty()) {
-        sections.put('Others', new Map<String, Object>{
-            'title' => 'Others',
-            'rows' => unmatchedRows,
-            'default' => false
-        });
+      sections.put(
+        'Others',
+        new Map<String, Object>{
+          'title' => 'Others',
+          'rows' => unmatchedRows,
+          'default' => false
+        }
+      );
     }
-    
+
     return sections.values();
-    }
-    private List<Map<String, Object>> getQuoteLineItemRows() {
+  }
+  private List<Map<String, Object>> getQuoteLineItemRows() {
     List<Map<String, Object>> rows = new List<Map<String, Object>>();
 
     for (SBQQ__QuoteLine__c qli : [

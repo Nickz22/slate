@@ -25,7 +25,6 @@ public with sharing class OpportunitySelector {
               Stage_Document_Automated__c,
               Additional_Client_CC__c,
               Amount_QB__c,
-              CreatedDate,
               Invoice_Amount__c,
               Invoice_Due_Date__c,
               Payment_Terms__c,

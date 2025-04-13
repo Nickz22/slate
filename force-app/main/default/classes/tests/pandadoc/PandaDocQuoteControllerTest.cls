@@ -21,7 +21,7 @@ private class PandaDocQuoteControllerTest {
       // Create test Accounts
       List<Account> accounts = new List<Account>();
       for (Integer i = 0; i < 3; i++) {
-        accounts.add(new Account(Name = 'Test Account ' + i));
+        accounts.add(new Account(Name = 'Test Account ' + i, Payment_Terms__c = 'Net 30'));
       }
       insert accounts;
 
@@ -50,7 +50,7 @@ private class PandaDocQuoteControllerTest {
             Division__c = divisions[i].Id,
             StageName = 'Prospecting',
             CloseDate = Date.today().addDays(30),
-            Amount=1000,
+            Amount = 1000,
             Lead_Type__c = 'Slate - CGI'
           )
         );
@@ -283,7 +283,7 @@ private class PandaDocQuoteControllerTest {
       'One ContentDocumentLink should be created'
     );
     Datetime createdDate = opp.CreatedDate;
-    
+
     String formattedDate = opp.CreatedDate.format('YYMMdd');
 
     String nameShouldbe =
@@ -451,5 +451,93 @@ private class PandaDocQuoteControllerTest {
       
       // THEN
       System.assertNotEquals(null, result, 'Result should not be null');
+  }
+
+  @isTest
+  static void testTokensReplacesNullValuesWithDoNotReplace() {
+    // GIVEN
+    Opportunity opp = [
+      SELECT Id
+      FROM Opportunity
+      WHERE Division__r.Name = 'Slate'
+      LIMIT 1
+    ];
+
+    // Set Required_Deposit__c to avoid exception
+    opp.Required_Deposit__c = 50;
+    // Set critical fields to null
+    opp.Opportunity_Descriptor__c = null;
+    opp.Lead_Type__c = null;
+    opp.Shoot_Date__c = null;
+    update opp;
+
+    // Create a test quote
+    SBQQ__Quote__c quote = new SBQQ__Quote__c(
+      SBQQ__Opportunity2__c = opp.Id,
+      SBQQ__Primary__c = true
+    );
+    insert quote;
+
+    PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
+    Test.setMock(HttpCalloutMock.class, mock);
+
+    // WHEN
+    Test.startTest();
+    Map<String, String> apiResult = PandaDocQuoteController.createPandaDocQuote(
+      opp.Id,
+      'estimate'
+    );
+    Test.stopTest();
+
+    // THEN
+    System.assertNotEquals(null, apiResult, 'API result should not be null');
+
+    // Verify request body contains "Do Not Replace" values
+    Map<String, Object> sentPayload = mock.lastRequestBody;
+    List<Object> sentTokens = (List<Object>) sentPayload.get('tokens');
+
+    Boolean foundOpportunityDescriptionReplacement = false;
+    Boolean foundShootDateReplacement = false;
+    Boolean foundProjectDescriptionReplacement = false;
+
+    for (Object tokenObj : sentTokens) {
+      Map<String, Object> token = (Map<String, Object>) tokenObj;
+
+      if (
+        token.get('name') == 'OPPORTUNITY_DESCRIPTION' &&
+        token.get('value') == 'Do Not Replace'
+      ) {
+        foundOpportunityDescriptionReplacement = true;
+      }
+
+      if (
+        token.get('name') == 'SHOOT_DATE' &&
+        token.get('value') == 'Do Not Replace'
+      ) {
+        foundShootDateReplacement = true;
+      }
+
+      if (
+        token.get('name') == 'PROJECT_DESCRIPTION' &&
+        token.get('value') == 'Do Not Replace'
+      ) {
+        foundProjectDescriptionReplacement = true;
+      }
+    }
+
+    System.assert(
+      foundOpportunityDescriptionReplacement,
+      'OPPORTUNITY_DESCRIPTION should be replaced with "Do Not Replace" when null'
+    );
+
+    System.assert(
+      foundShootDateReplacement,
+      'SHOOT_DATE should be replaced with "Do Not Replace" when null'
+    );
+
+    System.assert(
+      foundProjectDescriptionReplacement,
+      'PROJECT_DESCRIPTION should be replaced with "Do Not Replace" when null'
+    );
   }
 }

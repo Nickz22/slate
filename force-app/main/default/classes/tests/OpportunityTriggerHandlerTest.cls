@@ -182,4 +182,104 @@ public with sharing class OpportunityTriggerHandlerTest {
       'Slate deposit should be 70.0'
     );
   }
+
+  @isTest
+  static void testInvoiceDueDateCalculation() {
+    // Create test accounts with different payment terms
+    List<Account> testAccounts = new List<Account>{
+      new Account(Name = 'Test Account Net 15', Payment_Terms__c = 'Net 15'),
+      new Account(Name = 'Test Account Net 30', Payment_Terms__c = 'Net 30'),
+      new Account(Name = 'Test Account Net 45', Payment_Terms__c = 'Net 45'),
+      new Account(Name = 'Test Account Net 60', Payment_Terms__c = 'Net 60'),
+      new Account(Name = 'Test Account No Terms', Payment_Terms__c = null)
+    };
+    insert testAccounts;
+
+    Division__c division = new Division__c(
+      Name = 'Slate',
+      Division_Leader__c = UserInfo.getUserId()
+    );
+    insert division;
+
+    // Create opportunities linked to these accounts
+    Date closeDate = Date.today();
+    List<Opportunity> testOpps = new List<Opportunity>();
+
+    for (Account acc : testAccounts) {
+      testOpps.add(
+        new Opportunity(
+          Name = 'Test Opp for ' + acc.Name,
+          AccountId = acc.Id,
+          StageName = 'Proposal',
+          CloseDate = closeDate,
+          Division__c = division.Id,
+          Lead_Type__c = 'Slate - CGI'
+        )
+      );
+    }
+
+    insert testOpps;
+
+    // Get the opportunities before the update
+    Map<Id, Opportunity> oldOpps = new Map<Id, Opportunity>(
+      [
+        SELECT Id, StageName, CloseDate, Invoice_Due_Date__c
+        FROM Opportunity
+        WHERE Id IN :testOpps
+      ]
+    );
+
+    // Update the opportunities to Closed Won
+    for (Opportunity opp : testOpps) {
+      opp.StageName = 'Closed Won';
+    }
+
+    // Call the method being tested
+    Test.startTest();
+    OpportunityTriggerHandler.onBeforeUpdate(oldOpps, testOpps);
+    Test.stopTest();
+
+    // Verify the invoice due dates are set correctly
+    for (Opportunity opp : testOpps) {
+      Account relatedAccount = null;
+      for (Account acc : testAccounts) {
+        if (acc.Id == opp.AccountId) {
+          relatedAccount = acc;
+          break;
+        }
+      }
+
+      if (relatedAccount.Payment_Terms__c == 'Net 15') {
+        Assert.areEqual(
+          closeDate.addDays(15),
+          opp.Invoice_Due_Date__c,
+          'Invoice due date should be 15 days after close date for Net 15'
+        );
+      } else if (relatedAccount.Payment_Terms__c == 'Net 30') {
+        Assert.areEqual(
+          closeDate.addDays(30),
+          opp.Invoice_Due_Date__c,
+          'Invoice due date should be 30 days after close date for Net 30'
+        );
+      } else if (relatedAccount.Payment_Terms__c == 'Net 45') {
+        Assert.areEqual(
+          closeDate.addDays(45),
+          opp.Invoice_Due_Date__c,
+          'Invoice due date should be 45 days after close date for Net 45'
+        );
+      } else if (relatedAccount.Payment_Terms__c == 'Net 60') {
+        Assert.areEqual(
+          closeDate.addDays(60),
+          opp.Invoice_Due_Date__c,
+          'Invoice due date should be 60 days after close date for Net 60'
+        );
+      } else {
+        Assert.areEqual(
+          closeDate,
+          opp.Invoice_Due_Date__c,
+          'Invoice due date should be the same as close date when no payment terms'
+        );
+      }
+    }
+  }
 }

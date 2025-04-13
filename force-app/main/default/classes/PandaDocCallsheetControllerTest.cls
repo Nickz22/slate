@@ -55,34 +55,31 @@ private class PandaDocCallsheetControllerTest {
         );
       }
       insert opportunities;
-        SBQQ__Quote__c quote = new SBQQ__Quote__c(
+      SBQQ__Quote__c quote = new SBQQ__Quote__c(
         SBQQ__Opportunity2__c = opportunities[0].Id,
-        SBQQ__Primary__c = TRUE
-    );
-        insert quote;
-        Id pricebookId = Test.getStandardPricebookId();
-        Pricebook2 standardPricebook = new Pricebook2(
-            Id = pricebookId,
-            IsActive = true
-        );
-        update standardPricebook;
-            // Create Product
-    Product2 product = new Product2(
-        Name = 'Test Product',
-        IsActive = TRUE
-    );
-    insert product;
-    
-        PricebookEntry standardPriceEntry = new PricebookEntry(
-            Pricebook2Id = standardPricebook.Id,
-            Product2Id = product.Id,
-            UnitPrice = 100,
-            IsActive = true
-        );
-        insert standardPriceEntry;
-    
-    // Create Quote Line Item
-    SBQQ__QuoteLine__c qli = new SBQQ__QuoteLine__c(
+        SBQQ__Primary__c = true
+      );
+      insert quote;
+      Id pricebookId = Test.getStandardPricebookId();
+      Pricebook2 standardPricebook = new Pricebook2(
+        Id = pricebookId,
+        IsActive = true
+      );
+      update standardPricebook;
+      // Create Product
+      Product2 product = new Product2(Name = 'Test Product', IsActive = true);
+      insert product;
+
+      PricebookEntry standardPriceEntry = new PricebookEntry(
+        Pricebook2Id = standardPricebook.Id,
+        Product2Id = product.Id,
+        UnitPrice = 100,
+        IsActive = true
+      );
+      insert standardPriceEntry;
+
+      // Create Quote Line Item
+      SBQQ__QuoteLine__c qli = new SBQQ__QuoteLine__c(
         SBQQ__Quote__c = quote.Id,
         SBQQ__Product__c = product.Id,
         SBQQ__ListPrice__c = 100,
@@ -90,15 +87,19 @@ private class PandaDocCallsheetControllerTest {
         SBQQ__SubscriptionTerm__c = 12,
         Vendor__c = contacts[0].Id,
         Client_Info__c = 'Test Client Info',
-        Include_in_Call_Sheet__c = TRUE
-    );
-    insert qli;
+        Include_in_Call_Sheet__c = true
+      );
+      insert qli;
     }
   }
 
   @isTest
   static void testCreatePandaCallsheetSlate() {
-    SBQQ__Quote__c quote = [SELECT Id, SBQQ__Opportunity2__c FROM SBQQ__Quote__c LIMIT 1];
+    SBQQ__Quote__c quote = [
+      SELECT Id, SBQQ__Opportunity2__c
+      FROM SBQQ__Quote__c
+      LIMIT 1
+    ];
 
     PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
     Test.setMock(HttpCalloutMock.class, mock);
@@ -123,7 +124,7 @@ private class PandaDocCallsheetControllerTest {
       'Template UUID in the payload should exactly equal the mapped template id for Slate no cc fee estimate'
     );
   }
- 
+
   @isTest
   static void testAttachDocumentToOpportunity() {
     // GIVEN
@@ -165,7 +166,7 @@ private class PandaDocCallsheetControllerTest {
       'One ContentDocumentLink should be created'
     );
     Datetime createdDate = opp.CreatedDate;
-    
+
     String formattedDate = opp.CreatedDate.format('YYMMdd');
 
     String nameShouldbe =

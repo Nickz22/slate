@@ -15,6 +15,10 @@ public class OpportunityTriggerHandler {
       [SELECT Name FROM Division__c WHERE Id IN :divisionIds]
     );
     for (Opportunity opp : newOpps) {
+      if(opp.Division__c == null){
+        opp.addError('Division is required');
+        continue;
+      }
       opp.Division_Name__c = divisionById.get(opp.Division__c).Name;
     }
 
