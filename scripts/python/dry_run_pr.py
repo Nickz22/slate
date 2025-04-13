@@ -8,6 +8,30 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+"""
+Usage Instructions:
+-----------------
+This script performs a dry-run deployment of changes from one or more GitHub Pull Requests to a Salesforce org.
+
+Basic Usage:
+    python dry_run_pr.py --org <target_org_alias> --prs <github_pr_url>
+
+Multiple PRs:
+    python dry_run_pr.py --org <target_org_alias> --prs <github_pr_url_1> <github_pr_url_2> <github_pr_url_3>
+
+Interactive Mode:
+    python dry_run_pr.py --org <target_org_alias>
+    (Script will prompt for PR URL)
+
+Examples:
+    python dry_run_pr.py --org dev --prs https://github.com/username/repo/pull/123
+    python dry_run_pr.py --org staging --prs https://github.com/username/repo/pull/123 https://github.com/username/repo/pull/124
+
+Requirements:
+    - GITHUB_TOKEN environment variable must be set with a valid GitHub token
+    - Salesforce CLI (sf) must be installed and authenticated with the target org
+"""
+
 
 def get_test_classes(tests_dir, exclude_dirs=None):
     if exclude_dirs is None:
@@ -47,61 +71,58 @@ def get_changed_files(owner, repo, pr_number, token):
     return files
 
 
-def generate_deployment_details(files):
-    mapping = {
-        "/classes/": "ApexClass",
-        "/permissionsets/": "PermissionSet",
-        "/lwc/": "LightningComponentBundle",
-        "/aura/": "AuraDefinitionBundle",
-        "/objects/": "CustomObject",
-        "/customMetadata/": "CustomMetadata",
-    }
-    details = {}
-    for f in files:
-        if "/gpt-generated/" in f or "/typings/" in f or "/lwc/__tests__/" in f:
+def filter_deployable_files(files):
+    deployable_files = set()
+    excluded_patterns = ["/gpt-generated/", "/typings/", "/lwc/__tests__/"]
+
+    for file in files:
+        if any(pattern in file for pattern in excluded_patterns):
             continue
-        if "/objects/" in f and "/fields/" in f:
-            parts = f.split("/")
-            try:
-                idx = parts.index("objects")
-                obj = parts[idx + 1]
-                details[f"CustomObject:{obj}"] = True
-            except Exception:
-                continue
-        elif "CustomLabels.labels-meta.xml" in f:
-            details["CustomLabel"] = True
-        else:
-            for seg, typ in mapping.items():
-                if seg in f:
-                    name = f.split("/")[-1].split(".")[0]
-                    left = f.rsplit("/", 1)[0]
-                    if typ == "CustomObject" and not f.endswith(".object-meta.xml"):
-                        continue
-                    if typ == "LightningComponentBundle" and name not in left.split(
-                        "/"
-                    ):
-                        continue
-                    details[f"{typ}:{name}"] = True
-                    break
-    return list(details.keys())
+
+        if file.startswith("force-app/"):
+            deployable_files.add(file)
+
+    return list(deployable_files)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--pr", type=str)
-    parser.add_argument("--org", type=str, required=True)
+    parser.add_argument("--prs", type=str, nargs="+", help="List of GitHub PR URLs")
+    parser.add_argument("--org", type=str, required=True, help="Target org alias")
     args = parser.parse_args()
-    pr_url = args.pr if args.pr else input("Enter the GitHub Pull Request URL: ")
+
+    if not args.prs:
+        args.prs = [input("Enter the GitHub Pull Request URL: ")]
+
     token = os.getenv("GITHUB_TOKEN")
     if not token:
         sys.exit("No GITHUB_TOKEN found.")
-    owner, repo, pr_number = get_pr_details(pr_url)
-    changed_files = get_changed_files(owner, repo, pr_number, token)
-    if not changed_files:
-        sys.exit("Failed to retrieve changed files. Check the PR URL and token.")
-    deploy_metadata = generate_deployment_details(changed_files)
+
+    all_changed_files = []
+
+    for pr_url in args.prs:
+        owner, repo, pr_number = get_pr_details(pr_url)
+        changed_files = get_changed_files(owner, repo, pr_number, token)
+
+        if not changed_files:
+            print(f"Failed to retrieve changed files for PR: {pr_url}. Skipping.")
+            continue
+
+        all_changed_files.extend(changed_files)
+
+    if not all_changed_files:
+        sys.exit(
+            "Failed to retrieve changed files from any PR. Check the PR URLs and token."
+        )
+
+    deployable_files = filter_deployable_files(all_changed_files)
+
+    if not deployable_files:
+        sys.exit("No deployable files found in the changes.")
+
     tests_dir = "force-app/main/default/classes/tests"
     test_classes = get_test_classes(tests_dir, ["mocks"])
+
     cmd = [
         "sf",
         "project",
@@ -113,10 +134,13 @@ def main():
         "--target-org",
         args.org,
     ]
-    for m in deploy_metadata:
-        cmd.extend(["-m", m])
+
+    for file_path in deployable_files:
+        cmd.extend(["-d", file_path])
+
     for t in test_classes:
         cmd.extend(["--tests", t])
+
     print(" ".join(cmd))
     subprocess.check_call(cmd)
 

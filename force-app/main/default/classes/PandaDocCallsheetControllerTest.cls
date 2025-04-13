@@ -201,4 +201,123 @@ private class PandaDocCallsheetControllerTest {
     );
   }
 
+  @isTest
+  static void testTokensReplacesNullValuesWithDoNotReplace() {
+    // GIVEN
+    Opportunity opp = [
+      SELECT Id
+      FROM Opportunity
+      WHERE Division__r.Name = 'Slate'
+      LIMIT 1
+    ];
+
+    // Set critical fields to null
+    opp.Lead_Type__c = null;
+    opp.Lead_Producer__c = null;
+    opp.Opportunity_Descriptor__c = null;
+    opp.Shoot_Date__c = null;
+    update opp;
+
+    // Create controller directly to test internal methods
+    PandadocCallSheetController controller = new PandadocCallSheetController(
+      opp.Id
+    );
+
+    // Test by calling API
+    PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
+    Test.setMock(HttpCalloutMock.class, mock);
+
+    // WHEN
+    Test.startTest();
+    Map<String, String> apiResult = PandadocCallSheetController.createPandaDocCallSheet(
+      opp.Id
+    );
+    Test.stopTest();
+
+    // THEN
+    System.assertNotEquals(null, apiResult, 'API result should not be null');
+
+    // Verify request body contains "Do Not Replace" values
+    Map<String, Object> sentPayload = mock.lastRequestBody;
+    List<Object> sentTokens = (List<Object>) sentPayload.get('tokens');
+
+    Boolean foundLeadTypeReplacement = false;
+    Boolean foundOpportunityDescriptionReplacement = false;
+    Boolean foundShootDateReplacement = false;
+    Boolean foundProjectDescriptionReplacement = false;
+
+    for (Object tokenObj : sentTokens) {
+      Map<String, Object> token = (Map<String, Object>) tokenObj;
+
+      if (
+        token.get('name') == 'Lead_Type__c' &&
+        token.get('value') == 'Do Not Replace'
+      ) {
+        foundLeadTypeReplacement = true;
+      }
+
+      if (
+        token.get('name') == 'OPPORTUNITY_DESCRIPTION' &&
+        token.get('value') == 'Do Not Replace'
+      ) {
+        foundOpportunityDescriptionReplacement = true;
+      }
+
+      if (
+        token.get('name') == 'SHOOT_DATE' &&
+        token.get('value') == 'Do Not Replace'
+      ) {
+        foundShootDateReplacement = true;
+      }
+
+      if (
+        token.get('name') == 'PROJECT_DESCRIPTION' &&
+        token.get('value') == 'Do Not Replace'
+      ) {
+        foundProjectDescriptionReplacement = true;
+      }
+    }
+
+    System.assert(
+      foundLeadTypeReplacement,
+      'Lead_Type__c should be replaced with "Do Not Replace" when null'
+    );
+
+    System.assert(
+      foundOpportunityDescriptionReplacement,
+      'OPPORTUNITY_DESCRIPTION should be replaced with "Do Not Replace" when null'
+    );
+
+    System.assert(
+      foundShootDateReplacement,
+      'SHOOT_DATE should be replaced with "Do Not Replace" when null'
+    );
+
+    System.assert(
+      foundProjectDescriptionReplacement,
+      'PROJECT_DESCRIPTION should be replaced with "Do Not Replace" when null'
+    );
+  }
+
+  private class TokensReflectionHelper implements System.StubProvider {
+    private PandadocCallSheetController controller;
+
+    public TokensReflectionHelper(PandadocCallSheetController controller) {
+      this.controller = controller;
+    }
+
+    public Object handleMethodCall(
+      Object stubbedObject,
+      String stubbedMethodName,
+      Type returnType,
+      List<Type> listOfParamTypes,
+      List<String> listOfParamNames,
+      List<Object> listOfArgs
+    ) {
+      if (stubbedMethodName == 'getTokens') {
+        return controller.getTokens();
+      }
+      return null;
+    }
+  }
 }
