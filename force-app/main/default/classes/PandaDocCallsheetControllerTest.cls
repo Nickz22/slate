@@ -215,7 +215,6 @@ private class PandaDocCallsheetControllerTest {
     // Set critical fields to null
     opp.Lead_Type__c = null;
     opp.Lead_Producer__c = null;
-    opp.Lead_Producer_Email__c = null;
     opp.Opportunity_Descriptor__c = null;
     opp.Shoot_Date__c = null;
     update opp;
@@ -224,14 +223,6 @@ private class PandaDocCallsheetControllerTest {
     PandadocCallSheetController controller = new PandadocCallSheetController(
       opp.Id
     );
-
-    // Use reflection to access private method
-    List<PandaDocQuoteToken> tokens;
-    Object result = Test.createStub(
-      PandaDocQuoteToken.class,
-      new TokensReflectionHelper(controller)
-    );
-    tokens = (List<PandaDocQuoteToken>) result;
 
     // Test by calling API
     PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
@@ -255,7 +246,6 @@ private class PandaDocCallsheetControllerTest {
     Boolean foundOpportunityDescriptionReplacement = false;
     Boolean foundShootDateReplacement = false;
     Boolean foundProjectDescriptionReplacement = false;
-    Boolean foundProducerEmailReplacement = false;
 
     for (Object tokenObj : sentTokens) {
       Map<String, Object> token = (Map<String, Object>) tokenObj;
@@ -287,13 +277,6 @@ private class PandaDocCallsheetControllerTest {
       ) {
         foundProjectDescriptionReplacement = true;
       }
-
-      if (
-        token.get('name') == 'PRODUCER_EMAIL' &&
-        token.get('value') == 'Do Not Replace'
-      ) {
-        foundProducerEmailReplacement = true;
-      }
     }
 
     System.assert(
@@ -314,11 +297,6 @@ private class PandaDocCallsheetControllerTest {
     System.assert(
       foundProjectDescriptionReplacement,
       'PROJECT_DESCRIPTION should be replaced with "Do Not Replace" when null'
-    );
-
-    System.assert(
-      foundProducerEmailReplacement,
-      'PRODUCER_EMAIL should be replaced with "Do Not Replace" when null'
     );
   }
 

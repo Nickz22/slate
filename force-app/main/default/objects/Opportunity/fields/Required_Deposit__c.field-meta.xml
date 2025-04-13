@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Required_Deposit__c</fullName>
-    <defaultValue>00.70</defaultValue>
+    <defaultValue></defaultValue>
     <description>The percentage of the total that will be billed via the initial estimate.</description>
     <externalId>false</externalId>
     <label>Required Deposit</label>

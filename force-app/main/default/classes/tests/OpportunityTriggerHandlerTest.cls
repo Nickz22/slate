@@ -133,18 +133,21 @@ public with sharing class OpportunityTriggerHandlerTest {
         Name = 'Slate Opportunity',
         StageName = 'Prospecting',
         CloseDate = Date.today().addDays(30),
+        Lead_Type__c = 'Slate - CGI',
         Division__c = slateDiv.Id
       ),
       new Opportunity(
         Name = 'Align Opportunity',
         StageName = 'Prospecting',
         CloseDate = Date.today().addDays(30),
+        Lead_Type__c = 'Retouching - Align',
         Division__c = alignDiv.Id
       ),
       new Opportunity(
         Name = 'Palermo Opportunity',
         StageName = 'Prospecting',
         CloseDate = Date.today().addDays(30),
+        Lead_Type__c = 'Palermo - Branding',
         Division__c = palermoDiv.Id
       )
     };
