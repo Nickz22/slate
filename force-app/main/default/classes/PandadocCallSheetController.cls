@@ -102,7 +102,7 @@ public class PandadocCallSheetController {
 
     return new List<PandaDocQuoteToken>{
       new PandaDocQuoteToken(
-        'ACCOUNT_NAME',
+        'Account.Name',
         this.opp.Account.Name != null ? this.opp.Account.Name : 'Do Not Replace'
       ),
       new PandaDocQuoteToken('CALL_TIME', '8:00 AM'),
@@ -111,29 +111,29 @@ public class PandadocCallSheetController {
         this.opp.Lead_Type__c != null ? this.opp.Lead_Type__c : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
-        'PRODUCER_NAME',
+        'Lead_Producer__c',
         this.opp.Lead_Producer__c != null
           ? this.opp.Lead_Producer__c
           : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
-        'PRODUCER_EMAIL',
+        'Lead_Producer_Email__c',
         this.opp.Lead_Producer_Email__c != null
           ? this.opp.Lead_Producer_Email__c
           : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
-        'PRODUCER_PHONE',
+        'Division_Leader__r.Phone',
         this.opp.Division__r?.Division_Leader__r?.Phone != null
           ? this.opp.Division__r.Division_Leader__r.Phone
           : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
-        'OPPORTUNITY_NAME',
+        'Opportunity Name',
         this.opp.Name != null ? this.opp.Name : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
-        'OPPORTUNITY_DESCRIPTION',
+        'Opportunity_Descriptor__c',
         this.opp.Opportunity_Descriptor__c != null
           ? this.opp.Opportunity_Descriptor__c.toUpperCase()
           : 'Do Not Replace'
@@ -154,13 +154,7 @@ public class PandadocCallSheetController {
           .format('MM / dd / yyyy')
       ),
       new PandaDocQuoteToken(
-        'INVOICE_NUMBER',
-        opp.Division__r.Name.substring(0, 2).toUpperCase() +
-          '-' +
-          this.opp.InvoiceNumber__c
-      ),
-      new PandaDocQuoteToken(
-        'SHOOT_DATE',
+        'Shoot_Date__c',
         this.opp.Shoot_Date__c != null
           ? DateTime.newInstance(
                 this.opp.Shoot_Date__c,
@@ -326,26 +320,15 @@ public class PandadocCallSheetController {
         },
         'data' => new Map<String, Object>{
           'Name' => qli.SBQQ__Product__r.Name,
-          'Role__c' => qli.SBQQ__Product__r.Name,
-          'DESCRIPTION' => String.isNotBlank(qli.Client_Info__c)
+          'Product Name' => qli.SBQQ__Product__r.Name,
+          'Client_Info__c' => String.isNotBlank(qli.Client_Info__c)
             ? qli.Client_Info__c
             : '',
-          'Description' => String.isNotBlank(qli.Client_Info__c)
-            ? qli.Client_Info__c
-            : '',
-          'E_mail__c' => String.isNotBlank(qli.Vendor__r.Email)
+          'Vendor Email' => String.isNotBlank(qli.Vendor__r.Email)
             ? qli.Vendor__r.Email
             : '',
           'CallTime' => '8:00 AM',
-          'Text_Customer_Price__c' => String.valueOf(
-            qli.SBQQ__CustomerPrice__c
-          ),
-          'QUANTITY' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
-          'Quantity' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
-          'Days_Required__c' => String.valueOf(qli.Days_on_Project5__c),
-          'qty' => String.valueOf(1),
           'QTY' => String.valueOf(1),
-          'Qty' => String.valueOf(1),
           'Price' => qli.SBQQ__CustomerTotal__c
         }
       };

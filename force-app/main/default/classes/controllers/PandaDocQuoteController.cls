@@ -320,15 +320,15 @@ public class PandaDocQuoteController {
     Decimal balance = opportunityTotal - deposit;
     return new List<PandaDocQuoteToken>{
       new PandaDocQuoteToken(
-        'ACCOUNT_NAME',
+        'Account.Name',
         this.opp.Account.Name != null ? this.opp.Account.Name : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
-        'OPPORTUNITY_NAME',
+        'Opportunity Name',
         this.opp.Name != null ? this.opp.Name : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
-        'OPPORTUNITY_DESCRIPTION',
+        'Opportunity_Descriptor__c',
         this.opp.Opportunity_Descriptor__c != null
           ? this.opp.Opportunity_Descriptor__c.toUpperCase()
           : 'Do Not Replace'
@@ -349,13 +349,13 @@ public class PandaDocQuoteController {
           .format('MM / dd / yyyy')
       ),
       new PandaDocQuoteToken(
-        'INVOICE_NUMBER',
+        'InvoiceNumber__c',
         opp.Division__r.Name.substring(0, 2).toUpperCase() +
           '-' +
           this.opp.InvoiceNumber__c
       ),
       new PandaDocQuoteToken(
-        'PAYMENT_TERMS',
+        'Payment__c',
         this.opp.Payment__c != null ? this.opp.Payment__c : 'Do Not Replace'
       ),
       new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
@@ -364,7 +364,7 @@ public class PandaDocQuoteController {
       new PandaDocQuoteToken('CC_FEE', formatCurrency(ccfee)),
       new PandaDocQuoteToken('QUOTE_TOTAL', formatCurrency(opportunityTotal)),
       new PandaDocQuoteToken(
-        'SHOOT_DATE',
+        'Shoot_Date__c',
         this.opp.Shoot_Date__c != null
           ? DateTime.newInstance(
                 this.opp.Shoot_Date__c,
@@ -383,7 +383,7 @@ public class PandaDocQuoteController {
               ? this.opp.Lead_Type__c
               : 'Do Not Replace'
       ),
-      new PandaDocQuoteToken('DEPOSIT', this.opp.Required_Deposit__c),
+      new PandaDocQuoteToken('Required_Deposit__c', this.opp.Required_Deposit__c),
       new PandaDocQuoteToken('BALANCE', (100.0 - this.opp.Required_Deposit__c))
     };
   }
@@ -494,10 +494,7 @@ public class PandaDocQuoteController {
           /**
            * both descriptions need to be here
            */
-          'DESCRIPTION' => String.isNotBlank(qli.Client_Info__c)
-            ? qli.Client_Info__c
-            : '',
-          'Description' => String.isNotBlank(qli.Client_Info__c)
+          'Client_Info__c' => String.isNotBlank(qli.Client_Info__c)
             ? qli.Client_Info__c
             : '',
           'Text_Unit_Cost__c' => String.valueOf(listPriceRoundedToTwoDecimals),
@@ -507,9 +504,9 @@ public class PandaDocQuoteController {
           /**
            * both quantities need to be here
            */
-          'QUANTITY' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
+          'SBQQ__Quantity__c' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
           'Quantity' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
-          'Days_Required__c' => String.valueOf(qli.Days_on_Project5__c),
+          'Days_on_Project5__c' => String.valueOf(qli.Days_on_Project5__c),
           'qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'QTY' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
           'Qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
@@ -533,7 +530,7 @@ public class PandaDocQuoteController {
           'Name' => 'CC Fee',
           'Text_Unit_Cost__c' => String.valueOf(this.opp.CC_Fee_invoice__c),
           'Quantity' => String.valueOf(1),
-          'Days_Required__c' => String.valueOf(0),
+          'Days_on_Project5__c' => String.valueOf(0),
           'qty' => String.valueOf(1),
           'QTY' => String.valueOf(1),
           'Price' => this.opp.CC_Fee_invoice__c,
