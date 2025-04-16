@@ -123,14 +123,19 @@ public class L4GController {
     return null;
   }
   @AuraEnabled
-  public static Id cloneRecord(Id recordId, Map<String, Object> opportunityData) {
+  public static Id cloneRecord(
+    Id recordId,
+    Map<String, Object> opportunityData
+  ) {
+    System.debug(JSON.serializePretty(opportunityData));
     List<String> fields = new List<String>(
       Opportunity.SObjectType.getDescribe().fields.getMap().keySet()
     );
     String soql =
       '' +
       ' select ' +
-      String.join(fields, ',') + ', Account.Name'+
+      String.join(fields, ',') +
+      ', Account.Name' +
       ' from Opportunity' +
       ' where Id = \'' +
       recordId +
@@ -138,25 +143,33 @@ public class L4GController {
     List<Opportunity> originalRecord = Database.query(soql);
     Opportunity clonedRecord = originalRecord[0]
       ?.clone(false, true, false, false);
-      for(String field : opportunityData.keySet()){
-          if(field.containsIgnoreCase('date') && opportunityData.get(field) != null){
-              clonedRecord.put(field,Date.valueOf((String)opportunityData.get(field)));
-          }else{
-              clonedRecord.put(field, opportunityData.get(field));
-          }
+    for (String field : opportunityData.keySet()) {
+      if (
+        field.containsIgnoreCase('date') && opportunityData.get(field) != null
+      ) {
+        clonedRecord.put(
+          field,
+          Date.valueOf((String) opportunityData.get(field))
+        );
+      } else {
+        clonedRecord.put(field, opportunityData.get(field));
       }
+    }
     //clonedRecord.CloseDate = Date.today();
     clonedRecord.Invoice_Due_Date_Override__c = null;
-    String oppNamee = OpportunityTriggerHandler.setOppName(clonedRecord.Lead_Type__c, originalRecord[0].Account.Name);
+    String oppNamee = OpportunityTriggerHandler.setOppName(
+      clonedRecord.Lead_Type__c,
+      originalRecord[0].Account.Name
+    );
     clonedRecord.Name = oppNamee;
     List<OpportunityContactRole> existingOCRs = [
       SELECT Id, OpportunityId, ContactId, Role, IsPrimary
       FROM OpportunityContactRole
       WHERE OpportunityId = :recordId
     ];
-      if (originalRecord[0].SBQQ__PrimaryQuote__c != null) {
-          OpportunityTriggerHandler.autoGenerateQuote = false;
-      }
+    if (originalRecord[0].SBQQ__PrimaryQuote__c != null) {
+      OpportunityTriggerHandler.autoGenerateQuote = false;
+    }
     insert clonedRecord;
     if (originalRecord[0].SBQQ__PrimaryQuote__c != null) {
       List<String> quoteFields = new List<String>(
@@ -201,8 +214,12 @@ public class L4GController {
           clonedItems.add(clonedItem);
         }
         insert clonedItems;
+
+        // Call the future method to calculate the quote after the transaction completes
+        calculateQuoteAsync(clonedRecord.SBQQ__PrimaryQuote__c);
       }
     }
+
     if (existingOCRs.size() > 0) {
       List<OpportunityContactRole> contactRolesToInsert = new List<OpportunityContactRole>();
       for (OpportunityContactRole ocr : existingOCRs) {
@@ -214,6 +231,65 @@ public class L4GController {
     }
 
     return clonedRecord.Id;
+  }
+
+  /**
+   * Asynchronous method to calculate a quote using a direct REST call
+   * Uses @future to avoid "uncommitted work pending" errors when called after DML operations
+   */
+  @future(callout=true)
+  public static void calculateQuoteAsync(Id quoteId) {
+    try {
+      // Use a direct REST callout to calculate the quote
+      HttpRequest req = new HttpRequest();
+      req.setEndpoint(
+        URL.getOrgDomainUrl().toExternalForm() +
+        '/services/apexrest/SBQQ/ServiceRouter'
+      );
+      req.setMethod('POST');
+      req.setHeader('Content-Type', 'application/json');
+      req.setHeader('Authorization', 'Bearer ' + UserInfo.getSessionId());
+
+      // Build the request payload - simpler direct approach
+      Map<String, Object> payload = new Map<String, Object>{
+        'quote' => new Map<String, String>{ 'Id' => quoteId },
+        'methodName' => 'calculateAndSave'
+      };
+
+      req.setBody(JSON.serialize(payload));
+
+      // Execute the callout
+      Http http = new Http();
+      HttpResponse res = http.send(req);
+
+      // Log the response
+      System.debug('CPQ calculate API response status: ' + res.getStatusCode());
+      System.debug('CPQ calculate API response body: ' + res.getBody());
+
+      if (res.getStatusCode() != 200) {
+        // If REST call fails, fall back to toggle method
+        System.debug('REST callout failed, falling back to toggle approach');
+        SBQQ__Quote__c quoteToRecalculate = new SBQQ__Quote__c(
+          Id = quoteId,
+          CPQ_Recalculate__c = true
+        );
+        update quoteToRecalculate;
+      }
+    } catch (Exception e) {
+      System.debug('Error in CPQ calculation API: ' + e.getMessage());
+      System.debug('Error stack trace: ' + e.getStackTraceString());
+
+      // Fallback method - toggle the recalculate field
+      try {
+        SBQQ__Quote__c quoteToRecalculate = new SBQQ__Quote__c(
+          Id = quoteId,
+          CPQ_Recalculate__c = true
+        );
+        update quoteToRecalculate;
+      } catch (Exception e2) {
+        System.debug('Fallback calculation also failed: ' + e2.getMessage());
+      }
+    }
   }
   @AuraEnabled(cacheable=true)
   public static List<String> getFieldsToView(
