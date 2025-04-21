@@ -504,14 +504,14 @@ private class PandaDocQuoteControllerTest {
       Map<String, Object> token = (Map<String, Object>) tokenObj;
 
       if (
-        token.get('name') == 'OPPORTUNITY_DESCRIPTION' &&
+        token.get('name') == 'Opportunity_Descriptor__c' &&
         token.get('value') == 'Do Not Replace'
       ) {
         foundOpportunityDescriptionReplacement = true;
       }
 
       if (
-        token.get('name') == 'SHOOT_DATE' &&
+        token.get('name') == 'Shoot_Date__c' &&
         token.get('value') == 'Do Not Replace'
       ) {
         foundShootDateReplacement = true;
@@ -527,12 +527,12 @@ private class PandaDocQuoteControllerTest {
 
     System.assert(
       foundOpportunityDescriptionReplacement,
-      'OPPORTUNITY_DESCRIPTION should be replaced with "Do Not Replace" when null'
+      'Opportunity_Descriptor__c should be replaced with "Do Not Replace" when null'
     );
 
     System.assert(
       foundShootDateReplacement,
-      'SHOOT_DATE should be replaced with "Do Not Replace" when null'
+      'Shoot_Date__c should be replaced with "Do Not Replace" when null'
     );
 
     System.assert(
