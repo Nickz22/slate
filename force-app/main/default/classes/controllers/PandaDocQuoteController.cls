@@ -94,15 +94,15 @@ public class PandaDocQuoteController {
     Id opportunityId,
     String quoteType
   ) {
-      if(quoteType.equalsIgnoreCase('Callsheet')){
-          return PandadocCallSheetController.createPandaDocCallSheet(opportunityId);
-      }
-      if(!((String)opportunityId).startsWith('006')){
-          Opportunity oppFromQuote = new OpportunitySelector()
-          .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
-          .get(0);
-          opportunityId = oppFromQuote.Id;
-      }
+    if (quoteType.equalsIgnoreCase('Callsheet')) {
+      return PandadocCallSheetController.createPandaDocCallSheet(opportunityId);
+    }
+    if (!((String) opportunityId).startsWith('006')) {
+      Opportunity oppFromQuote = new OpportunitySelector()
+        .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
+        .get(0);
+      opportunityId = oppFromQuote.Id;
+    }
     PandaDocQuoteController controller = new PandaDocQuoteController(
       opportunityId,
       quoteType.toLowerCase()
@@ -158,17 +158,17 @@ public class PandaDocQuoteController {
     String opportunityId
   ) {
     try {
-        Opportunity opp;
-        if(((String)opportunityId).startsWith('006')){
-            opp = new OpportunitySelector()
-                .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
-                .get(0);
-        }else{
-            opp = new OpportunitySelector()
-                .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
-                .get(0);
-        }
-        
+      Opportunity opp;
+      if (((String) opportunityId).startsWith('006')) {
+        opp = new OpportunitySelector()
+          .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
+          .get(0);
+      } else {
+        opp = new OpportunitySelector()
+          .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
+          .get(0);
+      }
+
       return PandadocApi.checkDocumentStatus(
         statusUrl,
         opp.Division__r.Name.toLowerCase()
@@ -188,17 +188,17 @@ public class PandaDocQuoteController {
     try {
       // Fetch the document content from PandaDoc API
 
-        Opportunity opp;
-        if(((String)opportunityId).startsWith('006')){
-            opp = new OpportunitySelector()
-                .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
-                .get(0);
-        }else{
-            opp = new OpportunitySelector()
-                .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
-                .get(0);
-            opportunityId = opp.Id;
-        }
+      Opportunity opp;
+      if (((String) opportunityId).startsWith('006')) {
+        opp = new OpportunitySelector()
+          .selectOpportunitiesByIds(new Set<Id>{ opportunityId })
+          .get(0);
+      } else {
+        opp = new OpportunitySelector()
+          .selectOpportunitiesByQuoteIds(new Set<Id>{ opportunityId })
+          .get(0);
+        opportunityId = opp.Id;
+      }
       Blob documentContent = PandadocApi.getDocumentContent(
         documentId,
         opp.Division__r.Name.toLowerCase()
@@ -335,18 +335,20 @@ public class PandaDocQuoteController {
       ),
       new PandaDocQuoteToken(
         'Invoice_Due_Date_Override__c',
-        DateTime.newInstance(
-            Date.today()
-              .addDays(
-                Integer.valueOf(
-                  this.opp.Payment__c.split(' ')[
-                    this.opp.Payment__c.split(' ').size() - 1
-                  ]
-                )
-              ),
-            Time.newInstance(0, 0, 0, 0)
-          )
-          .format('MM / dd / yyyy')
+        this.opp.Payment__c == 'due on receipt'
+          ? 'Due on Receipt'
+          : DateTime.newInstance(
+                Date.today()
+                  .addDays(
+                    Integer.valueOf(
+                      this.opp.Payment__c.split(' ')[
+                        this.opp.Payment__c.split(' ').size() - 1
+                      ]
+                    )
+                  ),
+                Time.newInstance(0, 0, 0, 0)
+              )
+              .format('MM / dd / yyyy')
       ),
       new PandaDocQuoteToken(
         'InvoiceNumber__c',
@@ -383,7 +385,10 @@ public class PandaDocQuoteController {
               ? this.opp.Lead_Type__c
               : 'Do Not Replace'
       ),
-      new PandaDocQuoteToken('Required_Deposit__c', this.opp.Required_Deposit__c),
+      new PandaDocQuoteToken(
+        'Required_Deposit__c',
+        this.opp.Required_Deposit__c
+      ),
       new PandaDocQuoteToken('BALANCE', (100.0 - this.opp.Required_Deposit__c))
     };
   }
@@ -504,7 +509,9 @@ public class PandaDocQuoteController {
           /**
            * both quantities need to be here
            */
-          'SBQQ__Quantity__c' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
+          'SBQQ__Quantity__c' => String.valueOf(
+            Integer.valueOf(qli.SBQQ__Quantity__c)
+          ),
           'Quantity' => String.valueOf(Integer.valueOf(qli.SBQQ__Quantity__c)),
           'Days_on_Project5__c' => String.valueOf(qli.Days_on_Project5__c),
           'qty' => String.valueOf(1), // has to be 1 to allow us to directly set the Pandadoc SubTotal via the Customer Total
