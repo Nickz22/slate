@@ -1,0 +1,6 @@
+---
+description: 
+globs: .cls
+alwaysApply: false
+---
+- Don't put comments in any of your code contributions.

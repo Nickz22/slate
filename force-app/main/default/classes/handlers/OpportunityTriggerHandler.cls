@@ -15,7 +15,7 @@ public class OpportunityTriggerHandler {
       [SELECT Name FROM Division__c WHERE Id IN :divisionIds]
     );
     for (Opportunity opp : newOpps) {
-      if(opp.Division__c == null){
+      if (opp.Division__c == null) {
         opp.addError('Division is required');
         continue;
       }
@@ -43,7 +43,8 @@ public class OpportunityTriggerHandler {
       divisionIds.add(opp.Division__c);
 
       if (
-        opp.StageName.contains('Won') && opp.StageName != oldMap.get(opp.Id).StageName
+        opp.StageName.contains('Won') &&
+        opp.StageName != oldMap.get(opp.Id).StageName
       ) {
         accIds.add(opp.AccountId);
         closedWonOpportunities.add(opp);
@@ -62,7 +63,14 @@ public class OpportunityTriggerHandler {
 
     for (Opportunity opp : closedWonOpportunities) {
       Date dueDate = opp.CloseDate;
-      switch on accountMap.get(opp.AccountId).Payment_Terms__c {
+      Account acc = accountMap.get(opp.AccountId);
+
+      if (acc.Payment_Terms__c == null) {
+        opp.Invoice_Due_Date__c = opp.CloseDate;
+        continue;
+      }
+
+      switch on acc.Payment_Terms__c {
         when 'Net 15' {
           dueDate = dueDate.addDays(15);
         }
@@ -94,6 +102,159 @@ public class OpportunityTriggerHandler {
       ) {
         CreateUpdateInvoiceFuture(opp.Id);
       }
+    }
+
+    List<Opportunity> oppsNeedingCCFeeUpdate = new List<Opportunity>();
+    for (Opportunity opp : newRecords) {
+      Opportunity oldOpp = oldMap.get(opp.Id);
+      if (
+        opp.CC_Payment__c != oldOpp.CC_Payment__c ||
+        (opp.CC_Payment__c && opp.Amount != oldOpp.Amount)
+      ) {
+        oppsNeedingCCFeeUpdate.add(opp);
+      }
+    }
+
+    if (!oppsNeedingCCFeeUpdate.isEmpty()) {
+      handleCCFeeQuoteLineItems(oppsNeedingCCFeeUpdate, oldMap);
+    }
+  }
+
+  public static void handleCCFeeQuoteLineItems(
+    List<Opportunity> opportunities,
+    Map<Id, Opportunity> oldMap
+  ) {
+    Set<Id> oppIds = new Set<Id>();
+    Set<String> divisionNames = new Set<String>();
+
+    for (Opportunity opp : opportunities) {
+      oppIds.add(opp.Id);
+    }
+
+    Map<Id, Opportunity> oppMap = new Map<Id, Opportunity>(
+      [
+        SELECT
+          Id,
+          CC_Payment__c,
+          Amount,
+          Division__r.Name,
+          (
+            SELECT Id
+            FROM SBQQ__Quotes2__r
+            WHERE SBQQ__Primary__c = TRUE
+            LIMIT 1
+          )
+        FROM Opportunity
+        WHERE Id IN :oppIds
+      ]
+    );
+
+    for (Opportunity opp : oppMap.values()) {
+      divisionNames.add(opp.Division__r.Name);
+    }
+
+    Map<String, Product2> ccFeeProductByDivision = new Map<String, Product2>();
+    for (Product2 prod : [
+      SELECT Id, Name, ProductCode
+      FROM Product2
+      WHERE Name = 'CC Processing Fee' AND IsActive = TRUE
+    ]) {
+      for (String divName : divisionNames) {
+        if (
+          prod.ProductCode != null &&
+          prod.ProductCode.containsIgnoreCase(divName)
+        ) {
+          ccFeeProductByDivision.put(divName, prod);
+        }
+      }
+    }
+
+    Map<Id, SBQQ__Quote__c> quoteByOppId = new Map<Id, SBQQ__Quote__c>();
+    for (Opportunity opp : oppMap.values()) {
+      if (!opp.SBQQ__Quotes2__r.isEmpty()) {
+        quoteByOppId.put(opp.Id, opp.SBQQ__Quotes2__r[0]);
+      }
+    }
+
+    Map<Id, List<SBQQ__QuoteLine__c>> quoteLinesByQuoteId = new Map<Id, List<SBQQ__QuoteLine__c>>();
+    for (SBQQ__QuoteLine__c line : [
+      SELECT
+        Id,
+        SBQQ__Quote__c,
+        SBQQ__Product__c,
+        SBQQ__Product__r.Name,
+        SBQQ__CustomerPrice__c
+      FROM SBQQ__QuoteLine__c
+      WHERE
+        SBQQ__Quote__c IN :quoteByOppId.values()
+        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+    ]) {
+      if (!quoteLinesByQuoteId.containsKey(line.SBQQ__Quote__c)) {
+        quoteLinesByQuoteId.put(
+          line.SBQQ__Quote__c,
+          new List<SBQQ__QuoteLine__c>()
+        );
+      }
+      quoteLinesByQuoteId.get(line.SBQQ__Quote__c).add(line);
+    }
+
+    List<SBQQ__QuoteLine__c> linesToInsert = new List<SBQQ__QuoteLine__c>();
+    List<SBQQ__QuoteLine__c> linesToUpdate = new List<SBQQ__QuoteLine__c>();
+    List<SBQQ__QuoteLine__c> linesToDelete = new List<SBQQ__QuoteLine__c>();
+
+    for (Opportunity opp : opportunities) {
+      String divisionName = oppMap.get(opp.Id).Division__r.Name;
+      Product2 ccFeeProduct = ccFeeProductByDivision.get(divisionName);
+      SBQQ__Quote__c quote = quoteByOppId.get(opp.Id);
+
+      if (quote == null || ccFeeProduct == null)
+        continue;
+
+      List<SBQQ__QuoteLine__c> existingCCLines = quoteLinesByQuoteId.containsKey(
+          quote.Id
+        )
+        ? quoteLinesByQuoteId.get(quote.Id)
+        : new List<SBQQ__QuoteLine__c>();
+
+      if (opp.CC_Payment__c) {
+        Decimal ccFeeAmount = opp.Amount * 0.045;
+        Decimal ccFeeCost = opp.Amount * 0.03;
+
+        if (existingCCLines.isEmpty()) {
+          SBQQ__QuoteLine__c newLine = new SBQQ__QuoteLine__c(
+            SBQQ__Quote__c = quote.Id,
+            SBQQ__Product__c = ccFeeProduct.Id,
+            SBQQ__Quantity__c = 1,
+            SBQQ__ListPrice__c = ccFeeAmount,
+            SBQQ__CustomerPrice__c = ccFeeAmount,
+            SBQQ__UnitCost__c = ccFeeCost,
+            SBQQ__Description__c = 'Credit Card Processing Fee'
+          );
+          linesToInsert.add(newLine);
+        } else {
+          SBQQ__QuoteLine__c lineToUpdate = existingCCLines[0];
+          if (lineToUpdate.SBQQ__CustomerPrice__c != ccFeeAmount) {
+            lineToUpdate.SBQQ__ListPrice__c = ccFeeAmount;
+            lineToUpdate.SBQQ__CustomerPrice__c = ccFeeAmount;
+            lineToUpdate.SBQQ__UnitCost__c = ccFeeCost;
+            linesToUpdate.add(lineToUpdate);
+          }
+        }
+      } else if (!opp.CC_Payment__c && !existingCCLines.isEmpty()) {
+        linesToDelete.addAll(existingCCLines);
+      }
+    }
+
+    if (!linesToInsert.isEmpty()) {
+      insert linesToInsert;
+    }
+
+    if (!linesToUpdate.isEmpty()) {
+      update linesToUpdate;
+    }
+
+    if (!linesToDelete.isEmpty()) {
+      delete linesToDelete;
     }
   }
 
