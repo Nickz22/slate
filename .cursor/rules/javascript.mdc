@@ -1,0 +1,6 @@
+---
+description: 
+globs: .js
+alwaysApply: false
+---
+- Always position imports and exports in alphabetical order.

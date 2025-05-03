@@ -66,19 +66,13 @@ public class PandaDocQuoteController {
     String templateUuid;
     switch on this.quoteType {
       when ESTIMATE {
-        templateUuid = this.isCCPayment
-          ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Estimate_Template_Id__c
-          : this.quoteTemplateMapping.Pandadoc_Estimate_Template_Id__c;
+        templateUuid = this.quoteTemplateMapping.Pandadoc_Estimate_Template_Id__c;
       }
       when PROPOSAL {
-        templateUuid = this.isCCPayment
-          ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Proposal_Template_Id__c
-          : this.quoteTemplateMapping.Pandadoc_Proposal_Template_Id__c;
+        templateUuid = this.quoteTemplateMapping.Pandadoc_Proposal_Template_Id__c;
       }
       when INVOICE {
-        templateUuid = this.isCCPayment
-          ? this.quoteTemplateMapping.Pandadoc_CC_Fee_Invoice_Template_Id__c
-          : this.quoteTemplateMapping.Pandadoc_Invoice_Template_Id__c;
+        templateUuid = this.quoteTemplateMapping.Pandadoc_Invoice_Template_Id__c;
       }
       when else {
         throw new PandaDocQuoteException(
@@ -307,14 +301,9 @@ public class PandaDocQuoteController {
 
   private List<PandaDocQuoteToken> getTokens() {
     // invoice amount already includes tax
-    Decimal opportunityTotal =
-      this.opp.Amount_QB__c +
-      (this.opp.CC_Payment__c ? this.opp.CC_Fee_invoice__c : 0);
+    Decimal opportunityTotal = this.opp.Amount_QB__c;
     Decimal taxToCollect =
       this.opp.Tax_to_collect__c *
-      this.percentToPayByQuoteType.get(this.quoteType);
-    Decimal ccfee =
-      this.opp.CC_Fee_invoice__c *
       this.percentToPayByQuoteType.get(this.quoteType);
     Decimal deposit = opportunityTotal * (this.opp.Required_Deposit__c / 100);
     Decimal balance = opportunityTotal - deposit;
@@ -363,7 +352,6 @@ public class PandaDocQuoteController {
       new PandaDocQuoteToken('SALES_TAX', formatCurrency(taxToCollect)),
       new PandaDocQuoteToken('QUOTE_DEPOSIT', formatCurrency(deposit)),
       new PandaDocQuoteToken('QUOTE_BALANCE', formatCurrency(balance)),
-      new PandaDocQuoteToken('CC_FEE', formatCurrency(ccfee)),
       new PandaDocQuoteToken('QUOTE_TOTAL', formatCurrency(opportunityTotal)),
       new PandaDocQuoteToken(
         'Shoot_Date__c',
@@ -523,27 +511,6 @@ public class PandaDocQuoteController {
         }
       };
       System.debug('Pricing Row: ' + JSON.serializePretty(row));
-      rows.add(row);
-    }
-
-    if (this.opp.CC_Payment__c) {
-      Map<String, Object> row = new Map<String, Object>{
-        'options' => new Map<String, Object>{
-          'optional' => false,
-          'optional_selected' => true,
-          'qty_editable' => false
-        },
-        'data' => new Map<String, Object>{
-          'Name' => 'CC Fee',
-          'Text_Unit_Cost__c' => String.valueOf(this.opp.CC_Fee_invoice__c),
-          'Quantity' => String.valueOf(1),
-          'Days_on_Project5__c' => String.valueOf(0),
-          'qty' => String.valueOf(1),
-          'QTY' => String.valueOf(1),
-          'Price' => this.opp.CC_Fee_invoice__c,
-          'SBQQ__CustomerTotal__c' => this.opp.CC_Fee_invoice__c
-        }
-      };
       rows.add(row);
     }
 
