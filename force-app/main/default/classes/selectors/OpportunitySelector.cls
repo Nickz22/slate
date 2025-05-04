@@ -31,7 +31,8 @@ public with sharing class OpportunitySelector {
               CreatedDate, (SELECT Id FROM SBQQ__Quotes2__r WHERE SBQQ__Primary__c = true),
               Lead_Producer__c,
               Lead_Producer_Email__c,
-        			Division__r.Division_Leader__r.Phone
+        			Division__r.Division_Leader__r.Phone,
+              CloseDate
             FROM Opportunity
             WHERE Id IN :ids
         ];
