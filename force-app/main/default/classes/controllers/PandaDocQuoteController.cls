@@ -12,7 +12,7 @@ public class PandaDocQuoteController {
     INVOICE
   }
 
-  private static Map<String, String> companyEmailByUserEmailPhrase = new Map<String, String>{
+  private static Map<String, String> pandadocEmailByDivisionName = new Map<String, String>{
     'align' => 'info@align-ny.com',
     'slate' => 'info@slate-nyc.com',
     'palermo' => 'info@palermo-studio.com'
@@ -110,21 +110,14 @@ public class PandaDocQuoteController {
     controller.opp = freshOpp;
     controller.isCCPayment = freshOpp.CC_Payment__c;
 
-    String ownerEmail = '';
-
-    for (String phrase : companyEmailByUserEmailPhrase.keySet()) {
-      if (UserInfo.getUserName().toLowerCase().contains(phrase.toLowerCase())) {
-        ownerEmail = companyEmailByUserEmailPhrase.get(phrase);
-        break;
-      }
-    }
-
-    if (String.isBlank(ownerEmail)) {
+    String divisionName = freshOpp.Division__r.Name.toLowerCase();
+    if (!pandadocEmailByDivisionName.containsKey(divisionName)) {
       throw new PandaDocQuoteException(
         'Running user must have an email containing "Align", "Slate", or "Palermo" to send a PandaDoc quote.'
       );
     }
 
+    String ownerEmail = pandadocEmailByDivisionName.get(divisionName);
     Map<String, Object> requestBody = new Map<String, Object>{
       'name' => controller.getDocumentName(),
       'template_uuid' => controller.getQuoteTemplateUuid(),
