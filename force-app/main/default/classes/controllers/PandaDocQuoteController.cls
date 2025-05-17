@@ -313,6 +313,15 @@ public class PandaDocQuoteController {
         this.opp.Account.Name != null ? this.opp.Account.Name : 'Do Not Replace'
       ),
       new PandaDocQuoteToken(
+          'CloseDate',
+          this.opp.CloseDate != null
+          ? DateTime.newInstance(
+              this.opp.CloseDate,
+              Time.newInstance(0, 0, 0, 0)
+          )
+          .format('MM / dd / yyyy') : null
+      ),
+      new PandaDocQuoteToken(
         'Opportunity Name',
         this.opp.Name != null ? this.opp.Name : 'Do Not Replace'
       ),
