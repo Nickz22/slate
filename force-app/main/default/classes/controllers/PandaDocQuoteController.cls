@@ -324,20 +324,19 @@ public class PandaDocQuoteController {
       ),
       new PandaDocQuoteToken(
         'Invoice_Due_Date_Override__c',
-        this.opp.Payment__c == 'due on receipt'
-          ? 'Due on Receipt'
-          : DateTime.newInstance(
-                Date.today()
-                  .addDays(
-                    Integer.valueOf(
-                      this.opp.Payment__c.split(' ')[
-                        this.opp.Payment__c.split(' ').size() - 1
-                      ]
-                    )
-                  ),
-                Time.newInstance(0, 0, 0, 0)
-              )
-              .format('MM / dd / yyyy')
+        this.opp.Payment__c.containsIgnoreCase('receipt') ? this.opp.Payment__c :
+        DateTime.newInstance(
+            Date.today()
+              .addDays(
+                Integer.valueOf(
+                  this.opp.Payment__c.split(' ')[
+                    this.opp.Payment__c.split(' ').size() - 1
+                  ]
+                )
+              ),
+            Time.newInstance(0, 0, 0, 0)
+          )
+          .format('MM / dd / yyyy')
       ),
       new PandaDocQuoteToken(
         'InvoiceNumber__c',
