@@ -7,6 +7,7 @@ import { NavigationMixin } from "lightning/navigation";
 
 export default class CustomDatatable extends NavigationMixin(LightningElement) {
     @api actions = [{ name: 'edit', label: 'Edit' }, { name: 'clone', label: 'Clone' }];
+    @api initialInquiry;
     @track editableRowId = null;
     @track stageOptions;
     @track nameSortDirection = 'asc'; // Default sorting direction
