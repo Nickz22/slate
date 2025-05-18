@@ -135,12 +135,12 @@ public class OpportunityTriggerHandler {
     List<Opportunity> opportunities
   ) {
     Set<Id> accountIds = new Set<Id>();
-    Map<Id, Id> opportunityPrimaryContacts = new Map<Id, Id>();
+    Map<Id, Id> primaryContactIdByAccountId = new Map<Id, Id>();
 
     for (Opportunity opp : opportunities) {
       if (opp.PrimaryContact__c != null && opp.AccountId != null) {
         accountIds.add(opp.AccountId);
-        opportunityPrimaryContacts.put(opp.AccountId, opp.PrimaryContact__c);
+        primaryContactIdByAccountId.put(opp.AccountId, opp.PrimaryContact__c);
       }
     }
 
@@ -152,12 +152,10 @@ public class OpportunityTriggerHandler {
     for (Account acc : [
       SELECT Id, Contact__c
       FROM Account
-      WHERE Id IN :accountIds AND Contact__c = NULL
+      WHERE Id IN :accountIds
     ]) {
-      if (opportunityPrimaryContacts.containsKey(acc.Id)) {
-        acc.Contact__c = opportunityPrimaryContacts.get(acc.Id);
-        accountsToUpdate.add(acc);
-      }
+      acc.Contact__c = primaryContactIdByAccountId.get(acc.Id);
+      accountsToUpdate.add(acc);
     }
 
     if (!accountsToUpdate.isEmpty()) {
@@ -170,7 +168,6 @@ public class OpportunityTriggerHandler {
     Map<Id, Opportunity> oldMap
   ) {
     Set<Id> oppIds = new Set<Id>();
-    Set<String> divisionNames = new Set<String>();
 
     for (Opportunity opp : opportunities) {
       oppIds.add(opp.Id);
@@ -194,25 +191,12 @@ public class OpportunityTriggerHandler {
       ]
     );
 
-    for (Opportunity opp : oppMap.values()) {
-      divisionNames.add(opp.Division__r.Name);
-    }
-
-    Map<String, Product2> ccFeeProductByDivision = new Map<String, Product2>();
-    for (Product2 prod : [
+    Product2 ccFeeProduct = [
       SELECT Id, Name, ProductCode
       FROM Product2
       WHERE Name = 'CC Processing Fee' AND IsActive = TRUE
-    ]) {
-      for (String divName : divisionNames) {
-        if (
-          prod.ProductCode != null &&
-          prod.ProductCode.containsIgnoreCase(divName)
-        ) {
-          ccFeeProductByDivision.put(divName, prod);
-        }
-      }
-    }
+      LIMIT 1
+    ];
 
     Map<Id, SBQQ__Quote__c> quoteByOppId = new Map<Id, SBQQ__Quote__c>();
     for (Opportunity opp : oppMap.values()) {
@@ -248,8 +232,6 @@ public class OpportunityTriggerHandler {
     List<SBQQ__QuoteLine__c> linesToDelete = new List<SBQQ__QuoteLine__c>();
 
     for (Opportunity opp : opportunities) {
-      String divisionName = oppMap.get(opp.Id).Division__r.Name;
-      Product2 ccFeeProduct = ccFeeProductByDivision.get(divisionName);
       SBQQ__Quote__c quote = quoteByOppId.get(opp.Id);
 
       if (quote == null || ccFeeProduct == null)

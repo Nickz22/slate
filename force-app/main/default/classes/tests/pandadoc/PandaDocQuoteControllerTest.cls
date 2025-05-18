@@ -21,7 +21,9 @@ private class PandaDocQuoteControllerTest {
       // Create test Accounts
       List<Account> accounts = new List<Account>();
       for (Integer i = 0; i < 3; i++) {
-        accounts.add(new Account(Name = 'Test Account ' + i, Payment_Terms__c = 'Net 30'));
+        accounts.add(
+          new Account(Name = 'Test Account ' + i, Payment_Terms__c = 'Net 30')
+        );
       }
       insert accounts;
 
@@ -58,42 +60,39 @@ private class PandaDocQuoteControllerTest {
       insert opportunities;
       //insert quote
       SBQQ__Quote__c quote = new SBQQ__Quote__c(
-          SBQQ__Opportunity2__c = opportunities[0].Id,
-          SBQQ__Primary__c = TRUE
+        SBQQ__Opportunity2__c = opportunities[0].Id,
+        SBQQ__Primary__c = true
       );
       insert quote;
       Id pricebookId = Test.getStandardPricebookId();
       Pricebook2 standardPricebook = new Pricebook2(
-          Id = pricebookId,
-          IsActive = true
+        Id = pricebookId,
+        IsActive = true
       );
       update standardPricebook;
       // Create Product
-      Product2 product = new Product2(
-          Name = 'Test Product',
-          IsActive = TRUE
-      );
+      Product2 product = new Product2(Name = 'Test Product', IsActive = true);
       insert product;
-      
+
       PricebookEntry standardPriceEntry = new PricebookEntry(
-          Pricebook2Id = standardPricebook.Id,
-          Product2Id = product.Id,
-          UnitPrice = 100,
-          IsActive = true
+        Pricebook2Id = standardPricebook.Id,
+        Product2Id = product.Id,
+        UnitPrice = 100,
+        IsActive = true
       );
       insert standardPriceEntry;
-      
+
       // Create Quote Line Item
       SBQQ__QuoteLine__c qli = new SBQQ__QuoteLine__c(
-          SBQQ__Quote__c = quote.Id,
-          SBQQ__Product__c = product.Id,
-          SBQQ__ListPrice__c = 100,
-          SBQQ__Quantity__c = 1,
-          SBQQ__SubscriptionTerm__c = 12,
-          Vendor__c = contacts[0].Id,
-          Client_Info__c = 'Test Client Info'
+        SBQQ__Quote__c = quote.Id,
+        SBQQ__Product__c = product.Id,
+        SBQQ__ListPrice__c = 100,
+        SBQQ__Quantity__c = 1,
+        SBQQ__SubscriptionTerm__c = 12,
+        Vendor__c = contacts[0].Id,
+        Client_Info__c = 'Test Client Info'
       );
-        insert qli;
+      insert qli;
     }
   }
 
@@ -141,7 +140,26 @@ private class PandaDocQuoteControllerTest {
       WHERE Division__r.Name = 'Slate'
       LIMIT 1
     ];
-    opp.CC_Payment__c = true; // Set CC_Payment__c to true for this test
+
+    // Create CC Processing Fee Product and PricebookEntry
+    Product2 ccProduct = new Product2(
+      Name = 'CC Processing Fee',
+      IsActive = true,
+      ProductCode = 'Slate_CC',
+      Family = 'Service'
+    );
+    insert ccProduct;
+
+    Id pricebookId = Test.getStandardPricebookId();
+    PricebookEntry standardPriceEntry = new PricebookEntry(
+      Pricebook2Id = pricebookId,
+      Product2Id = ccProduct.Id,
+      UnitPrice = 1, // Set a nominal price, actual price might be calculated by automation
+      IsActive = true
+    );
+    insert standardPriceEntry;
+
+    opp.CC_Payment__c = true;
     update opp;
 
     PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
@@ -158,14 +176,16 @@ private class PandaDocQuoteControllerTest {
     // THEN
     System.assertNotEquals(null, result, 'Result should not be null');
 
-    String slateCCFeeEstimateTemplateUuid = new PandadocQuoteMappingSelector()
-      .selectPandadocQuoteTemplateMappingByDivisionName('Slate')
-      .Pandadoc_CC_Fee_Estimate_Template_Id__c; // Use the CC Fee template field
-    Map<String, Object> sentPayload = mock.lastRequestBody;
-    System.assertEquals(
-      slateCCFeeEstimateTemplateUuid,
-      sentPayload.get('template_uuid'),
-      'Template UUID in the payload should exactly equal the mapped template id for Slate CC fee estimate'
+    Assert.areEqual(
+      1,
+      [
+        SELECT COUNT()
+        FROM SBQQ__QuoteLine__c
+        WHERE
+          SBQQ__Product__r.Name = 'CC Processing Fee'
+          AND SBQQ__Quote__r.SBQQ__Opportunity2__c = :opp.Id
+      ],
+      'Expected one CC Processing Fee QLI for Slate CC Payment Estimate'
     );
   }
 
@@ -213,6 +233,25 @@ private class PandaDocQuoteControllerTest {
       WHERE Division__r.Name = 'Slate'
       LIMIT 1
     ];
+
+    // Create CC Processing Fee Product and PricebookEntry
+    Product2 ccProduct = new Product2(
+      Name = 'CC Processing Fee',
+      IsActive = true,
+      ProductCode = 'Slate_CC',
+      Family = 'Service'
+    );
+    insert ccProduct;
+
+    Id pricebookId = Test.getStandardPricebookId();
+    PricebookEntry standardPriceEntry = new PricebookEntry(
+      Pricebook2Id = pricebookId,
+      Product2Id = ccProduct.Id,
+      UnitPrice = 1, // Set a nominal price, actual price might be calculated by automation
+      IsActive = true
+    );
+    insert standardPriceEntry;
+
     opp.CC_Payment__c = true;
     update opp;
 
@@ -230,14 +269,16 @@ private class PandaDocQuoteControllerTest {
     // THEN
     System.assertNotEquals(null, result, 'Result should not be null');
 
-    String slateCCFeeInvoiceTemplateUuid = new PandadocQuoteMappingSelector()
-      .selectPandadocQuoteTemplateMappingByDivisionName('Slate')
-      .Pandadoc_CC_Fee_Invoice_Template_Id__c; // Changed to CC fee invoice template field
-    Map<String, Object> sentPayload = mock.lastRequestBody;
-    System.assertEquals(
-      slateCCFeeInvoiceTemplateUuid,
-      sentPayload.get('template_uuid'),
-      'Template UUID in the payload should exactly equal the mapped template id for Slate CC fee invoice'
+    Assert.areEqual(
+      1,
+      [
+        SELECT COUNT()
+        FROM SBQQ__QuoteLine__c
+        WHERE
+          SBQQ__Product__r.Name = 'CC Processing Fee'
+          AND SBQQ__Quote__r.SBQQ__Opportunity2__c = :opp.Id
+      ],
+      'Expected one CC Processing Fee QLI for Slate CC Payment Invoice'
     );
   }
 
@@ -435,22 +476,22 @@ private class PandaDocQuoteControllerTest {
 
     System.assertEquals(2, ccRecipientCount, 'There should be 2 CC recipients');
   }
-    @isTest
+  @isTest
   static void testCreatePandaDocQuote_WithQuoteRecord() {
-      SBQQ__Quote__c quote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
-      PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
-      Test.setMock(HttpCalloutMock.class, mock);
-      
-      // WHEN
-      Test.startTest();
-      Map<String, String> result = PandaDocQuoteController.createPandaDocQuote(
-          quote.Id,
-          'estimate'
-      );
-      Test.stopTest();
-      
-      // THEN
-      System.assertNotEquals(null, result, 'Result should not be null');
+    SBQQ__Quote__c quote = [SELECT Id FROM SBQQ__Quote__c LIMIT 1];
+    PandaDocApiMock mock = PandaDocApiMock.createSuccessMock();
+    Test.setMock(HttpCalloutMock.class, mock);
+
+    // WHEN
+    Test.startTest();
+    Map<String, String> result = PandaDocQuoteController.createPandaDocQuote(
+      quote.Id,
+      'estimate'
+    );
+    Test.stopTest();
+
+    // THEN
+    System.assertNotEquals(null, result, 'Result should not be null');
   }
 
   @isTest

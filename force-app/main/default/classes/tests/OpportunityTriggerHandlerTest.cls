@@ -1260,14 +1260,14 @@ public with sharing class OpportunityTriggerHandlerTest {
     testOpp.PrimaryContact__c = newContact.Id;
     update testOpp;
 
-    // Verify Account primary contact remains unchanged since it's already populated
+    // Verify Account primary contact is changed
     testAccount = [
       SELECT Id, Contact__c
       FROM Account
       WHERE Id = :testAccount.Id
     ];
     Assert.areEqual(
-      testContact.Id,
+      newContact.Id,
       testAccount.Contact__c,
       'Account primary contact should not change when already populated'
     );
@@ -1351,16 +1351,16 @@ public with sharing class OpportunityTriggerHandlerTest {
 
     Test.stopTest();
 
-    // Verify second opportunity was inserted but Account primary contact remains the same
+    // Verify second opportunity was inserted and changes primary contact
     Account accountAfterSecondOpp = [
       SELECT Id, Contact__c
       FROM Account
       WHERE Id = :testAccount.Id
     ];
     Assert.areEqual(
-      testContact.Id,
+      secondContact.Id,
       accountAfterSecondOpp.Contact__c,
-      'Account primary contact should not change when already populated'
+      'Account primary contact should be updated from second opportunity'
     );
   }
 }

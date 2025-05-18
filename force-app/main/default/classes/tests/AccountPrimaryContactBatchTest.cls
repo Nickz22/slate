@@ -66,6 +66,12 @@ public class AccountPrimaryContactBatchTest {
 
     insert testOpportunities;
 
+    // null the primary contact on all accounts
+    for (Account acc : testAccounts) {
+      acc.Contact__c = null;
+    }
+    update testAccounts;
+
     // Verify initial state - all accounts should have null Contact__c
     for (Account acc : [
       SELECT Id, Contact__c

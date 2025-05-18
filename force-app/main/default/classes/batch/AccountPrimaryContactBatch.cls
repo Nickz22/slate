@@ -23,17 +23,17 @@ global class AccountPrimaryContactBatch implements Database.Batchable<sObject>, 
     }
 
     // Find the most recent Opportunity for each Account with PrimaryContact__c populated
+    // order by ascending so that the latest created opportunity has it's primary contact set last
+    // on top of earlier contacts
     Map<Id, Id> accountToPrimaryContactMap = new Map<Id, Id>();
 
     for (Opportunity opp : [
-      SELECT Id, AccountId, PrimaryContact__c, CreatedDate
+      SELECT Name, AccountId, PrimaryContact__c, CreatedDate
       FROM Opportunity
       WHERE AccountId IN :accountIds AND PrimaryContact__c != NULL
-      ORDER BY CreatedDate DESC
+      ORDER BY CreatedDate ASC
     ]) {
-      if (!accountToPrimaryContactMap.containsKey(opp.AccountId)) {
-        accountToPrimaryContactMap.put(opp.AccountId, opp.PrimaryContact__c);
-      }
+      accountToPrimaryContactMap.put(opp.AccountId, opp.PrimaryContact__c);
     }
 
     // Update accounts with primary contact from opportunities
