@@ -486,7 +486,7 @@ private class PandaDocWebhookHandlerTest {
     change.data.metadata = new PandaDocDocumentChange.Metadata();
     change.data.metadata.salesforce_opportunity_id = opportunityId;
     change.data.template = new PandaDocDocumentChange.Template();
-    change.data.template.name = 'Test Quote';
+    change.data.template.name = 'Test Estimate';
     return change;
   }
 
