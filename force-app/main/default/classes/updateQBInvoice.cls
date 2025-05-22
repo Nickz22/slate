@@ -8,7 +8,7 @@ public class updateQBInvoice {
     public static void updateInvoice(Id opportunityId)
     {
         opp = [SELECT Id, Name, AccountId, Shoot_Date__c, Additional_Client_CC__c, CloseDate, Opportunity_Descriptor__c,Service_Type__c,
-                        Due_Date_Retouching_R1__c,Payment_terms__c, PO__c,
+                        Due_Date_Retouching_R1__c,Payment_terms__c,
                         Primary_E_mail__c, InvoiceNumber__c, StageName, Invoice_Due_Date_Override__c FROM Opportunity WHERE Id =: opportunityId];
         
         quote = [SELECT Id, SBQQ__Pricebook__r.Name,
@@ -127,11 +127,6 @@ public class updateQBInvoice {
             customField1Map.put('StringValue',opp.Name);
             customFieldList.add(customField1Map);
             
-            Map<String, Object> customField2Map = new Map<String,Object>();
-            customField2Map.put('DefinitionId','5');
-            customField2Map.put('Type','StringType');
-            customField2Map.put('StringValue',opp.PO__c);
-            customFieldList.add(customField1Map);
         }
         invoiceMap.put('CustomField',customFieldList);
         
