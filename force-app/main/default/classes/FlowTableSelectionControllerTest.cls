@@ -1,0 +1,3 @@
+@isTest // deprecated
+class FlowTableSelectionControllerTest {
+}
