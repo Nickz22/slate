@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Post_to_Chatter</name>
+        <label>Post to Chatter</label>
+        <locationX>808</locationX>
+        <locationY>815</locationY>
+        <actionName>chatterPost</actionName>
+        <actionType>chatterPost</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>text</name>
+            <value>
+                <elementReference>ChatterBody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>subjectNameOrId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>chatterPost</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+    <apiVersion>54.0</apiVersion>
+    <decisions>
+        <name>Invoice_Sent_and_Retouch_Align_Decisions</name>
+        <label>Invoice Sent and Retouch Align Decisions</label>
+        <locationX>843</locationX>
+        <locationY>354</locationY>
+        <defaultConnector>
+            <targetReference>Is_Won_Production_Complete</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Estimate_is_Invoice_Sent_Not_Retouch_Align</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.Stage_Document_Automated__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Invoice Generated</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Estimate_Status_to_Null</targetReference>
+            </connector>
+            <label>Estimate is Invoice Sent</label>
+        </rules>
+        <rules>
+            <name>Estimate_Not_Invoice_Sent_Not_Retouch_Align</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Stage_Document_Automated__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Invoice Generated</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Estimate_Status</targetReference>
+            </connector>
+            <label>Estimate Not Invoice Sent</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Won_Production_Complete</name>
+        <label>Is Won - Production Complete?</label>
+        <locationX>799</locationX>
+        <locationY>557</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Is_Won_Production_Complete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Won - Production Complete</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Post_to_Chatter</targetReference>
+            </connector>
+            <label>Yes - Is Won - Production Complete</label>
+        </rules>
+    </decisions>
+    <description>This record-triggered flow is designed to track and update the Estimate Status based on changes to the Stage field of the Opportunity object. It ensures that estimates align with different phases of the opportunity lifecycle, especially when moving to Won - Production Complete or similar statuses.
+
+Key Components:
+Trigger:
+
+The flow is triggered when an Opportunity record is created or updated.
+Entry conditions ensure it runs only if the Stage field is updated to one of the following values:
+Won - Production Complete
+Won - Pre Production
+Won - Production
+Won - Post Production
+Won - Production - Future Job - Placeholder
+Won - Production - Waiting
+Decision Elements:
+
+Invoice Sent Check: Determines whether the estimate is linked to an invoice.
+Production Completion Check: Determines whether the opportunity has reached &quot;Won - Production Complete.&quot;
+Record Updates:
+
+If the estimate is linked to an invoice, its status is reset to Null.
+If the estimate is not linked to an invoice, its status is updated accordingly.
+If the opportunity is at the final &quot;Won - Production Complete&quot; stage, a Chatter notification is posted.</description>
+    <environments>Default</environments>
+    <interviewLabel>Opportunity Object - Notification for Stage changed to Won - Production Complete {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RTF - Opportunity - Stage Change - Update Estimate Status &amp; Notify</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Set_Estimate_Status</name>
+        <label>Set Estimate Status</label>
+        <locationX>1005</locationX>
+        <locationY>555</locationY>
+        <connector>
+            <targetReference>Is_Won_Production_Complete</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Stage_Document_Automated__c</field>
+            <value>
+                <stringValue>Invoice Generated</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Estimate_Status_Back_to_Invoice_Sent</name>
+        <label>Set Estimate Status Back to Invoice Sent</label>
+        <locationX>585</locationX>
+        <locationY>556</locationY>
+        <connector>
+            <targetReference>Is_Won_Production_Complete</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Stage_Document_Automated__c</field>
+            <value>
+                <stringValue>Invoice Generated</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Estimate_Status_to_Null</name>
+        <label>Set Estimate Status to Null</label>
+        <locationX>584</locationX>
+        <locationY>348</locationY>
+        <connector>
+            <targetReference>Set_Estimate_Status_Back_to_Invoice_Sent</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Stage_Document_Automated__c</field>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>710</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>Invoice_Sent_and_Retouch_Align_Decisions</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Won - Production Complete</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Won - Pre Production</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Won - Production</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Won - Post Production</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Won - Production - Future Job - Placeholder</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Won - Production - Waiting</stringValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>ChatterBody</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>@[0054W000009kKmy] the stage of this opportunity has changed to Won - Production Complete. 
+Opportunity Name: {!$Record.Name}
+Account: {!$Record.Account.Name}
+Owner: {!$Record.Owner.Name}
+Close Date: {!$Record.CloseDate}</text>
+    </textTemplates>
+</Flow>
