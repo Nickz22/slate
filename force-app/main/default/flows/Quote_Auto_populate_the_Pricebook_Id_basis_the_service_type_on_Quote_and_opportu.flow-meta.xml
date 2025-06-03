@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>55.0</apiVersion>
+    <assignments>
+        <name>Update_Quote_PriceBook</name>
+        <label>Update Quote PriceBook</label>
+        <locationX>50</locationX>
+        <locationY>719</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.SBQQ__PriceBook__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Price_book_for_Slate_Studios.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.SBQQ__PricebookId__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Price_book_for_Slate_Studios.Id</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Update_Quote_PriceBook1</name>
+        <label>Update Quote PriceBook</label>
+        <locationX>578</locationX>
+        <locationY>719</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.SBQQ__PriceBook__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Price_book_for_Align_Retouch.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.SBQQ__PricebookId__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Price_book_for_Align_Retouch.Id</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>Update_Quote_PriceBook3</name>
+        <label>Update Quote PriceBook</label>
+        <locationX>1106</locationX>
+        <locationY>719</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.SBQQ__PriceBook__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Price_book_for_Palermo_Studio.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.SBQQ__PricebookId__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Price_book_for_Palermo_Studio.Id</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Check_for_price_book</name>
+        <label>Check for price book</label>
+        <locationX>182</locationX>
+        <locationY>611</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>price_book_slate</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Price_book_for_Slate_Studios</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Quote_PriceBook</targetReference>
+            </connector>
+            <label>price book slate</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_for_price_book1</name>
+        <label>Check for price book</label>
+        <locationX>710</locationX>
+        <locationY>611</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>price_book_slate1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Price_book_for_Align_Retouch</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Quote_PriceBook1</targetReference>
+            </connector>
+            <label>price book slate</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Opportunity_Service_Type</name>
+        <label>Check Opportunity Service Type</label>
+        <locationX>908</locationX>
+        <locationY>395</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Service_type_starts_with_slate</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Opportunity.Division__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Slate</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Price_book_for_Slate_Studios</targetReference>
+            </connector>
+            <label>Service type starts with slate</label>
+        </rules>
+        <rules>
+            <name>Service_type_starts_with_Align</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Opportunity.Division__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Align</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Price_book_for_Align_Retouch</targetReference>
+            </connector>
+            <label>Service type starts with Align</label>
+        </rules>
+        <rules>
+            <name>Service_type_starts_with_Palermo</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Opportunity.Division__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Palermo</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Price_book_for_Palermo_Studio</targetReference>
+            </connector>
+            <label>Service type starts with Palermo</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Price_Book</name>
+        <label>Check Price Book</label>
+        <locationX>1238</locationX>
+        <locationY>611</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_Price_Book1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Price_book_for_Palermo_Studio</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Quote_PriceBook3</targetReference>
+            </connector>
+            <label>Check Price Book</label>
+        </rules>
+    </decisions>
+    <description>This Record-Triggered Flow updates the Pricebook ID of a Quote based on the Service Type of its associated Opportunity.
+
+How It Works:
+Trigger: The flow runs when a Quote is created.
+Retrieve Opportunity: It fetches the related Opportunity to check its Service Type.
+Decision Node (Check Service Type): The flow determines the correct Pricebook based on the Opportunity&apos;s Service Type.
+Retrieve Pricebook: It fetches the appropriate Pricebook ID from the Pricebook object, filtering based on names starting with:
+&quot;Slate&quot; (Slate Studios)
+&quot;Align&quot; (Align Retouch)
+&quot;Palermo&quot; (Palermo Studio)
+Update Quote: If a match is found, the Quote’s Pricebook ID is updated.</description>
+    <environments>Default</environments>
+    <interviewLabel>Quoto - {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RTF - Quote - On Create - Set Pricebook by Service Type</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Opportunity</name>
+        <label>Get Opportunity</label>
+        <locationX>908</locationX>
+        <locationY>287</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Opportunity_Service_Type</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.SBQQ__Opportunity2__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Price_book_for_Align_Retouch</name>
+        <label>Get Price book for Align Retouch</label>
+        <locationX>710</locationX>
+        <locationY>503</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_for_price_book1</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>Align</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Pricebook2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Price_book_for_Palermo_Studio</name>
+        <label>Get Price book for Palermo Studio</label>
+        <locationX>1238</locationX>
+        <locationY>503</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Price_Book</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>Palermo</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Pricebook2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Price_book_for_Slate_Studios</name>
+        <label>Get Price book for Slate Studios</label>
+        <locationX>182</locationX>
+        <locationY>503</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_for_price_book</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>Slate</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Pricebook2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>782</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Opportunity</targetReference>
+        </connector>
+        <object>SBQQ__Quote__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

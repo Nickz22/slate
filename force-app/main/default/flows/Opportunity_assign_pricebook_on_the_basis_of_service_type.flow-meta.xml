@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>55.0</apiVersion>
+    <decisions>
+        <name>Check_If_get_price_book_is_not_null</name>
+        <label>Check If get price book is not null</label>
+        <locationX>182</locationX>
+        <locationY>539</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Get_price_book_not_null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Price_book_for_Slate_Studios</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_price_book_on_opportunity_Slate</targetReference>
+            </connector>
+            <label>Get price book not null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_price_book</name>
+        <label>Check price book</label>
+        <locationX>710</locationX>
+        <locationY>539</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_price_book_not_null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Price_book_for_Align_Retouch</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Pricebook_on_opportunity_Align</targetReference>
+            </connector>
+            <label>Check price book not null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_price_book2</name>
+        <label>Check price book</label>
+        <locationX>1238</locationX>
+        <locationY>539</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_pricebook_is_not_null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Price_book_for_Palermo_Studio</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_price_book_on_opportunity_Palermo</targetReference>
+            </connector>
+            <label>Check pricebook is not null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_the_opportunity_service_type</name>
+        <label>Check the opportunity service type</label>
+        <locationX>908</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Service_type_equals_to_Slate</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Division__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Slate</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Price_book_for_Slate_Studios</targetReference>
+            </connector>
+            <label>Service type equals to Slate</label>
+        </rules>
+        <rules>
+            <name>Service_type_equals_to_Align</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Division__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Align</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Price_book_for_Align_Retouch</targetReference>
+            </connector>
+            <label>Service type equals to Align</label>
+        </rules>
+        <rules>
+            <name>Service_type_equals_to_Palermo</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Division__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Palermo</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Price_book_for_Palermo_Studio</targetReference>
+            </connector>
+            <label>Service type equals to Palermo</label>
+        </rules>
+    </decisions>
+    <description>This Salesforce Record-Triggered Flow is designed to assign a Pricebook based on the Service Type of an Opportunity. It follows these steps:
+
+Trigger: The flow runs when a record is created or updated for the Opportunity object.
+Decision: Check Opportunity Service Type: Evaluates the Service Type field of the Opportunity.
+Get Price Book Records: Retrieves the Pricebook corresponding to the detected Service Type (Slate Studios, Align Retouch, or Palermo Studio).
+
+Decision: Check if Pricebook is Not Null: Ensures the retrieved Pricebook is valid.
+Update Opportunity Record: If a valid Pricebook is found, the Pricebook ID field on the Opportunity is updated.
+End Flow: If no matching Pricebook is found, the flow terminates without making changes.</description>
+    <environments>Default</environments>
+    <interviewLabel>Opportunity-assign pricebook on the basis of service type {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RTF - Opportunity - On Create/Update - Assign Pricebook by Service Type</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Price_book_for_Align_Retouch</name>
+        <label>Get Price book for Align Retouch</label>
+        <locationX>710</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_price_book</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>Align</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Pricebook2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Price_book_for_Palermo_Studio</name>
+        <label>Get Price book for Palermo Studio</label>
+        <locationX>1238</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_price_book2</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>Palermo</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Pricebook2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Price_book_for_Slate_Studios</name>
+        <label>Get Price book for Slate Studios</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_If_get_price_book_is_not_null</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>Slate</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Pricebook2</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_price_book_on_opportunity_Palermo</name>
+        <label>Update price book on opportunity (Palermo)</label>
+        <locationX>1106</locationX>
+        <locationY>647</locationY>
+        <inputAssignments>
+            <field>Pricebook2Id</field>
+            <value>
+                <elementReference>Get_Price_book_for_Palermo_Studio.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_price_book_on_opportunity_Slate</name>
+        <label>Update price book on opportunity (Slate)</label>
+        <locationX>50</locationX>
+        <locationY>647</locationY>
+        <inputAssignments>
+            <field>Pricebook2Id</field>
+            <value>
+                <elementReference>Get_Price_book_for_Slate_Studios.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Pricebook_on_opportunity_Align</name>
+        <label>Update Pricebook on opportunity (Align)</label>
+        <locationX>578</locationX>
+        <locationY>647</locationY>
+        <inputAssignments>
+            <field>Pricebook2Id</field>
+            <value>
+                <elementReference>Get_Price_book_for_Align_Retouch.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>782</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_the_opportunity_service_type</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Division__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>
