@@ -194,7 +194,7 @@ public class OpportunityTriggerHandler {
     Product2 ccFeeProduct = [
       SELECT Id, Name, ProductCode
       FROM Product2
-      WHERE Name = 'CC Processing Fee' AND IsActive = TRUE
+      WHERE Name = 'CC Fee' AND IsActive = TRUE
       LIMIT 1
     ];
 
@@ -216,7 +216,7 @@ public class OpportunityTriggerHandler {
       FROM SBQQ__QuoteLine__c
       WHERE
         SBQQ__Quote__c IN :quoteByOppId.values()
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+        AND SBQQ__Product__r.Name = 'CC Fee'
     ]) {
       if (!quoteLinesByQuoteId.containsKey(line.SBQQ__Quote__c)) {
         quoteLinesByQuoteId.put(
@@ -248,6 +248,23 @@ public class OpportunityTriggerHandler {
         Decimal ccFeeCost = opp.Amount * 0.03;
 
         if (existingCCLines.isEmpty()) {
+          Integer nextLineNumber = 1;
+          List<SBQQ__QuoteLine__c> allQuoteLinesSorted = [
+            SELECT SBQQ__Number__c
+            FROM SBQQ__QuoteLine__c
+            WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Number__c != NULL
+            ORDER BY SBQQ__Number__c DESC
+            LIMIT 1
+          ];
+
+          if (
+            !allQuoteLinesSorted.isEmpty() &&
+            allQuoteLinesSorted[0].SBQQ__Number__c != null
+          ) {
+            nextLineNumber =
+              allQuoteLinesSorted[0].SBQQ__Number__c.intValue() + 1;
+          }
+
           SBQQ__QuoteLine__c newLine = new SBQQ__QuoteLine__c(
             SBQQ__Quote__c = quote.Id,
             SBQQ__Product__c = ccFeeProduct.Id,
@@ -255,7 +272,8 @@ public class OpportunityTriggerHandler {
             SBQQ__ListPrice__c = ccFeeAmount,
             SBQQ__CustomerPrice__c = ccFeeAmount,
             SBQQ__UnitCost__c = ccFeeCost,
-            SBQQ__Description__c = 'Credit Card Processing Fee'
+            SBQQ__Description__c = 'Credit Card Processing Fee',
+            SBQQ__Number__c = nextLineNumber
           );
           linesToInsert.add(newLine);
         } else {
