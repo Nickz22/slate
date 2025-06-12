@@ -1169,11 +1169,6 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
-            <field>SalesTax__c</field>
-            <table>Opportunity.SBQQ__Quotes2__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
             <field>Lead_Type__c</field>
             <table>Opportunity.SBQQ__Quotes2__r</table>
         </columns>

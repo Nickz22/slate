@@ -1054,11 +1054,6 @@
         </columns>
         <columns>
             <checkedByDefault>false</checkedByDefault>
-            <field>SalesTax__c</field>
-            <table>Opportunity.SBQQ__Quotes2__r</table>
-        </columns>
-        <columns>
-            <checkedByDefault>false</checkedByDefault>
             <field>SBQQ__ShippingCity__c</field>
             <table>Opportunity.SBQQ__Quotes2__r</table>
         </columns>

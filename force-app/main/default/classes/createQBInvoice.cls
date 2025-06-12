@@ -15,7 +15,6 @@ public class createQBInvoice {
         Additional_Client_CC__c,
         CloseDate,
         Opportunity_Descriptor__c,
-        Service_Type__c,
         Due_Date_Retouching_R1__c,
         Payment_terms__c,
         Primary_E_mail__c,

@@ -7,7 +7,7 @@ public class updateQBInvoice {
     
     public static void updateInvoice(Id opportunityId)
     {
-        opp = [SELECT Id, Name, AccountId, Shoot_Date__c, Additional_Client_CC__c, CloseDate, Opportunity_Descriptor__c,Service_Type__c,
+        opp = [SELECT Id, Name, AccountId, Shoot_Date__c, Additional_Client_CC__c, CloseDate, Opportunity_Descriptor__c,
                         Due_Date_Retouching_R1__c,Payment_terms__c,
                         Primary_E_mail__c, InvoiceNumber__c, StageName, Invoice_Due_Date_Override__c FROM Opportunity WHERE Id =: opportunityId];
         
