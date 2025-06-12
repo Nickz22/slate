@@ -546,12 +546,6 @@ Successfully completes the Quote cloning process.</description>
                 <elementReference>Get_Quote_to_Clone.SBQQ__WatermarkShown__c</elementReference>
             </value>
         </inputAssignments>
-        <inputAssignments>
-            <field>SalesTax__c</field>
-            <value>
-                <elementReference>Get_Quote_to_Clone.SalesTax__c</elementReference>
-            </value>
-        </inputAssignments>
         <object>SBQQ__Quote__c</object>
     </recordCreates>
     <recordCreates>

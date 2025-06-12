@@ -337,6 +337,25 @@ public with sharing class OpportunityTriggerHandlerTest {
     );
     insert quote;
 
+    // Create a dummy product for the initial quote line
+    Product2 testProduct = new Product2(
+      Name = 'Test Product for Numbering',
+      IsActive = true,
+      Family = 'Software' // Example family
+    );
+    insert testProduct;
+
+    // Create an initial Quote Line Item
+    SBQQ__QuoteLine__c initialQuoteLine = new SBQQ__QuoteLine__c(
+      SBQQ__Quote__c = quote.Id,
+      SBQQ__Product__c = testProduct.Id,
+      SBQQ__Quantity__c = 1,
+      SBQQ__ListPrice__c = 100,
+      SBQQ__CustomerPrice__c = 100,
+      SBQQ__Number__c = 1 // Explicitly set the first line number
+    );
+    insert initialQuoteLine;
+
     Test.startTest();
     // Now update the opportunity to have CC_Payment__c = true
     opp.CC_Payment__c = true;
@@ -352,11 +371,10 @@ public with sharing class OpportunityTriggerHandlerTest {
         SBQQ__ListPrice__c,
         SBQQ__UnitCost__c,
         SBQQ__Quantity__c,
-        SBQQ__Description__c
+        SBQQ__Description__c,
+        SBQQ__Number__c // Added field
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
 
     System.assertEquals(
@@ -364,30 +382,38 @@ public with sharing class OpportunityTriggerHandlerTest {
       quoteLines.size(),
       'Expected a CC Fee quote line to be created'
     );
+    // Fetch the CC Fee line for easier access to its fields
+    SBQQ__QuoteLine__c ccFeeLine = quoteLines[0];
+
     System.assertEquals(
       45.0,
-      quoteLines[0].SBQQ__CustomerPrice__c,
+      ccFeeLine.SBQQ__CustomerPrice__c,
       'Expected CC Fee to be 4.5% of 1000 = 45'
     );
     System.assertEquals(
       45.0,
-      quoteLines[0].SBQQ__ListPrice__c,
+      ccFeeLine.SBQQ__ListPrice__c,
       'Expected ListPrice to equal CustomerPrice'
     );
     System.assertEquals(
       30.0,
-      quoteLines[0].SBQQ__UnitCost__c,
+      ccFeeLine.SBQQ__UnitCost__c,
       'Expected UnitCost to be 3% of 1000 = 30'
     );
     System.assertEquals(
       1,
-      quoteLines[0].SBQQ__Quantity__c,
+      ccFeeLine.SBQQ__Quantity__c,
       'Expected Quantity to be 1'
     );
     System.assertEquals(
       'Credit Card Processing Fee',
-      quoteLines[0].SBQQ__Description__c,
+      ccFeeLine.SBQQ__Description__c,
       'Expected Description to be Credit Card Processing Fee'
+    );
+    System.assertEquals(
+      2, // Expecting the CC Fee line to be the second line
+      ccFeeLine.SBQQ__Number__c,
+      'Expected CC Fee QLI to have Number__c = 2'
     );
   }
 
@@ -462,9 +488,7 @@ public with sharing class OpportunityTriggerHandlerTest {
         SBQQ__Quantity__c,
         SBQQ__Description__c
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
 
     System.assertEquals(
@@ -553,7 +577,7 @@ public with sharing class OpportunityTriggerHandlerTest {
     Product2 ccProduct = [
       SELECT Id
       FROM Product2
-      WHERE Name = 'CC Processing Fee'
+      WHERE Name = 'CC Fee'
       LIMIT 1
     ];
 
@@ -576,9 +600,7 @@ public with sharing class OpportunityTriggerHandlerTest {
     List<SBQQ__QuoteLine__c> quoteLines = [
       SELECT Id
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
 
     System.assertEquals(
@@ -633,6 +655,25 @@ public with sharing class OpportunityTriggerHandlerTest {
     );
     insert quote;
 
+    // Create a dummy product for the initial quote line
+    Product2 testProduct = new Product2(
+      Name = 'Test Product for Numbering Align',
+      IsActive = true,
+      Family = 'Hardware' // Example family
+    );
+    insert testProduct;
+
+    // Create an initial Quote Line Item
+    SBQQ__QuoteLine__c initialQuoteLine = new SBQQ__QuoteLine__c(
+      SBQQ__Quote__c = quote.Id,
+      SBQQ__Product__c = testProduct.Id,
+      SBQQ__Quantity__c = 1,
+      SBQQ__ListPrice__c = 150,
+      SBQQ__CustomerPrice__c = 150,
+      SBQQ__Number__c = 1 // Explicitly set the first line number
+    );
+    insert initialQuoteLine;
+
     Test.startTest();
     opp.CC_Payment__c = true;
     update opp;
@@ -646,11 +687,10 @@ public with sharing class OpportunityTriggerHandlerTest {
         SBQQ__ListPrice__c,
         SBQQ__UnitCost__c,
         SBQQ__Quantity__c,
-        SBQQ__Description__c
+        SBQQ__Description__c,
+        SBQQ__Number__c // Added field
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
 
     System.assertEquals(
@@ -658,30 +698,38 @@ public with sharing class OpportunityTriggerHandlerTest {
       quoteLines.size(),
       'Expected a CC Fee quote line to be created for Align division'
     );
+    // Fetch the CC Fee line for easier access to its fields
+    SBQQ__QuoteLine__c ccFeeLine = quoteLines[0];
+
     System.assertEquals(
       45.0,
-      quoteLines[0].SBQQ__CustomerPrice__c,
+      ccFeeLine.SBQQ__CustomerPrice__c,
       'Expected CC Fee to be 4.5% of 1000 = 45'
     );
     System.assertEquals(
       45.0,
-      quoteLines[0].SBQQ__ListPrice__c,
+      ccFeeLine.SBQQ__ListPrice__c,
       'Expected ListPrice to equal CustomerPrice'
     );
     System.assertEquals(
       30.0,
-      quoteLines[0].SBQQ__UnitCost__c,
+      ccFeeLine.SBQQ__UnitCost__c,
       'Expected UnitCost to be 3% of 1000 = 30'
     );
     System.assertEquals(
       1,
-      quoteLines[0].SBQQ__Quantity__c,
+      ccFeeLine.SBQQ__Quantity__c,
       'Expected Quantity to be 1'
     );
     System.assertEquals(
       'Credit Card Processing Fee',
-      quoteLines[0].SBQQ__Description__c,
+      ccFeeLine.SBQQ__Description__c,
       'Expected Description to be Credit Card Processing Fee'
+    );
+    System.assertEquals(
+      2, // Expecting the CC Fee line to be the second line
+      ccFeeLine.SBQQ__Number__c,
+      'Expected CC Fee QLI to have Number__c = 2 for Align division'
     );
   }
 
@@ -748,9 +796,7 @@ public with sharing class OpportunityTriggerHandlerTest {
         SBQQ__Quantity__c,
         SBQQ__Description__c
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
 
     System.assertEquals(
@@ -830,7 +876,7 @@ public with sharing class OpportunityTriggerHandlerTest {
     Product2 ccProduct = [
       SELECT Id
       FROM Product2
-      WHERE Name = 'CC Processing Fee'
+      WHERE Name = 'CC Fee'
       LIMIT 1
     ];
     SBQQ__QuoteLine__c ccFeeLine = new SBQQ__QuoteLine__c(
@@ -847,9 +893,7 @@ public with sharing class OpportunityTriggerHandlerTest {
     List<SBQQ__QuoteLine__c> quoteLines = [
       SELECT Id
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
     System.assertEquals(
       0,
@@ -900,6 +944,26 @@ public with sharing class OpportunityTriggerHandlerTest {
       SBQQ__PricebookId__c = pricebookId
     );
     insert quote;
+
+    // Create a dummy product for the initial quote line
+    Product2 testProduct = new Product2(
+      Name = 'Test Product for Numbering Palermo',
+      IsActive = true,
+      Family = 'Service' // Example family
+    );
+    insert testProduct;
+
+    // Create an initial Quote Line Item
+    SBQQ__QuoteLine__c initialQuoteLine = new SBQQ__QuoteLine__c(
+      SBQQ__Quote__c = quote.Id,
+      SBQQ__Product__c = testProduct.Id,
+      SBQQ__Quantity__c = 1,
+      SBQQ__ListPrice__c = 200,
+      SBQQ__CustomerPrice__c = 200,
+      SBQQ__Number__c = 1 // Explicitly set the first line number
+    );
+    insert initialQuoteLine;
+
     Test.startTest();
     opp.CC_Payment__c = true;
     update opp;
@@ -912,41 +976,48 @@ public with sharing class OpportunityTriggerHandlerTest {
         SBQQ__ListPrice__c,
         SBQQ__UnitCost__c,
         SBQQ__Quantity__c,
-        SBQQ__Description__c
+        SBQQ__Description__c,
+        SBQQ__Number__c // Added field
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
     System.assertEquals(
       1,
       quoteLines.size(),
       'Expected a CC Fee quote line to be created for Palermo division'
     );
+    // Fetch the CC Fee line for easier access to its fields
+    SBQQ__QuoteLine__c ccFeeLine = quoteLines[0];
+
     System.assertEquals(
       45.0,
-      quoteLines[0].SBQQ__CustomerPrice__c,
+      ccFeeLine.SBQQ__CustomerPrice__c,
       'Expected CC Fee to be 4.5% of 1000 = 45'
     );
     System.assertEquals(
       45.0,
-      quoteLines[0].SBQQ__ListPrice__c,
+      ccFeeLine.SBQQ__ListPrice__c,
       'Expected ListPrice to equal CustomerPrice'
     );
     System.assertEquals(
       30.0,
-      quoteLines[0].SBQQ__UnitCost__c,
+      ccFeeLine.SBQQ__UnitCost__c,
       'Expected UnitCost to be 3% of 1000 = 30'
     );
     System.assertEquals(
       1,
-      quoteLines[0].SBQQ__Quantity__c,
+      ccFeeLine.SBQQ__Quantity__c,
       'Expected Quantity to be 1'
     );
     System.assertEquals(
       'Credit Card Processing Fee',
-      quoteLines[0].SBQQ__Description__c,
+      ccFeeLine.SBQQ__Description__c,
       'Expected Description to be Credit Card Processing Fee'
+    );
+    System.assertEquals(
+      2, // Expecting the CC Fee line to be the second line
+      ccFeeLine.SBQQ__Number__c,
+      'Expected CC Fee QLI to have Number__c = 2 for Palermo division'
     );
   }
 
@@ -1008,9 +1079,7 @@ public with sharing class OpportunityTriggerHandlerTest {
         SBQQ__Quantity__c,
         SBQQ__Description__c
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
     System.assertEquals(
       1,
@@ -1089,7 +1158,7 @@ public with sharing class OpportunityTriggerHandlerTest {
     Product2 ccProduct = [
       SELECT Id
       FROM Product2
-      WHERE Name = 'CC Processing Fee'
+      WHERE Name = 'CC Fee'
       LIMIT 1
     ];
     SBQQ__QuoteLine__c ccFeeLine = new SBQQ__QuoteLine__c(
@@ -1106,9 +1175,7 @@ public with sharing class OpportunityTriggerHandlerTest {
     List<SBQQ__QuoteLine__c> quoteLines = [
       SELECT Id
       FROM SBQQ__QuoteLine__c
-      WHERE
-        SBQQ__Quote__c = :quote.Id
-        AND SBQQ__Product__r.Name = 'CC Processing Fee'
+      WHERE SBQQ__Quote__c = :quote.Id AND SBQQ__Product__r.Name = 'CC Fee'
     ];
     System.assertEquals(
       0,
@@ -1132,14 +1199,14 @@ public with sharing class OpportunityTriggerHandlerTest {
     insert account;
 
     Product2 ccProduct = new Product2(
-      Name = 'CC Processing Fee',
+      Name = 'CC Fee',
       ProductCode = 'SLATE_0076',
       IsActive = true
     );
     insert ccProduct;
 
     Product2 alignProduct = new Product2(
-      Name = 'CC Processing Fee',
+      Name = 'CC Fee',
       ProductCode = 'ALIGN_0076',
       IsActive = true
     );
@@ -1166,7 +1233,7 @@ public with sharing class OpportunityTriggerHandlerTest {
     Division__c palermoDivision = new Division__c(Name = 'Palermo');
     insert palermoDivision;
     Product2 palermoProduct = new Product2(
-      Name = 'CC Processing Fee',
+      Name = 'CC Fee',
       ProductCode = 'PALERMO_0076',
       IsActive = true
     );
