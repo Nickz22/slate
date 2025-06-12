@@ -143,7 +143,7 @@ private class PandaDocQuoteControllerTest {
 
     // Create CC Processing Fee Product and PricebookEntry
     Product2 ccProduct = new Product2(
-      Name = 'CC Processing Fee',
+      Name = 'CC Fee',
       IsActive = true,
       ProductCode = 'Slate_CC',
       Family = 'Service'
@@ -182,7 +182,7 @@ private class PandaDocQuoteControllerTest {
         SELECT COUNT()
         FROM SBQQ__QuoteLine__c
         WHERE
-          SBQQ__Product__r.Name = 'CC Processing Fee'
+          SBQQ__Product__r.Name = 'CC Fee'
           AND SBQQ__Quote__r.SBQQ__Opportunity2__c = :opp.Id
       ],
       'Expected one CC Processing Fee QLI for Slate CC Payment Estimate'
@@ -236,7 +236,7 @@ private class PandaDocQuoteControllerTest {
 
     // Create CC Processing Fee Product and PricebookEntry
     Product2 ccProduct = new Product2(
-      Name = 'CC Processing Fee',
+      Name = 'CC Fee',
       IsActive = true,
       ProductCode = 'Slate_CC',
       Family = 'Service'
@@ -275,7 +275,7 @@ private class PandaDocQuoteControllerTest {
         SELECT COUNT()
         FROM SBQQ__QuoteLine__c
         WHERE
-          SBQQ__Product__r.Name = 'CC Processing Fee'
+          SBQQ__Product__r.Name = 'CC Fee'
           AND SBQQ__Quote__r.SBQQ__Opportunity2__c = :opp.Id
       ],
       'Expected one CC Processing Fee QLI for Slate CC Payment Invoice'
