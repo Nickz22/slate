@@ -15,10 +15,8 @@ public class createQBInvoice {
         Additional_Client_CC__c,
         CloseDate,
         Opportunity_Descriptor__c,
-        Service_Type__c,
         Due_Date_Retouching_R1__c,
         Payment_terms__c,
-        PO__c,
         Primary_E_mail__c,
         InvoiceNumber__c,
         StageName,
@@ -186,11 +184,6 @@ public class createQBInvoice {
       customField1Map.put('StringValue', opp.Name);
       customFieldList.add(customField1Map);
 
-      Map<String, Object> customField2Map = new Map<String, Object>();
-      customField2Map.put('DefinitionId', '5');
-      customField2Map.put('Type', 'StringType');
-      customField2Map.put('StringValue', opp.PO__c);
-      customFieldList.add(customField1Map);
     }
     invoiceMap.put('CustomField', customFieldList);
 
