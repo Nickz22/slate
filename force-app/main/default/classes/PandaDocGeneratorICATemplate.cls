@@ -1,0 +1,4 @@
+@isTest // deprecated
+class PandaDocGeneratorICATemplate {
+    
+}
