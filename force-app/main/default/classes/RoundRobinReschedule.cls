@@ -1,5 +1,4 @@
-@isTest // deprecated
+// Deprecated
+@isTest
 public class RoundRobinReschedule {
-    
-
 }
